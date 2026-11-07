@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import 'alarm_sound.dart';
 import 'reminder_actions.dart';
 
 /// Factory responsible for building platform-specific notification details and channels
@@ -32,7 +33,7 @@ class NotificationDetailsFactory {
 
   /// Timeout in milliseconds (60 seconds) after which the Android notification
   /// automatically dismisses so the insistent sound does not ring indefinitely.
-  static const int timeoutAfterMs = 60000;
+  static const int timeoutAfterMs = 120000;
 
   /// Regular (non-alarm) channel for "N minutes left" heads-up reminders.
   static const String reminderChannelId = 'task_reminder_v1';
@@ -74,16 +75,27 @@ class NotificationDetailsFactory {
   }
 
   /// Builds the [AndroidNotificationChannel] configured with alarm importance and sound.
-  AndroidNotificationChannel createAndroidChannel() {
-    return const AndroidNotificationChannel(
-      androidChannelId,
+  AndroidNotificationChannel createAndroidChannel([
+    AlarmSound sound = AlarmSound.builtIn,
+    String? customPath,
+  ]) {
+    return AndroidNotificationChannel(
+      _channelId(sound),
       androidChannelName,
       description: androidChannelDescription,
       importance: Importance.max,
-      sound: RawResourceAndroidNotificationSound(androidSoundResource),
+      sound: _androidSound(customPath),
       audioAttributesUsage: AudioAttributesUsage.alarm,
     );
   }
+
+  static String _channelId(AlarmSound sound) =>
+      sound.isCustom ? sound.androidChannelId : androidChannelId;
+
+  static AndroidNotificationSound _androidSound(String? customPath) =>
+      customPath == null
+          ? const RawResourceAndroidNotificationSound(androidSoundResource)
+          : UriAndroidNotificationSound(Uri.file(customPath).toString());
 
   /// Localised captions for the notification buttons.
   static List<AndroidNotificationAction> _androidActions(
@@ -99,27 +111,29 @@ class NotificationDetailsFactory {
   NotificationDetails createNotificationDetails({
     String doneLabel = 'Done',
     String snoozeLabel = '+10 min',
+    AlarmSound sound = AlarmSound.builtIn,
+    String? customPath,
   }) {
     return NotificationDetails(
       android: AndroidNotificationDetails(
-        androidChannelId,
+        _channelId(sound),
         androidChannelName,
         channelDescription: androidChannelDescription,
         importance: Importance.max,
         priority: Priority.high,
         category: AndroidNotificationCategory.alarm,
         audioAttributesUsage: AudioAttributesUsage.alarm,
-        sound: const RawResourceAndroidNotificationSound(androidSoundResource),
+        sound: _androidSound(customPath),
         fullScreenIntent: true,
         additionalFlags: Int32List.fromList(<int>[insistentFlag]),
         timeoutAfter: timeoutAfterMs,
         actions: _androidActions(doneLabel, snoozeLabel),
       ),
-      iOS: const DarwinNotificationDetails(
+      iOS: DarwinNotificationDetails(
         presentAlert: true,
         presentBadge: false,
         presentSound: true,
-        sound: iosSoundFile,
+        sound: sound.fileName ?? iosSoundFile,
         interruptionLevel: InterruptionLevel.timeSensitive,
         categoryIdentifier: ReminderActions.iosCategory,
       ),

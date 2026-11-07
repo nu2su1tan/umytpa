@@ -17,6 +17,7 @@ import '../../tasks/domain/entities/task.dart';
 import '../../tasks/domain/usecases/should_schedule_reminder.dart';
 import '../domain/reminder_permission_status.dart';
 import '../domain/reminder_scheduler.dart';
+import 'alarm_sound.dart';
 import 'notification_details_factory.dart';
 import 'reminder_actions.dart';
 import 'reminder_notification_text.dart';
@@ -120,43 +121,27 @@ class LocalReminderScheduler implements ReminderScheduler {
 
       if (wantsReminder) {
         final (:String title, :String body) = _reminderText(task, lang);
-        await _plugin.zonedSchedule(
+        await _ring(
           id: task.id,
+          at: task.remindAt!,
           title: title,
           body: body,
-          scheduledDate: tz.TZDateTime.from(task.remindAt!, tz.local),
-          notificationDetails: detailsFactory.createReminderDetails(
-            doneLabel: ReminderNotificationText.doneLabel(languageCode: lang),
-            snoozeLabel:
-                ReminderNotificationText.snoozeLabel(languageCode: lang),
-          ),
-          androidScheduleMode: mode,
-          payload: ReminderActions.encodePayload(
-            taskId: task.id,
-            title: title,
-            body: body,
-          ),
+          mode: mode,
+          taskId: task.id,
+          lang: lang,
         );
       }
 
       if (wantsAlarm) {
         final (:String title, :String body) = _alarmText(task, lang);
-        await _plugin.zonedSchedule(
+        await _ring(
           id: _alarmId(task.id),
+          at: task.dueAt,
           title: title,
           body: body,
-          scheduledDate: tz.TZDateTime.from(task.dueAt, tz.local),
-          notificationDetails: detailsFactory.createNotificationDetails(
-            doneLabel: ReminderNotificationText.doneLabel(languageCode: lang),
-            snoozeLabel:
-                ReminderNotificationText.snoozeLabel(languageCode: lang),
-          ),
-          androidScheduleMode: mode,
-          payload: ReminderActions.encodePayload(
-            taskId: task.id,
-            title: title,
-            body: body,
-          ),
+          mode: mode,
+          taskId: task.id,
+          lang: lang,
         );
       }
       return const Success<void>(null);
@@ -226,6 +211,108 @@ class LocalReminderScheduler implements ReminderScheduler {
   String get _lang =>
       languageCode?.call() ?? PlatformDispatcher.instance.locale.languageCode;
 
+
+  /// iOS plays a notification sound once and for at most 30 seconds, so the
+  /// alarm is repeated every [_repeatEvery] until the user reacts.
+  static const int _repeatCount = 6;
+  static const Duration _repeatEvery = Duration(seconds: 30);
+
+  static int _repeatId(int taskId, int n) => 1100000000 + taskId * 8 + n;
+
+  Future<void> _cancelRepeats(int taskId) async {
+    if (!Platform.isIOS) {
+      return;
+    }
+    for (int n = 1; n <= _repeatCount; n++) {
+      await _plugin.cancel(id: _repeatId(taskId, n));
+    }
+  }
+
+  /// Posts one alarm-style notification at [at]: the chosen sound, and on
+  /// Android a looping sound that lasts until the notification is dismissed.
+  Future<void> _ring({
+    required int id,
+    required DateTime at,
+    required String title,
+    required String body,
+    required AndroidScheduleMode mode,
+    required int taskId,
+    required String lang,
+  }) async {
+    final AlarmSound sound = await AlarmSound.load();
+    final String? customPath = await sound.path();
+    if (sound.isCustom && Platform.isAndroid) {
+      await _plugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.createNotificationChannel(
+            detailsFactory.createAndroidChannel(sound, customPath),
+          );
+    }
+    final NotificationDetails details = detailsFactory.createNotificationDetails(
+      doneLabel: ReminderNotificationText.doneLabel(languageCode: lang),
+      snoozeLabel: ReminderNotificationText.snoozeLabel(languageCode: lang),
+      sound: sound,
+      customPath: customPath,
+    );
+    final String payload = ReminderActions.encodePayload(
+      taskId: taskId,
+      title: title,
+      body: body,
+    );
+    await _plugin.zonedSchedule(
+      id: id,
+      title: title,
+      body: body,
+      scheduledDate: tz.TZDateTime.from(at, tz.local),
+      notificationDetails: details,
+      androidScheduleMode: mode,
+      payload: payload,
+    );
+    if (!Platform.isIOS) {
+      return;
+    }
+    for (int n = 1; n <= _repeatCount; n++) {
+      await _plugin.zonedSchedule(
+        id: _repeatId(taskId, n),
+        title: title,
+        body: body,
+        scheduledDate: tz.TZDateTime.from(at.add(_repeatEvery * n), tz.local),
+        notificationDetails: details,
+        androidScheduleMode: mode,
+        payload: payload,
+      );
+    }
+  }
+
+  /// Stops the repeating iOS alarm once the user is back in the app: clears
+  /// the repeats still waiting and the ones already shown. Returns whether
+  /// anything was cleared, so the caller can re-plan the future ones.
+  Future<bool> stopRinging() async {
+    if (!Platform.isIOS) {
+      return false;
+    }
+    await initialize();
+    bool cleared = false;
+    final List<PendingNotificationRequest> pending =
+        await _plugin.pendingNotificationRequests();
+    for (final PendingNotificationRequest r in pending) {
+      if (r.id >= 1100000000 && r.id < 2000000000) {
+        await _plugin.cancel(id: r.id);
+        cleared = true;
+      }
+    }
+    final List<ActiveNotification> shown =
+        await _plugin.getActiveNotifications();
+    for (final ActiveNotification n in shown) {
+      final int? id = n.id;
+      if (id != null && id >= 1100000000 && id < 2000000000) {
+        await _plugin.cancel(id: id);
+      }
+    }
+    return cleared;
+  }
+
   /// Rings the deadline alarm again after [delay] (the "+10 min" button).
   Future<void> snooze({
     required int taskId,
@@ -236,22 +323,17 @@ class LocalReminderScheduler implements ReminderScheduler {
     try {
       await initialize();
       final String lang = _lang;
+      await _cancelRepeats(taskId);
       await _plugin.cancel(id: _alarmId(taskId));
-      await _plugin.zonedSchedule(
+      await _plugin.cancel(id: taskId);
+      await _ring(
         id: _alarmId(taskId),
+        at: DateTime.now().add(delay),
         title: title,
         body: body,
-        scheduledDate: tz.TZDateTime.now(tz.local).add(delay),
-        notificationDetails: detailsFactory.createNotificationDetails(
-          doneLabel: ReminderNotificationText.doneLabel(languageCode: lang),
-          snoozeLabel: ReminderNotificationText.snoozeLabel(languageCode: lang),
-        ),
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        payload: ReminderActions.encodePayload(
-          taskId: taskId,
-          title: title,
-          body: body,
-        ),
+        mode: AndroidScheduleMode.exactAllowWhileIdle,
+        taskId: taskId,
+        lang: lang,
       );
     } on Object catch (error, stackTrace) {
       _err(error, stackTrace);
@@ -264,6 +346,7 @@ class LocalReminderScheduler implements ReminderScheduler {
       await initialize();
       await _plugin.cancel(id: taskId);
       await _plugin.cancel(id: _alarmId(taskId));
+      await _cancelRepeats(taskId);
       return const Success<void>(null);
     } on Object catch (error, stackTrace) {
       return _err(error, stackTrace);

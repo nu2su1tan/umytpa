@@ -1273,4 +1273,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customReminderHint => 'Amount';
+
+  @override
+  String get alarmSoundTitle => 'Alarm sound';
+
+  @override
+  String get alarmSoundBuiltIn => 'Built-in';
+
+  @override
+  String get alarmSoundPick => 'Choose a sound from your device';
+
+  @override
+  String get alarmSoundReset => 'Use the built-in sound';
+
+  @override
+  String get alarmSoundHintIos =>
+      'MP3, M4A, WAV, AIFF or CAF. Only the first 30 seconds play. It repeats until you open the app or tap Done.';
+
+  @override
+  String get alarmSoundHintAndroid =>
+      'MP3, M4A, OPUS, OGG or WAV. It rings until you tap or dismiss the notification.';
+
+  @override
+  String get alarmSoundFailed => 'Couldn\'t use this file';
 }

@@ -21,6 +21,8 @@ import '../../domain/usecases/group_tasks_by_date.dart';
 import '../../domain/usecases/toggle_task_done.dart';
 import '../../domain/usecases/update_task.dart';
 import '../../domain/usecases/watch_tasks.dart';
+import '../../../reminders/data/local_reminder_scheduler.dart';
+import '../../../reminders/domain/usecases/reschedule_all_reminders.dart';
 import '../../data/task_widget_sync.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../domain/usecases/task_stats.dart';
@@ -82,11 +84,19 @@ class _TasksPageState extends State<TasksPage> with WidgetsBindingObserver {
     super.dispose();
   }
 
+  /// Back in the app: the repeating iOS alarm has done its job.
+  Future<void> _stopRinging() async {
+    if (await getIt<LocalReminderScheduler>().stopRinging()) {
+      await getIt<RescheduleAllReminders>()();
+    }
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // A notification button ("Done") may have changed tasks from a background
     // isolate, which this database connection can't see on its own.
     if (state == AppLifecycleState.resumed) {
+      unawaited(_stopRinging());
       _cubit.start();
       _stats.refresh();
     }

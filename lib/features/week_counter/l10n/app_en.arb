@@ -765,5 +765,12 @@
   "unitHours": "hours",
   "unitDays": "days",
   "customReminderApply": "Set",
-  "customReminderHint": "Amount"
+  "customReminderHint": "Amount",
+  "alarmSoundTitle": "Alarm sound",
+  "alarmSoundBuiltIn": "Built-in",
+  "alarmSoundPick": "Choose a sound from your device",
+  "alarmSoundReset": "Use the built-in sound",
+  "alarmSoundHintIos": "MP3, M4A, WAV, AIFF or CAF. Only the first 30 seconds play. It repeats until you open the app or tap Done.",
+  "alarmSoundHintAndroid": "MP3, M4A, OPUS, OGG or WAV. It rings until you tap or dismiss the notification.",
+  "alarmSoundFailed": "Couldn't use this file"
 }

@@ -156,7 +156,9 @@ class _TodayCardState extends State<TodayCard> {
                 Text(mood, style: t.footnote.copyWith(color: t.ink2)),
               ],
               const SizedBox(height: 14),
-              Row(
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
                 children: <Widget>[
                   if (widget.stats.currentStreak > 0)
                     _Chip(
@@ -165,13 +167,11 @@ class _TodayCardState extends State<TodayCard> {
                       label: copy.streakChip(widget.stats.currentStreak),
                       onTap: widget.onOpenStats,
                     ),
-                  const Spacer(),
                   _Chip(
                     icon: Icons.timer_outlined,
                     label: l10n.focusTitle,
                     onTap: widget.onStartFocus,
                   ),
-                  const SizedBox(width: 8),
                   _Chip(
                     icon: Icons.bar_chart_rounded,
                     label: l10n.statsOpen,

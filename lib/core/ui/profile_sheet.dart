@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
+import '../../features/reminders/data/alarm_sound.dart';
 import '../../features/reminders/domain/usecases/reschedule_all_reminders.dart';
 import '../../features/week_counter/ui/kit/glass.dart';
 import '../../features/week_counter/ui/kit/group.dart';
@@ -49,6 +52,40 @@ class _ProfileFormState extends State<_ProfileForm> {
   final ProfileController _profile = getIt<ProfileController>();
   late final TextEditingController _name =
       TextEditingController(text: _profile.name ?? '');
+
+  AlarmSound _sound = AlarmSound.builtIn;
+
+  @override
+  void initState() {
+    super.initState();
+    AlarmSound.load().then((AlarmSound s) {
+      if (mounted) {
+        setState(() => _sound = s);
+      }
+    });
+  }
+
+  Future<void> _pickSound() async {
+    final ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
+    final String failed = context.l10n.alarmSoundFailed;
+    try {
+      final AlarmSound? picked = await AlarmSound.pick();
+      if (picked == null || !mounted) {
+        return;
+      }
+      setState(() => _sound = picked);
+      // Alarms already planned still carry the old sound.
+      await getIt<RescheduleAllReminders>()();
+    } on Object {
+      messenger.showSnackBar(SnackBar(content: Text(failed)));
+    }
+  }
+
+  Future<void> _resetSound() async {
+    await AlarmSound.reset();
+    setState(() => _sound = AlarmSound.builtIn);
+    await getIt<RescheduleAllReminders>()();
+  }
 
   @override
   void dispose() {
@@ -136,6 +173,37 @@ class _ProfileFormState extends State<_ProfileForm> {
                     onTap: () => _profile.setTone(tone),
                   ),
               ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.alarmSoundTitle,
+              style: t.footnote.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Group(
+              margin: EdgeInsets.zero,
+              color: t.sheetCard,
+              children: <Widget>[
+                GroupRow(
+                  icon: Icons.music_note_rounded,
+                  title: l10n.alarmSoundPick,
+                  subtitle: _sound.label ?? l10n.alarmSoundBuiltIn,
+                  onTap: _pickSound,
+                ),
+                if (_sound.isCustom)
+                  GroupRow(
+                    icon: Icons.restart_alt_rounded,
+                    title: l10n.alarmSoundReset,
+                    onTap: _resetSound,
+                  ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              Platform.isIOS
+                  ? l10n.alarmSoundHintIos
+                  : l10n.alarmSoundHintAndroid,
+              style: t.footnote.copyWith(color: t.ink2),
             ),
             const SizedBox(height: 16),
             FilledButton(

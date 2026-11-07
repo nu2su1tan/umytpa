@@ -2179,6 +2179,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Amount'**
   String get customReminderHint;
+
+  /// No description provided for @alarmSoundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm sound'**
+  String get alarmSoundTitle;
+
+  /// No description provided for @alarmSoundBuiltIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in'**
+  String get alarmSoundBuiltIn;
+
+  /// No description provided for @alarmSoundPick.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a sound from your device'**
+  String get alarmSoundPick;
+
+  /// No description provided for @alarmSoundReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the built-in sound'**
+  String get alarmSoundReset;
+
+  /// No description provided for @alarmSoundHintIos.
+  ///
+  /// In en, this message translates to:
+  /// **'MP3, M4A, WAV, AIFF or CAF. Only the first 30 seconds play. It repeats until you open the app or tap Done.'**
+  String get alarmSoundHintIos;
+
+  /// No description provided for @alarmSoundHintAndroid.
+  ///
+  /// In en, this message translates to:
+  /// **'MP3, M4A, OPUS, OGG or WAV. It rings until you tap or dismiss the notification.'**
+  String get alarmSoundHintAndroid;
+
+  /// No description provided for @alarmSoundFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t use this file'**
+  String get alarmSoundFailed;
 }
 
 class _AppLocalizationsDelegate

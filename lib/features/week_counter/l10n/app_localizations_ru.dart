@@ -1296,4 +1296,27 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get customReminderHint => 'Сколько';
+
+  @override
+  String get alarmSoundTitle => 'Звук будильника';
+
+  @override
+  String get alarmSoundBuiltIn => 'Стандартный';
+
+  @override
+  String get alarmSoundPick => 'Выбрать звук с устройства';
+
+  @override
+  String get alarmSoundReset => 'Вернуть стандартный звук';
+
+  @override
+  String get alarmSoundHintIos =>
+      'MP3, M4A, WAV, AIFF или CAF. Играют первые 30 секунд. Звук повторяется, пока ты не откроешь приложение или не нажмёшь «Готово».';
+
+  @override
+  String get alarmSoundHintAndroid =>
+      'MP3, M4A, OPUS, OGG или WAV. Звучит, пока ты не нажмёшь на уведомление или не смахнёшь его.';
+
+  @override
+  String get alarmSoundFailed => 'Не получилось взять этот файл';
 }
