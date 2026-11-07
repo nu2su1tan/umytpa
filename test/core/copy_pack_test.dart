@@ -94,6 +94,28 @@ void main() {
     }
   });
 
+  test('headline and streak chip have several wordings with plurals', () {
+    for (final CopyTone tone in CopyTone.values) {
+      final CopyPack ru = CopyPack.of('ru', tone);
+      final CopyPack en = CopyPack.of('en', tone);
+      expect(ru.leftLine(1), contains('1 задача'));
+      expect(ru.leftLine(3), contains('3 задачи'));
+      expect(ru.leftLine(5), contains('5 задач'));
+      expect(en.leftLine(1), contains('1 task'));
+      expect(en.leftLine(2), contains('2 tasks'));
+      expect(ru.streakChip(2), contains('2 дня'));
+      expect(en.streakChip(1), contains('1 day'));
+    }
+    final Set<String> seen = <String>{
+      for (int i = 1; i < 12; i++)
+        CopyPack.of(
+          'ru',
+          CopyTone.friendly,
+        ).streakChip(i).replaceAll(RegExp(r'\d+ \p{L}+', unicode: true), '#'),
+    };
+    expect(seen.length, greaterThan(1));
+  });
+
   test('streak notes pick the closest threshold', () {
     final CopyPack p = CopyPack.of('en', CopyTone.friendly);
     expect(p.streakNote(0), isNull);

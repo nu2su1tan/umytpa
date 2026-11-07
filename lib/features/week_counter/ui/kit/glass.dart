@@ -112,9 +112,17 @@ class GlassButton extends StatelessWidget {
         child: iconWidget,
       );
     } else {
-      body = SizedBox.square(
-        dimension: 44,
-        child: Glass(shadow: false, child: Center(child: iconWidget)),
+      // A plain translucent disc: a BackdropFilter per button is costly,
+      // and the bar's fade already hides what scrolls underneath.
+      body = Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: t.glass,
+          shape: BoxShape.circle,
+          border: Border.all(color: t.glassLine, width: 0.5),
+        ),
+        child: iconWidget,
       );
     }
     return Tooltip(

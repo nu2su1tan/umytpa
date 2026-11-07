@@ -10,6 +10,17 @@ import '../../domain/validation/task_input_validator.dart';
 
 /// Translations of the tracker's domain values. The domain keeps its English
 /// labels; the UI shows these.
+// Building a DateFormat parses its pattern; the list asks for the same two
+// formats once per row on every rebuild, so keep them.
+final Map<String, DateFormat> _hmCache = <String, DateFormat>{};
+final Map<String, DateFormat> _dayMonthCache = <String, DateFormat>{};
+
+DateFormat _hm(String locale) =>
+    _hmCache.putIfAbsent(locale, () => DateFormat.Hm(locale));
+
+DateFormat _dayMonth(String locale) =>
+    _dayMonthCache.putIfAbsent(locale, () => DateFormat('d MMM', locale));
+
 extension TaskL10n on AppLocalizations {
   String categoryLabel(TaskCategory category) => switch (category) {
         TaskCategory.study => categoryStudy,
@@ -69,7 +80,7 @@ extension TaskL10n on AppLocalizations {
 
   String dueLabel(DateTime dueAt, {required DateTime now}) {
     final DateTime local = dueAt.toLocal();
-    final String time = DateFormat.Hm(localeName).format(local);
+    final String time = _hm(localeName).format(local);
 
     if (DateTimeUtils.isSameCalendarDay(local, now)) {
       return time;
@@ -85,7 +96,7 @@ extension TaskL10n on AppLocalizations {
     )) {
       return dueTomorrow(time);
     }
-    return dueOnDate(DateFormat('d MMM', localeName).format(local), time);
+    return dueOnDate(_dayMonth(localeName).format(local), time);
   }
 
   /// Translates a message produced by the domain (validation, use cases).

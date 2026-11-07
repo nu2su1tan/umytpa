@@ -4,7 +4,7 @@ import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
-import 'package:timezone/data/latest_all.dart' as tz_data;
+import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
 import 'package:intl/intl.dart';
@@ -81,13 +81,6 @@ class LocalReminderScheduler implements ReminderScheduler {
         macOS: darwinSettings,
       ),
       onDidReceiveBackgroundNotificationResponse: reminderBackgroundHandler,
-      onDidReceiveNotificationResponse: (NotificationResponse r) {
-        // Buttons that don't open the UI arrive in the background handler;
-        // anything that reaches us here with an action is handled the same.
-        if (r.actionId != null) {
-          reminderBackgroundHandler(r);
-        }
-      },
     );
 
     final AndroidFlutterLocalNotificationsPlugin? android =
@@ -116,21 +109,12 @@ class LocalReminderScheduler implements ReminderScheduler {
         return const Success<void>(null);
       }
 
-      final ReminderPermissionStatus notifPermission =
-          await checkNotificationsPermission();
-      if (!notifPermission.isGranted) {
+      final ({bool granted, AndroidScheduleMode mode}) env =
+          await _environment();
+      if (!env.granted) {
         return const Err<void>(PermissionFailure());
       }
-
-      if (Platform.isAndroid) {
-        final AndroidFlutterLocalNotificationsPlugin? android =
-            _plugin.resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin>();
-        final bool? canSchedule = await android?.canScheduleExactNotifications();
-        if (canSchedule == false) {
-          await android?.requestExactAlarmsPermission();
-        }
-      }
+      final AndroidScheduleMode mode = env.mode;
 
       final String lang = _lang;
 
@@ -146,7 +130,7 @@ class LocalReminderScheduler implements ReminderScheduler {
             snoozeLabel:
                 ReminderNotificationText.snoozeLabel(languageCode: lang),
           ),
-          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          androidScheduleMode: mode,
           payload: ReminderActions.encodePayload(
             taskId: task.id,
             title: title,
@@ -167,7 +151,7 @@ class LocalReminderScheduler implements ReminderScheduler {
             snoozeLabel:
                 ReminderNotificationText.snoozeLabel(languageCode: lang),
           ),
-          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          androidScheduleMode: mode,
           payload: ReminderActions.encodePayload(
             taskId: task.id,
             title: title,
@@ -179,6 +163,38 @@ class LocalReminderScheduler implements ReminderScheduler {
     } on Object catch (error, stackTrace) {
       return _err(error, stackTrace);
     }
+  }
+
+  ({bool granted, AndroidScheduleMode mode})? _envCache;
+  DateTime? _envAt;
+
+  /// Whether we may post notifications, and whether alarms can be exact.
+  /// Cached briefly: restoring many tasks would otherwise ask the platform
+  /// the same two questions for each one. Never opens a settings screen.
+  Future<({bool granted, AndroidScheduleMode mode})> _environment() async {
+    final DateTime now = DateTime.now();
+    final ({bool granted, AndroidScheduleMode mode})? cached = _envCache;
+    if (cached != null &&
+        _envAt != null &&
+        now.difference(_envAt!) < const Duration(seconds: 20)) {
+      return cached;
+    }
+    final bool granted = (await checkNotificationsPermission()).isGranted;
+    AndroidScheduleMode mode = AndroidScheduleMode.exactAllowWhileIdle;
+    if (Platform.isAndroid) {
+      final bool? canExact = await _plugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.canScheduleExactNotifications();
+      if (canExact == false) {
+        mode = AndroidScheduleMode.inexactAllowWhileIdle;
+      }
+    }
+    final ({bool granted, AndroidScheduleMode mode}) env =
+        (granted: granted, mode: mode);
+    _envCache = env;
+    _envAt = now;
+    return env;
   }
 
   ({String title, String body}) _reminderText(Task task, String lang) {
@@ -329,6 +345,7 @@ class LocalReminderScheduler implements ReminderScheduler {
   @override
   Future<ReminderPermissionStatus> requestNotificationsPermission() async {
     await initialize();
+    _envCache = null;
 
     if (Platform.isAndroid) {
       final AndroidFlutterLocalNotificationsPlugin? android =
@@ -385,6 +402,7 @@ class LocalReminderScheduler implements ReminderScheduler {
   @override
   Future<ReminderPermissionStatus> requestExactAlarmsPermission() async {
     await initialize();
+    _envCache = null;
 
     if (Platform.isAndroid) {
       final AndroidFlutterLocalNotificationsPlugin? android =

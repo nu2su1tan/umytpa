@@ -92,6 +92,12 @@ void main() {
       expect(r.title, 'Stretch');
     });
 
+    test('prices and versions are not times', () {
+      final SmartInput r = SmartInputParser.parse('Buy milk 2.50', now: now);
+      expect(r.hasTime, isFalse);
+      expect(r.title, 'Buy milk 2.50');
+    });
+
     test('plain text finds nothing', () {
       final SmartInput r = SmartInputParser.parse('Buy milk', now: now);
       expect(r.found, isFalse);

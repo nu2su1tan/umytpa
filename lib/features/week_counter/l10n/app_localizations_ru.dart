@@ -797,7 +797,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sectionLater => 'Потом';
 
   @override
-  String get sectionCompleted => 'Уже сделано ✅';
+  String get sectionCompleted => 'Уже сделано';
 
   @override
   String get categoryStudy => 'Учёба';
@@ -1057,10 +1057,10 @@ class AppLocalizationsRu extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count дней подряд 🔥',
-      many: '$count дней подряд 🔥',
-      few: '$count дня подряд 🔥',
-      one: '$count день подряд 🔥',
+      other: '$count дней подряд',
+      many: '$count дней подряд',
+      few: '$count дня подряд',
+      one: '$count день подряд',
     );
     return '$_temp0';
   }

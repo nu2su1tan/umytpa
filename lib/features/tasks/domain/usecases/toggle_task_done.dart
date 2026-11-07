@@ -19,6 +19,9 @@ class ToggleTaskDone {
     required bool isDone,
     required DateTime now,
   }) async {
+    if (!isDone) {
+      await _dropSpawnedNext(id, now: now);
+    }
     final Result<Task> updated = await repository.setDone(
       id: id,
       isDone: isDone,
@@ -55,6 +58,36 @@ class ToggleTaskDone {
     if (created case Success<Task>(:final value)) {
       if (shouldScheduleReminder(value, now: now)) {
         await reminderScheduler.schedule(value);
+      }
+    }
+  }
+
+  /// Un-ticking a repeating task (a mis-tap) must not leave the next
+  /// occurrence it created behind as a duplicate.
+  Future<void> _dropSpawnedNext(int id, {required DateTime now}) async {
+    final Result<Task> before = await repository.getById(id);
+    if (before is! Success<Task>) {
+      return;
+    }
+    final Task task = before.value;
+    if (!task.isDone || !task.repeat.repeats) {
+      return;
+    }
+    final DateTime expected = task.repeat.nextAfter(
+      task.dueAt,
+      now: task.completedAt ?? now,
+    );
+    final List<Task> all = await repository.watchAll().first;
+    for (final Task other in all) {
+      if (other.id != task.id &&
+          !other.isDone &&
+          other.title == task.title &&
+          other.category == task.category &&
+          other.repeat == task.repeat &&
+          other.dueAt == expected) {
+        await repository.delete(other.id);
+        await reminderScheduler.cancel(other.id);
+        return;
       }
     }
   }

@@ -47,6 +47,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late final Timer _ticker;
 
+  /// False while another tab is shown: no point rebuilding a hidden screen
+  /// every second.
+  bool _visible = true;
+
   /// Which line of the pool comes first; the orb and the refresh button move
   /// it along. Starts at a different line each day.
   late int _jokeSeed = _controller.clock().day;
@@ -57,6 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!_visible) return;
       final now = _controller.clock();
       if (!now.isBefore(_controller.snapshot.validUntil)) {
         _controller.recompute();
@@ -74,6 +79,12 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _visible = TickerMode.of(context);
   }
 
   @override

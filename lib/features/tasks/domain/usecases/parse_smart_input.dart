@@ -91,9 +91,11 @@ abstract final class SmartInputParser {
     (_re(r'(?:в\s+)?(?:воскресенье|вс|sunday|sun)'), DateTime.sunday),
   ];
 
-  // 18:00, 18.30, "в 18:00", "at 6:15pm"
+  // "18:00", "at 6:15pm" and, only after a preposition, "в 18.30". A bare
+  // "2.50" is a price or a version, not a time.
   static final RegExp _clock = RegExp(
-    '$_l(?:(?:в|во|at|by|до|к)\\s+)?(\\d{1,2})[:.](\\d{2})\\s*(am|pm)?$_r',
+    '$_l(?:(?:в|во|at|by|до|к)\\s+(\\d{1,2})[:.](\\d{2})|(\\d{1,2}):(\\d{2}))'
+    '\\s*(am|pm)?$_r',
     caseSensitive: false,
     unicode: true,
   );
@@ -172,8 +174,11 @@ abstract final class SmartInputParser {
 
     final RegExpMatch? clock = _clock.firstMatch(text);
     if (clock != null) {
-      final int? h = _to24(int.parse(clock.group(1)!), clock.group(3));
-      final int mi = int.parse(clock.group(2)!);
+      final int? h = _to24(
+        int.parse(clock.group(1) ?? clock.group(3)!),
+        clock.group(5),
+      );
+      final int mi = int.parse(clock.group(2) ?? clock.group(4)!);
       if (h != null && mi < 60) {
         hour = h;
         minute = mi;

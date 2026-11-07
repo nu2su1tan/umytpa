@@ -250,8 +250,50 @@ void main() {
       expect(created.dueAt, done.dueAt.add(const Duration(days: 1)));
     });
 
+    test('un-ticking a repeating task removes the copy it spawned', () async {
+      final Task done = Task(
+        id: 1,
+        title: 'Stretch',
+        dueAt: now.add(const Duration(hours: 1)),
+        category: TaskCategory.personal,
+        remindBefore: null,
+        isDone: true,
+        createdAt: now,
+        repeat: RepeatRule.daily,
+        completedAt: now,
+      );
+      final Task spawned = Task(
+        id: 2,
+        title: 'Stretch',
+        dueAt: done.dueAt.add(const Duration(days: 1)),
+        category: TaskCategory.personal,
+        remindBefore: null,
+        isDone: false,
+        createdAt: now,
+        repeat: RepeatRule.daily,
+      );
+      when(() => repository.getById(1))
+          .thenAnswer((_) async => Success<Task>(done));
+      when(() => repository.watchAll())
+          .thenAnswer((_) => Stream<List<Task>>.value(<Task>[done, spawned]));
+      when(() => repository.delete(2))
+          .thenAnswer((_) async => const Success<void>(null));
+      when(() => repository.setDone(id: 1, isDone: false, now: now))
+          .thenAnswer((_) async => Success<Task>(done.copyWith(isDone: false)));
+
+      final ToggleTaskDone useCase = ToggleTaskDone(
+        repository: repository,
+        reminderScheduler: scheduler,
+      );
+      await useCase(id: 1, isDone: false, now: now);
+
+      verify(() => repository.delete(2)).called(1);
+    });
+
     test('reschedules when unmarked and remindAt is future', () async {
       final Task open = buildTask();
+      when(() => repository.getById(1))
+          .thenAnswer((_) async => Success<Task>(open));
       when(
         () => repository.setDone(id: 1, isDone: false, now: now),
       ).thenAnswer((_) async => Success<Task>(open));

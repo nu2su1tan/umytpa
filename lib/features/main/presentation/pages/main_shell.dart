@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import '../../../../core/ui/glass/glass.dart';
 import '../../../tasks/presentation/pages/tasks_page.dart';
@@ -46,7 +45,6 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
   }
 
   Future<void> _setup() async {
-    await initializeDateFormatting();
     if (HomeWidgetSync.isSupported) {
       await HomeWidgetSync.init();
     }

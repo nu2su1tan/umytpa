@@ -59,7 +59,7 @@ class _TodayCardState extends State<TodayCard> {
         ? copy.todayNothing
         : p.allDone
             ? copy.todayAllDone
-            : l10n.todayLeft(p.left);
+            : copy.leftLine(p.left);
     final TaskStats stats = widget.stats;
     final String? mood = stats.currentStreak > 0
         ? copy.streakNote(stats.currentStreak)
@@ -162,7 +162,7 @@ class _TodayCardState extends State<TodayCard> {
                     _Chip(
                       icon: Icons.local_fire_department_rounded,
                       iconColor: const Color(0xFFFF8A3D),
-                      label: l10n.streakDays(widget.stats.currentStreak),
+                      label: copy.streakChip(widget.stats.currentStreak),
                       onTap: widget.onOpenStats,
                     ),
                   const Spacer(),

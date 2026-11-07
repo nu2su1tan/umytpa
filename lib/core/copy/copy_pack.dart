@@ -29,6 +29,8 @@ class CopyPack {
     required this.todayNothing,
     required this.todayAllDone,
     required this.streakLost,
+    required this.leftLines,
+    required this.streakChips,
     required this.streakNotes,
     required this.recapMore,
     required this.recapSame,
@@ -69,6 +71,12 @@ class CopyPack {
   final String todayAllDone;
   final String streakLost;
 
+  /// Headline while tasks remain; `{tasks}` is "3 tasks".
+  final List<String> leftLines;
+
+  /// Streak chip text; `{days}` is "3 days".
+  final List<String> streakChips;
+
   /// Streak length threshold -> line (`{count}` allowed).
   final Map<int, String> streakNotes;
 
@@ -87,6 +95,10 @@ class CopyPack {
   final String focusDone;
 
   static final math.Random _random = math.Random();
+
+  /// Fixed for one app launch, so wording differs between launches but does
+  /// not flicker while the screen is open.
+  static final int sessionSeed = math.Random().nextInt(1 << 20);
   static final Map<int, int> _last = <int, int>{};
 
   static String _who(String s, String? name) {
@@ -153,6 +165,22 @@ class CopyPack {
 
   String emptyLine(DateTime now, {String? name}) =>
       _who(_stable(empty, _daySeed(now)), name);
+
+  /// "Next up: 3 tasks"; varies between launches and as the count changes.
+  String leftLine(int count) => _stable(leftLines, sessionSeed + count)
+      .replaceAll('{tasks}', tasksPhrase(count));
+
+  /// "Streak: 3 days"; varies between launches and as the streak grows.
+  String streakChip(int days) => _stable(streakChips, sessionSeed + days)
+      .replaceAll('{days}', daysPhrase(days));
+
+  String tasksPhrase(int n) => lang == 'ru'
+      ? '$n ${_ru(n, 'задача', 'задачи', 'задач')}'
+      : '$n ${n == 1 ? 'task' : 'tasks'}';
+
+  String daysPhrase(int n) => lang == 'ru'
+      ? '$n ${_ru(n, 'день', 'дня', 'дней')}'
+      : '$n ${n == 1 ? 'day' : 'days'}';
 
   String rescueText(int count) =>
       rescueBanner.replaceAll('{count}', '$count');
@@ -332,6 +360,8 @@ const CopyPack _ruFriendly = CopyPack(
   todayNothing: 'На сегодня тишина — чилль 😎',
   todayAllDone: 'Всё закрыл — ты огонь! 🔥',
   streakLost: 'Серия сорвалась — бывает. Начнём заново, я с тобой 💪',
+  leftLines: <String>['Ещё {tasks} — и свободен', 'На очереди {tasks}', 'Впереди {tasks}', 'Добиваем: {tasks}'],
+  streakChips: <String>['{days} подряд', 'Серия: {days}', '{days} в огне', 'Уже {days} без пропусков'],
   streakNotes: <int, String>{
     1: 'Первый день — поехали',
     3: '{count} дня подряд — разгоняемся 🚀',
@@ -400,6 +430,8 @@ const CopyPack _ruCalm = CopyPack(
   todayNothing: 'На сегодня ничего не запланировано',
   todayAllDone: 'Всё выполнено. Хорошая работа!',
   streakLost: 'Серия прервалась. Это нормально — начните заново',
+  leftLines: <String>['Осталось дел: {tasks}', 'На сегодня: {tasks}'],
+  streakChips: <String>['{days} подряд', 'Серия: {days}'],
   streakNotes: <int, String>{
     1: 'Первый день',
     3: '{count} дня подряд',
@@ -463,6 +495,8 @@ const CopyPack _ruCoach = CopyPack(
   todayNothing: 'План на сегодня пуст — исправь это',
   todayAllDone: 'План выполнен. Отличная дисциплина',
   streakLost: 'Серия прервана. Возвращайся — без оправданий',
+  leftLines: <String>['Впереди {tasks}. Работай', 'К выполнению: {tasks}'],
+  streakChips: <String>['Серия: {days}', '{days} без пропусков'],
   streakNotes: <int, String>{
     1: 'День первый. Начало положено',
     3: '{count} дня подряд. Держи ритм',
@@ -526,6 +560,8 @@ const CopyPack _enFriendly = CopyPack(
   todayNothing: 'Nothing planned today — chill 😎',
   todayAllDone: 'All done — you’re on fire! 🔥',
   streakLost: 'Streak broke — it happens. Let’s start over 💪',
+  leftLines: <String>['{tasks} to go', 'Next up: {tasks}', 'Only {tasks} left', 'Finish {tasks} and you’re free'],
+  streakChips: <String>['{days} in a row', 'Streak: {days}', '{days} on fire', '{days} and counting'],
   streakNotes: <int, String>{
     1: 'Day one — let’s go',
     3: '{count} days — warming up 🚀',
@@ -586,6 +622,8 @@ const CopyPack _enCalm = CopyPack(
   todayNothing: 'Nothing planned for today',
   todayAllDone: 'All done. Good work!',
   streakLost: 'The streak ended. That’s okay — start again',
+  leftLines: <String>['{tasks} remaining today', 'Today: {tasks}'],
+  streakChips: <String>['{days} in a row', 'Streak: {days}'],
   streakNotes: <int, String>{
     1: 'First day',
     3: '{count} days in a row',
@@ -636,6 +674,8 @@ const CopyPack _enCoach = CopyPack(
   todayNothing: 'Nothing planned today — fix that',
   todayAllDone: 'Plan complete. Excellent discipline',
   streakLost: 'Streak broken. Come back — no excuses',
+  leftLines: <String>['{tasks} ahead. Get to work', 'To do: {tasks}'],
+  streakChips: <String>['Streak: {days}', '{days}, no misses'],
   streakNotes: <int, String>{
     1: 'Day one. A start is made',
     3: '{count} days in a row. Hold the rhythm',
