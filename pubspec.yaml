@@ -1,0 +1,61 @@
+name: umytpa
+description: Offline-first minimalist task tracker with local reminders.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  flutter_bloc: ^9.1.1
+  equatable: ^3.0.0
+  get_it: ^9.3.0
+  # 18.x pulls cupertino_ui that conflicts with SDK 3.12 via intl pin
+  go_router: ^17.0.0
+  # Pinned by flutter_localizations from go_router's cupertino_ui chain
+  intl: ^0.20.2
+  # 9.0.0 needs Dart ^3.13; project SDK is 3.12.2
+  google_fonts: ^8.2.1
+  drift: ^2.35.3
+  drift_flutter: ^0.3.1
+  path_provider: ^2.1.6
+  flutter_local_notifications: ^22.3.3
+  timezone: ^0.11.2
+  flutter_timezone: ^5.1.1
+  flutter_localizations:
+    sdk: flutter
+  http: ^1.6.0
+  shared_preferences: ^2.5.6
+  home_widget: ^0.10.0
+  liquid_glass_renderer: 0.2.0-dev.4
+  liquid_glass_tab_bar: 0.1.0-dev.10
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  drift_dev: ^2.35.2
+  # 2.16+ needs analyzer 14 / meta 1.18.3; Flutter 3.44 pins meta 1.18.0
+  build_runner: ^2.15.1
+  mocktail: ^1.0.5
+  bloc_test: ^10.0.0
+
+# Flutter 3.44 pins test_api 0.7.11; bloc_test→test needs newer APIs.
+# Override upward so test_core/bloc_test compile; flutter_test still runs.
+dependency_overrides:
+  test_api: 0.7.15
+  equatable: ^2.0.7
+
+flutter:
+  uses-material-design: true
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon.png"
+  min_sdk_android: 21
