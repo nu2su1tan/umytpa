@@ -27,6 +27,7 @@ import '../cubit/task_form_result.dart';
 import '../cubit/task_form_state.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../utils/task_l10n.dart';
+import 'custom_reminder_dialog.dart';
 
 abstract final class TaskFormSheet {
   static Future<TaskFormResult?> show(
@@ -318,7 +319,8 @@ class _TaskFormSheetBodyState extends State<_TaskFormSheetBody> {
                                         border: InputBorder.none,
                                         enabledBorder: InputBorder.none,
                                         focusedBorder: InputBorder.none,
-                                        errorText: state.validation.titleError == null
+                                        errorText: state.validation.titleError == null ||
+                                                !state.isDirty
                                             ? null
                                             : context.l10n.domainMessage(
                                                 state.validation.titleError!,
@@ -437,7 +439,7 @@ class _TaskFormSheetBodyState extends State<_TaskFormSheetBody> {
                                       final TaskFormCubit cubit =
                                           context.read<TaskFormCubit>();
                                       final Duration? picked =
-                                          await _pickCustomReminder(
+                                          await showCustomReminderDialog(
                                         context,
                                         state.customBefore,
                                       );
@@ -1047,88 +1049,4 @@ class _SmartSuggestion extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Asks for any "remind me N minutes/hours/days before" value.
-Future<Duration?> _pickCustomReminder(
-  BuildContext context,
-  Duration? initial,
-) {
-  final int startMinutes = initial?.inMinutes ?? 15;
-  final bool days = startMinutes >= 1440 && startMinutes % 1440 == 0;
-  final bool hours = !days && startMinutes >= 60 && startMinutes % 60 == 0;
-  int unit = days ? 2 : (hours ? 1 : 0);
-  final int amount = days
-      ? startMinutes ~/ 1440
-      : (hours ? startMinutes ~/ 60 : startMinutes);
-  final TextEditingController controller =
-      TextEditingController(text: '$amount');
-  const List<int> perUnit = <int>[1, 60, 1440];
-  const List<int> maxAmount = <int>[10080, 168, 60];
-
-  return showDialog<Duration>(
-    context: context,
-    builder: (BuildContext dialogContext) {
-      final Tokens t = dialogContext.tokens;
-      final AppLocalizations l10n = dialogContext.l10n;
-      return StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
-          final int? value = int.tryParse(controller.text);
-          final bool valid =
-              value != null && value >= 1 && value <= maxAmount[unit];
-          return AlertDialog(
-            title: Text(l10n.customReminderTitle),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                TextField(
-                  controller: controller,
-                  autofocus: true,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(5),
-                  ],
-                  style: t.sectionTitle,
-                  decoration: InputDecoration(hintText: l10n.customReminderHint),
-                  onChanged: (_) => setState(() {}),
-                ),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  children: <Widget>[
-                    for (final (int i, String label) in <String>[
-                      l10n.unitMinutes,
-                      l10n.unitHours,
-                      l10n.unitDays,
-                    ].indexed)
-                      ChoiceChip(
-                        label: Text(label),
-                        selected: unit == i,
-                        onSelected: (_) => setState(() => unit = i),
-                      ),
-                  ],
-                ),
-              ],
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
-                child: Text(l10n.cancel),
-              ),
-              FilledButton(
-                onPressed: valid
-                    ? () => Navigator.of(dialogContext).pop(
-                          Duration(minutes: value * perUnit[unit]),
-                        )
-                    : null,
-                child: Text(l10n.customReminderApply),
-              ),
-            ],
-          );
-        },
-      );
-    },
-  ).whenComplete(controller.dispose);
 }
