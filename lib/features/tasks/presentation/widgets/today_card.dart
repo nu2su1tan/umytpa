@@ -5,6 +5,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../core/copy/copy_pack.dart';
+import '../../../../core/copy/profile_controller.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../week_counter/ui/kit/pressable.dart';
 import '../../../week_counter/ui/theme/tokens.dart';
@@ -52,11 +54,18 @@ class _TodayCardState extends State<TodayCard> {
     final TodayProgress p = widget.progress;
     final double fraction = p.fraction ?? 0;
 
+    final CopyPack copy = context.copy;
     final String headline = p.total == 0
-        ? l10n.todayNothingPlanned
+        ? copy.todayNothing
         : p.allDone
-            ? l10n.todayAllDone
+            ? copy.todayAllDone
             : l10n.todayLeft(p.left);
+    final TaskStats stats = widget.stats;
+    final String? mood = stats.currentStreak > 0
+        ? copy.streakNote(stats.currentStreak)
+        : (stats.bestStreak >= 3 && stats.doneToday == 0)
+            ? copy.streakLost
+            : null;
 
     return Stack(
       clipBehavior: Clip.none,
@@ -111,6 +120,16 @@ class _TodayCardState extends State<TodayCard> {
                             height: 26 / 20,
                           ),
                         ),
+                        if (p.total == 0) ...<Widget>[
+                          const SizedBox(height: 2),
+                          Text(
+                            copy.emptyLine(
+                              DateTime.now(),
+                              name: context.profile.name,
+                            ),
+                            style: t.footnote.copyWith(color: t.ink2),
+                          ),
+                        ],
                         if (p.total > 0) ...<Widget>[
                           const SizedBox(height: 2),
                           Text(
@@ -132,6 +151,10 @@ class _TodayCardState extends State<TodayCard> {
                   ),
                 ],
               ),
+              if (mood != null) ...<Widget>[
+                const SizedBox(height: 12),
+                Text(mood, style: t.footnote.copyWith(color: t.ink2)),
+              ],
               const SizedBox(height: 14),
               Row(
                 children: <Widget>[

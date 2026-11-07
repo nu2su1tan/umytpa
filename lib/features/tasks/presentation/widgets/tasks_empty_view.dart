@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/copy/profile_controller.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../week_counter/ui/kit/buttons.dart';
 import '../../../week_counter/ui/theme/tokens.dart';
@@ -23,13 +24,13 @@ class TasksEmptyView extends StatelessWidget {
             const _EmptyIllustration(),
             const SizedBox(height: 28),
             Text(
-              context.l10n.tasksEmptyTitle,
+              context.copy.emptyTitle,
               style: t.largeTitle.copyWith(fontSize: 28, height: 34 / 28),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              context.l10n.tasksEmptyBody,
+              context.copy.emptyBody,
               style: t.body.copyWith(color: t.ink2),
               textAlign: TextAlign.center,
             ),

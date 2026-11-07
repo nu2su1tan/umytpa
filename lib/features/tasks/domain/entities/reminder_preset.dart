@@ -4,7 +4,10 @@ enum ReminderPreset {
   fiveMinutes,
   thirtyMinutes,
   oneHour,
-  oneDay;
+  oneDay,
+
+  /// Any other offset, kept next to the choice (see the form state).
+  custom;
 
   /// Offset before [Task.dueAt]. `null` means no reminder.
   Duration? get duration => switch (this) {
@@ -13,6 +16,7 @@ enum ReminderPreset {
         ReminderPreset.thirtyMinutes => const Duration(minutes: 30),
         ReminderPreset.oneHour => const Duration(hours: 1),
         ReminderPreset.oneDay => const Duration(days: 1),
+        ReminderPreset.custom => null,
       };
 
   String get label => switch (this) {
@@ -21,12 +25,13 @@ enum ReminderPreset {
         ReminderPreset.thirtyMinutes => '30 min',
         ReminderPreset.oneHour => '1 hour',
         ReminderPreset.oneDay => '1 day',
+        ReminderPreset.custom => 'Custom',
       };
 
   /// Default for a new task when settings are unavailable.
   static const ReminderPreset defaultPreset = ReminderPreset.oneHour;
 
-  /// Resolves a stored duration back to a preset. Unknown values → [none].
+  /// Resolves a stored duration back to a preset. Other values → [custom].
   static ReminderPreset fromDuration(Duration? duration) {
     if (duration == null) {
       return ReminderPreset.none;
@@ -36,6 +41,6 @@ enum ReminderPreset {
         return preset;
       }
     }
-    return ReminderPreset.none;
+    return ReminderPreset.custom;
   }
 }

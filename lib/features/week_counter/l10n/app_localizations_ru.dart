@@ -111,7 +111,7 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get retry => 'Повторить';
+  String get retry => 'Ещё раз';
 
   @override
   String get legendWeekend => 'выходные';
@@ -776,28 +776,28 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tabTracker => 'Трекер';
 
   @override
-  String get greetingMorning => 'Доброе утро';
+  String get greetingMorning => 'Утречко ☀️';
 
   @override
-  String get greetingAfternoon => 'Добрый день';
+  String get greetingAfternoon => 'Как день, огонь?';
 
   @override
-  String get greetingEvening => 'Добрый вечер';
+  String get greetingEvening => 'Добрый вечерок 🌙';
 
   @override
-  String get sectionOverdue => 'Просрочено';
+  String get sectionOverdue => 'Горит 🔥';
 
   @override
-  String get sectionToday => 'Сегодня';
+  String get sectionToday => 'На сегодня';
 
   @override
   String get sectionTomorrow => 'Завтра';
 
   @override
-  String get sectionLater => 'Позже';
+  String get sectionLater => 'Потом';
 
   @override
-  String get sectionCompleted => 'Выполнено';
+  String get sectionCompleted => 'Уже сделано ✅';
 
   @override
   String get categoryStudy => 'Учёба';
@@ -815,7 +815,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get filterAll => 'Все';
 
   @override
-  String get reminderPresetNone => 'Без напоминания';
+  String get reminderPresetNone => 'Не надо';
 
   @override
   String get reminderPreset5m => '5 мин';
@@ -868,52 +868,52 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get tasksEmptyTitle => 'Задач пока нет';
+  String get tasksEmptyTitle => 'Тут пока пусто';
 
   @override
-  String get tasksEmptyBody => 'Добавьте первую';
+  String get tasksEmptyBody => 'Накидай первую задачку';
 
   @override
-  String get addTask => 'Добавить задачу';
+  String get addTask => 'Накинуть задачу';
 
   @override
-  String get tasksFilterEmptyTitle => 'В этой категории нет задач';
+  String get tasksFilterEmptyTitle => 'Тут ничего нет';
 
   @override
   String get tasksFilterEmptyBody =>
-      'Выберите другой фильтр или добавьте задачу';
+      'Глянь другую категорию или накидай новую задачку';
 
   @override
-  String get errorTitle => 'Что-то пошло не так';
+  String get errorTitle => 'Упс, что-то сломалось';
 
   @override
   String taskDeleted(String title) {
-    return 'Удалено: «$title»';
+    return 'Выкинул «$title»';
   }
 
   @override
-  String get undo => 'Отменить';
+  String get undo => 'Вернуть';
 
   @override
-  String get markDone => 'Отметить выполненной';
+  String get markDone => 'Отметить сделанным';
 
   @override
-  String get markNotDone => 'Снять отметку';
+  String get markNotDone => 'Снять галочку';
 
   @override
-  String get discardTitle => 'Отменить изменения?';
+  String get discardTitle => 'Выйти без сохранения?';
 
   @override
-  String get discardBody => 'У вас есть несохранённые изменения.';
+  String get discardBody => 'Всё, что ты накидал, пропадёт.';
 
   @override
-  String get keepEditing => 'Продолжить';
+  String get keepEditing => 'Остаться';
 
   @override
-  String get discard => 'Отменить';
+  String get discard => 'Выйти';
 
   @override
-  String get taskHint => 'Что нужно сделать?';
+  String get taskHint => 'Что надо сделать?';
 
   @override
   String get remindMe => 'Напомнить';
@@ -931,43 +931,43 @@ class AppLocalizationsRu extends AppLocalizations {
   String get dateTomorrow => 'Завтра';
 
   @override
-  String get permExactTitle => 'Разрешение на точные будильники';
+  String get permExactTitle => 'Нужны точные будильники';
 
   @override
   String get permExactBody =>
-      'Umytpa нужно разрешение на точные будильники, чтобы напоминания приходили вовремя. Нажмите «Продолжить», чтобы открыть настройки.';
+      'Чтобы напоминалка сработала секунда в секунду, Umytpa нужен доступ к точным будильникам. Жми «Дальше» — откроем настройки.';
 
   @override
-  String get permFullScreenTitle => 'Разрешение на полноэкранные напоминания';
+  String get permFullScreenTitle => 'Напоминалки поверх экрана';
 
   @override
   String get permFullScreenBody =>
-      'Umytpa может показывать напоминания поверх заблокированного экрана, как будильник. Нажмите «Продолжить», чтобы включить это в настройках.';
+      'Umytpa может вылезать поверх заблокированного экрана, как будильник — дедлайн не проспишь. Жми «Дальше» и включи в настройках.';
 
   @override
-  String get continueLabel => 'Продолжить';
+  String get continueLabel => 'Дальше';
 
   @override
   String get notificationsOffBanner =>
-      'Уведомления выключены. Задачу можно сохранить, но напоминания не сработают.';
+      'Уведомления выключены. Задачу сохранить можно, но напоминалки молчать будут.';
 
   @override
   String get openSettingsAction => 'Открыть настройки';
 
   @override
-  String get errTitleRequired => 'Введите название';
+  String get errTitleRequired => 'Напиши, что надо сделать';
 
   @override
   String errTitleTooLong(int max) {
-    return 'Название не длиннее $max символов';
+    return 'Многовато, давай до $max символов';
   }
 
   @override
-  String get errDeadlinePast => 'Срок должен быть в будущем';
+  String get errDeadlinePast => 'Это время уже прошло, выбери попозже';
 
   @override
   String get warnReminderPassed =>
-      'Время напоминания уже прошло. Задача сохранится без уведомления.';
+      'Напоминалка уже опоздала — сохраню задачу без неё.';
 
   @override
   String get errInvalidInput => 'Некорректные данные';
@@ -988,10 +988,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get languageButton => 'Сменить язык';
 
   @override
-  String get repeatLabel => 'Повтор';
+  String get repeatLabel => 'Повторять';
 
   @override
-  String get repeatNone => 'Нет';
+  String get repeatNone => 'Не надо';
 
   @override
   String get repeatDaily => 'Каждый день';
@@ -1000,10 +1000,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get repeatWeekdays => 'По будням';
 
   @override
-  String get repeatWeekly => 'Каждую неделю';
+  String get repeatWeekly => 'Раз в неделю';
 
   @override
-  String get subtasksLabel => 'Чек-лист';
+  String get subtasksLabel => 'Шаги';
 
   @override
   String get subtaskHint => 'Добавить шаг';
@@ -1017,7 +1017,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get widgetToday => 'Сегодня';
 
   @override
-  String get widgetNothingNext => 'Ничего не запланировано';
+  String get widgetNothingNext => 'Пусто, чилль 😎';
 
   @override
   String get widgetAllDone => 'Всё сделано 🎉';
@@ -1029,27 +1029,27 @@ class AppLocalizationsRu extends AppLocalizations {
       locale: localeName,
       other: 'Осталось $count задач',
       many: 'Осталось $count задач',
-      few: 'Осталось $count задачи',
-      one: 'Осталась $count задача',
-      zero: 'Всё сделано',
+      few: 'Осталось $count задачки',
+      one: 'Осталась $count задачка',
+      zero: 'Всё сделано, ты машина',
     );
     return '$_temp0';
   }
 
   @override
   String todayDoneOf(int done, int total) {
-    return '$done из $total выполнено';
+    return '$done из $total уже в кармане';
   }
 
   @override
-  String get todayNothingPlanned => 'На сегодня ничего не запланировано';
+  String get todayNothingPlanned => 'На сегодня тишина — чилль 😎';
 
   @override
-  String get todayAllDone => 'Всё сделано — отличная работа!';
+  String get todayAllDone => 'Всё закрыл — ты огонь! 🔥';
 
   @override
   String todayNext(String title) {
-    return 'Далее: $title';
+    return 'Следом: $title';
   }
 
   @override
@@ -1057,49 +1057,49 @@ class AppLocalizationsRu extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Серия $count дней',
-      many: 'Серия $count дней',
-      few: 'Серия $count дня',
-      one: 'Серия $count день',
+      other: '$count дней подряд 🔥',
+      many: '$count дней подряд 🔥',
+      few: '$count дня подряд 🔥',
+      one: '$count день подряд 🔥',
     );
     return '$_temp0';
   }
 
   @override
-  String get statsTitle => 'Статистика';
+  String get statsTitle => 'Твоя статистика';
 
   @override
-  String get statsOpen => 'Статистика';
+  String get statsOpen => 'Статка';
 
   @override
-  String get statsDoneTotal => 'Выполнено';
+  String get statsDoneTotal => 'Закрыто';
 
   @override
-  String get statsCurrentStreak => 'Текущая серия';
+  String get statsCurrentStreak => 'Серия сейчас';
 
   @override
-  String get statsBestStreak => 'Лучшая серия';
+  String get statsBestStreak => 'Рекорд серии';
 
   @override
-  String get statsFocusTotal => 'Время фокуса';
+  String get statsFocusTotal => 'Время в фокусе';
 
   @override
-  String get statsLast7Done => 'Выполнено за 7 дней';
+  String get statsLast7Done => 'Закрыто за 7 дней';
 
   @override
-  String get statsLast7Focus => 'Минуты фокуса за 7 дней';
+  String get statsLast7Focus => 'Фокус за 7 дней';
 
   @override
   String get statsByCategory => 'По категориям';
 
   @override
-  String get statsBestDay => 'Самый продуктивный день';
+  String get statsBestDay => 'Самый заряженный день';
 
   @override
-  String get statsNoData => 'Выполни задачу, чтобы увидеть статистику';
+  String get statsNoData => 'Закрой пару задач — тут появится магия';
 
   @override
-  String get statsBadges => 'Награды';
+  String get statsBadges => 'Ачивки';
 
   @override
   String get statsDaysShort => 'д';
@@ -1118,72 +1118,72 @@ class AppLocalizationsRu extends AppLocalizations {
   String get badgeFirstDone => 'Первый шаг';
 
   @override
-  String get badgeFirstDoneDesc => 'Выполни задачу';
+  String get badgeFirstDoneDesc => 'Закрой любую задачу';
 
   @override
   String get badgeTenDone => 'Разгон';
 
   @override
-  String get badgeTenDoneDesc => 'Выполни 10 задач';
+  String get badgeTenDoneDesc => 'Закрой 10 задач';
 
   @override
-  String get badgeFiftyDone => 'В ударе';
+  String get badgeFiftyDone => 'Тащер';
 
   @override
-  String get badgeFiftyDoneDesc => 'Выполни 50 задач';
+  String get badgeFiftyDoneDesc => 'Закрой 50 задач';
 
   @override
-  String get badgeHundredDone => 'Сотня';
+  String get badgeHundredDone => 'Легенда';
 
   @override
-  String get badgeHundredDoneDesc => 'Выполни 100 задач';
+  String get badgeHundredDoneDesc => 'Закрой 100 задач';
 
   @override
-  String get badgeStreak3 => 'Три подряд';
+  String get badgeStreak3 => 'Три дня подряд';
 
   @override
   String get badgeStreak3Desc => 'Серия 3 дня';
 
   @override
-  String get badgeStreak7 => 'Идеальная неделя';
+  String get badgeStreak7 => 'Неделя огня';
 
   @override
   String get badgeStreak7Desc => 'Серия 7 дней';
 
   @override
-  String get badgeStreak30 => 'Неудержимый';
+  String get badgeStreak30 => 'Машина';
 
   @override
-  String get badgeStreak30Desc => 'Серия 30 дней';
+  String get badgeStreak30Desc => 'Серия 30 дней — это сила';
 
   @override
   String get badgeFocusHour => 'В потоке';
 
   @override
-  String get badgeFocusHourDesc => 'Сфокусируйся в сумме на 1 час';
+  String get badgeFocusHourDesc => 'Набери 1 час фокуса';
 
   @override
-  String get badgeFocusTen => 'Глубокая работа';
+  String get badgeFocusTen => 'Режим монаха';
 
   @override
-  String get badgeFocusTenDesc => 'Сфокусируйся в сумме на 10 часов';
+  String get badgeFocusTenDesc => 'Набери 10 часов фокуса';
 
   @override
   String get focusTitle => 'Фокус';
 
   @override
-  String get focusStart => 'Начать фокус';
+  String get focusStart => 'Погнали';
 
   @override
-  String get focusStop => 'Остановить';
+  String get focusStop => 'Стоп';
 
   @override
   String focusWithTask(String title) {
-    return 'Работаю над: $title';
+    return 'Рубим: $title';
   }
 
   @override
-  String get focusNoTask => 'Свободная сессия';
+  String get focusNoTask => 'Просто фокус';
 
   @override
   String focusMinutesOption(int count) {
@@ -1191,39 +1191,109 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get focusDoneTitle => 'Сессия завершена!';
+  String get focusDoneTitle => 'Красава, сессия закрыта!';
 
   @override
   String focusDoneBody(int count) {
-    return 'Сохранено $count мин фокуса.';
+    return '$count мин чистого фокуса в копилке.';
   }
 
   @override
-  String get focusMarkTaskDone => 'Отметить задачу выполненной';
+  String get focusMarkTaskDone => 'Задача готова ✅';
 
   @override
   String get focusClose => 'Закрыть';
 
   @override
-  String get focusRunning => 'Не отвлекайся';
+  String get focusRunning => 'Не отвлекайся, ты в потоке';
 
   @override
-  String get focusNotifTitle => 'Фокус-сессия завершена';
+  String get focusNotifTitle => 'Время вышло!';
 
   @override
-  String get focusNotifBody => 'Пора отдохнуть.';
+  String get focusNotifBody => 'Можно выдохнуть и размяться.';
 
   @override
-  String get focusTask => 'Фокус на этой задаче';
+  String get focusTask => 'Сфокусироваться';
 
   @override
   String smartApply(String summary) {
-    return 'Применить: $summary';
+    return 'Накинуть: $summary';
   }
 
   @override
-  String get smartHint => 'Подсказка: «Лаба завтра в 18:00 #учёба»';
+  String get smartHint => 'Пиши как есть: «Лаба завтра в 18:00 #учёба»';
 
   @override
   String get allDoneCelebrate => 'На сегодня всё!';
+
+  @override
+  String get profileTitle => 'Настрой под себя';
+
+  @override
+  String get profileButton => 'Персонализация';
+
+  @override
+  String get profileWelcomeTitle => 'Давай знакомиться';
+
+  @override
+  String get profileWelcomeBody =>
+      'Как к тебе обращаться? Можно пропустить и поменять потом.';
+
+  @override
+  String get profileNameLabel => 'Твоё имя';
+
+  @override
+  String get profileNameHint => 'Имя или ник';
+
+  @override
+  String get profileToneTitle => 'Как со мной общаться?';
+
+  @override
+  String get toneFriendly => 'По-дружески';
+
+  @override
+  String get toneFriendlyDesc => 'Свободно, со сленгом и эмодзи';
+
+  @override
+  String get toneCalm => 'Спокойно';
+
+  @override
+  String get toneCalmDesc => 'Вежливо и мягко';
+
+  @override
+  String get toneCoach => 'Строгий коуч';
+
+  @override
+  String get toneCoachDesc => 'Коротко и требовательно';
+
+  @override
+  String get profileDone => 'Готово';
+
+  @override
+  String get profileSkip => 'Пропустить';
+
+  @override
+  String get recapTitle => 'Итоги недели';
+
+  @override
+  String get reminderCustom => 'Своё время';
+
+  @override
+  String get customReminderTitle => 'Напомнить до дедлайна за';
+
+  @override
+  String get unitMinutes => 'минут';
+
+  @override
+  String get unitHours => 'часов';
+
+  @override
+  String get unitDays => 'дней';
+
+  @override
+  String get customReminderApply => 'Готово';
+
+  @override
+  String get customReminderHint => 'Сколько';
 }

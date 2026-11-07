@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'core/copy/profile_controller.dart';
 import 'core/di/injection.dart';
 import 'core/l10n/locale_controller.dart';
 import 'core/router/app_router.dart';
@@ -21,6 +22,10 @@ class TaskTrackerApp extends StatelessWidget {
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
           routerConfig: appRouter,
+          builder: (BuildContext context, Widget? child) => ProfileScope(
+            controller: getIt<ProfileController>(),
+            child: child ?? const SizedBox.shrink(),
+          ),
           // null follows the system language.
           locale: localeController.locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,

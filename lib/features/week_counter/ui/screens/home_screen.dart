@@ -90,7 +90,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final t = context.tokens;
     return ListenableBuilder(
       listenable: _controller,
       builder: (context, _) {
@@ -122,14 +121,6 @@ class _HomeScreenState extends State<HomeScreen> {
         return AppPage(
           largeTitle: false,
           barAlways: true,
-          leading: Align(
-            alignment: Alignment.centerLeft,
-            widthFactor: 1,
-            child: Text(
-              l10n.dateHeading(today),
-              style: t.callout.copyWith(fontWeight: FontWeight.w600),
-            ),
-          ),
           trailing: GlassButton(
             icon: Icons.tune_rounded,
             label: l10n.scheduleTitle,

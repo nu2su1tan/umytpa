@@ -2041,6 +2041,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All done for today!'**
   String get allDoneCelebrate;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Make it yours'**
+  String get profileTitle;
+
+  /// No description provided for @profileButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Personalize'**
+  String get profileButton;
+
+  /// No description provided for @profileWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Let’s get acquainted'**
+  String get profileWelcomeTitle;
+
+  /// No description provided for @profileWelcomeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'What should I call you? You can skip this and change it later.'**
+  String get profileWelcomeBody;
+
+  /// No description provided for @profileNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get profileNameLabel;
+
+  /// No description provided for @profileNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Name or nickname'**
+  String get profileNameHint;
+
+  /// No description provided for @profileToneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How should I talk to you?'**
+  String get profileToneTitle;
+
+  /// No description provided for @toneFriendly.
+  ///
+  /// In en, this message translates to:
+  /// **'Friendly'**
+  String get toneFriendly;
+
+  /// No description provided for @toneFriendlyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Casual, with slang and emoji'**
+  String get toneFriendlyDesc;
+
+  /// No description provided for @toneCalm.
+  ///
+  /// In en, this message translates to:
+  /// **'Calm'**
+  String get toneCalm;
+
+  /// No description provided for @toneCalmDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Polite and gentle'**
+  String get toneCalmDesc;
+
+  /// No description provided for @toneCoach.
+  ///
+  /// In en, this message translates to:
+  /// **'Strict coach'**
+  String get toneCoach;
+
+  /// No description provided for @toneCoachDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Short and demanding'**
+  String get toneCoachDesc;
+
+  /// No description provided for @profileDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get profileDone;
+
+  /// No description provided for @profileSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get profileSkip;
+
+  /// No description provided for @recapTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Week in review'**
+  String get recapTitle;
+
+  /// No description provided for @reminderCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get reminderCustom;
+
+  /// No description provided for @customReminderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me before the deadline'**
+  String get customReminderTitle;
+
+  /// No description provided for @unitMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'minutes'**
+  String get unitMinutes;
+
+  /// No description provided for @unitHours.
+  ///
+  /// In en, this message translates to:
+  /// **'hours'**
+  String get unitHours;
+
+  /// No description provided for @unitDays.
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get unitDays;
+
+  /// No description provided for @customReminderApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Set'**
+  String get customReminderApply;
+
+  /// No description provided for @customReminderHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get customReminderHint;
 }
 
 class _AppLocalizationsDelegate

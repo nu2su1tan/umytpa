@@ -7,6 +7,10 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
+import 'package:intl/intl.dart';
+
+import '../../../core/copy/copy_pack.dart';
+import '../../../core/copy/profile_controller.dart';
 import '../../../core/error/failure.dart';
 import '../../../core/error/result.dart';
 import '../../tasks/domain/entities/task.dart';
@@ -22,6 +26,7 @@ class LocalReminderScheduler implements ReminderScheduler {
   LocalReminderScheduler({
     required this.detailsFactory,
     this.languageCode,
+    this.profile,
     FlutterLocalNotificationsPlugin? plugin,
   }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
 
@@ -29,6 +34,8 @@ class LocalReminderScheduler implements ReminderScheduler {
 
   /// Language for notification text; `null` means the system language.
   final String? Function()? languageCode;
+  /// Supplies the user's name and tone for the notification wording.
+  final ProfileController? profile;
   final FlutterLocalNotificationsPlugin _plugin;
   bool _initialized = false;
   bool _fullScreenRequested = false;
@@ -128,8 +135,7 @@ class LocalReminderScheduler implements ReminderScheduler {
       final String lang = _lang;
 
       if (wantsReminder) {
-        final (:String title, :String body) =
-            ReminderNotificationText.forTask(task, languageCode: lang);
+        final (:String title, :String body) = _reminderText(task, lang);
         await _plugin.zonedSchedule(
           id: task.id,
           title: title,
@@ -150,8 +156,7 @@ class LocalReminderScheduler implements ReminderScheduler {
       }
 
       if (wantsAlarm) {
-        final (:String title, :String body) =
-            ReminderNotificationText.forDeadline(task, languageCode: lang);
+        final (:String title, :String body) = _alarmText(task, lang);
         await _plugin.zonedSchedule(
           id: _alarmId(task.id),
           title: title,
@@ -174,6 +179,32 @@ class LocalReminderScheduler implements ReminderScheduler {
     } on Object catch (error, stackTrace) {
       return _err(error, stackTrace);
     }
+  }
+
+  ({String title, String body}) _reminderText(Task task, String lang) {
+    final ProfileController? p = profile;
+    if (p == null) {
+      return ReminderNotificationText.forTask(task, languageCode: lang);
+    }
+    return CopyPack.of(lang, p.tone).reminder(
+      taskTitle: task.title,
+      time: DateFormat.Hm().format(task.dueAt.toLocal()),
+      before: task.remindBefore ?? Duration.zero,
+      seed: task.id,
+      name: p.name,
+    );
+  }
+
+  ({String title, String body}) _alarmText(Task task, String lang) {
+    final ProfileController? p = profile;
+    if (p == null) {
+      return ReminderNotificationText.forDeadline(task, languageCode: lang);
+    }
+    return CopyPack.of(lang, p.tone).alarm(
+      taskTitle: task.title,
+      seed: task.id,
+      name: p.name,
+    );
   }
 
   String get _lang =>

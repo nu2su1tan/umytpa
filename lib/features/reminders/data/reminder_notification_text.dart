@@ -37,7 +37,7 @@ abstract final class ReminderNotificationText {
   }
 
   static String doneLabel({String? languageCode}) =>
-      languageCode == 'ru' ? 'Готово' : 'Done';
+      languageCode == 'ru' ? 'Сделал' : 'Done';
 
   static String snoozeLabel({String? languageCode}) =>
       languageCode == 'ru' ? '+10 мин' : '+10 min';
@@ -45,7 +45,7 @@ abstract final class ReminderNotificationText {
   static String bodyFor(Task task, {String? languageCode}) {
     final String due = DateFormat.Hm().format(task.dueAt.toLocal());
     if (languageCode == 'ru') {
-      return '${task.title} · срок $due';
+      return '${task.title} · до $due';
     }
     return '${task.title} · due $due';
   }
@@ -89,17 +89,17 @@ abstract final class ReminderNotificationText {
 
   static String _titleRu(Duration remindBefore) {
     if (remindBefore == Duration.zero) {
-      return 'Срок наступил';
+      return 'Дедлайн настал! ⏰';
     }
     final int minutes = remindBefore.inMinutes;
     if (minutes % 1440 == 0) {
       final int d = minutes ~/ 1440;
-      return 'Осталось $d ${_plural(d, 'день', 'дня', 'дней')}';
+      return 'Дедлайн через $d ${_plural(d, 'день', 'дня', 'дней')} ⏰';
     }
     if (minutes % 60 == 0) {
       final int h = minutes ~/ 60;
-      return 'Осталось $h ${_plural(h, 'час', 'часа', 'часов')}';
+      return 'Дедлайн через $h ${_plural(h, 'час', 'часа', 'часов')} ⏰';
     }
-    return 'Осталось $minutes ${_plural(minutes, 'минута', 'минуты', 'минут')}';
+    return 'Дедлайн через $minutes ${_plural(minutes, 'минуту', 'минуты', 'минут')} ⏰';
   }
 }

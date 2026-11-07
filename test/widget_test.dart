@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:umytpa/core/copy/copy_pack.dart';
 import 'package:umytpa/core/theme/app_theme.dart';
 import 'package:umytpa/features/tasks/domain/entities/focus_session.dart';
 import 'package:umytpa/features/tasks/domain/entities/task.dart';
@@ -85,8 +86,8 @@ void main() {
     controller.add(const <Task>[]);
     await tester.pumpAndSettle();
 
-    expect(find.text('No tasks yet'), findsOneWidget);
-    expect(find.text('Add your first one'), findsOneWidget);
+    expect(find.text('Nothing here yet'), findsOneWidget);
+    expect(find.text('Throw in your first task'), findsOneWidget);
     expect(find.text('Add task'), findsOneWidget);
   });
 
@@ -105,7 +106,14 @@ void main() {
     ]);
     await tester.pumpAndSettle();
 
-    expect(find.text('Good morning'), findsOneWidget);
+    expect(
+      find.text(
+        CopyPack.of('en', CopyTone.friendly).greeting(
+          now: DateTime(2026, 10, 30, 9),
+        ),
+      ),
+      findsOneWidget,
+    );
     expect(find.text('All'), findsOneWidget);
     expect(find.text('Review pitch deck'), findsOneWidget);
     expect(find.text('1h before'), findsOneWidget);

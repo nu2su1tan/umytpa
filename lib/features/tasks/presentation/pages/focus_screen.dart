@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/copy/profile_controller.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../reminders/domain/reminder_scheduler.dart';
@@ -185,7 +186,7 @@ class _FocusScreenState extends State<FocusScreen> {
                   ),
                 if (_phase == _Phase.finished) ...<Widget>[
                   Text(
-                    l10n.focusDoneTitle,
+                    context.copy.focusDone,
                     style: t.sectionTitle,
                     textAlign: TextAlign.center,
                   ),

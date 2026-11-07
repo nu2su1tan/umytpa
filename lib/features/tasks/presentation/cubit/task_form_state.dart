@@ -31,6 +31,7 @@ final class TaskFormReady extends TaskFormState {
     required this.isDirty,
     required this.isSubmitting,
     required this.showPermissionHelp,
+    this.customBefore,
     this.repeat = RepeatRule.none,
     this.subtasks = const <Subtask>[],
     this.smart,
@@ -48,6 +49,8 @@ final class TaskFormReady extends TaskFormState {
   final bool isDirty;
   final bool isSubmitting;
   final bool showPermissionHelp;
+  /// The offset when [reminder] is [ReminderPreset.custom].
+  final Duration? customBefore;
   final RepeatRule repeat;
   final List<Subtask> subtasks;
 
@@ -56,6 +59,10 @@ final class TaskFormReady extends TaskFormState {
   final Task? existingTask;
   final String? submitError;
   final ReminderPermissionRationale? pendingRationale;
+
+  /// The reminder offset actually chosen, whichever way.
+  Duration? get remindBefore =>
+      reminder == ReminderPreset.custom ? customBefore : reminder.duration;
 
   bool get canSave => validation.isValid && !isSubmitting;
 
@@ -68,6 +75,7 @@ final class TaskFormReady extends TaskFormState {
     bool? isDirty,
     bool? isSubmitting,
     bool? showPermissionHelp,
+    Duration? Function()? customBefore,
     RepeatRule? repeat,
     List<Subtask>? subtasks,
     SmartInput? Function()? smart,
@@ -84,6 +92,8 @@ final class TaskFormReady extends TaskFormState {
       isDirty: isDirty ?? this.isDirty,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       showPermissionHelp: showPermissionHelp ?? this.showPermissionHelp,
+      customBefore:
+          customBefore != null ? customBefore() : this.customBefore,
       repeat: repeat ?? this.repeat,
       subtasks: subtasks ?? this.subtasks,
       smart: smart != null ? smart() : this.smart,
@@ -101,6 +111,7 @@ final class TaskFormReady extends TaskFormState {
         dueAt,
         category,
         reminder,
+        customBefore,
         validation,
         isEdit,
         isDirty,

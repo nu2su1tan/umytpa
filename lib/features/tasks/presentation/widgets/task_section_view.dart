@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/copy/profile_controller.dart';
 import '../../../week_counter/ui/kit/pressable.dart';
 import '../../../week_counter/ui/theme/tokens.dart';
 import '../../domain/entities/task.dart';
@@ -50,7 +51,9 @@ class TaskSectionView extends StatelessWidget {
               child: Row(
                 children: <Widget>[
                   Text(
-                    context.l10n.sectionTitle(section.kind),
+                    section.kind.isOverdue
+                        ? context.copy.overdueTitle
+                        : context.l10n.sectionTitle(section.kind),
                     style: t.sectionTitle.copyWith(
                       fontSize: 20,
                       height: 26 / 20,
@@ -74,6 +77,14 @@ class TaskSectionView extends StatelessWidget {
             ),
           ),
         ),
+        if (section.kind.isOverdue && !collapsed)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
+            child: Text(
+              context.copy.overdueNudge,
+              style: t.footnote.copyWith(color: t.ink2),
+            ),
+          ),
         if (!collapsed)
           ...section.tasks.map(
             (Task task) => Padding(

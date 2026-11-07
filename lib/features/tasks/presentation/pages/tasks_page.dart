@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/copy/profile_controller.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/ui/glass/glass.dart';
 import '../../../../core/ui/language_sheet.dart';
+import '../../../../core/ui/profile_sheet.dart';
 import '../../../week_counter/ui/kit/app_page.dart';
 import '../../../week_counter/ui/theme/tokens.dart';
+import '../../../../core/utils/date_time_utils.dart';
 import '../../domain/entities/task.dart';
 import '../../domain/entities/task_category.dart';
 import '../../domain/entities/task_section.dart';
@@ -16,6 +19,7 @@ import '../../domain/usecases/create_task.dart';
 import '../../domain/usecases/delete_task.dart';
 import '../../domain/usecases/group_tasks_by_date.dart';
 import '../../domain/usecases/toggle_task_done.dart';
+import '../../domain/usecases/update_task.dart';
 import '../../domain/usecases/watch_tasks.dart';
 import '../../data/task_widget_sync.dart';
 import '../../domain/repositories/task_repository.dart';
@@ -51,6 +55,7 @@ class _TasksPageState extends State<TasksPage> with WidgetsBindingObserver {
     deleteTaskUseCase: getIt<DeleteTask>(),
     createTask: getIt<CreateTask>(),
     groupTasksByDate: getIt<GroupTasksByDate>(),
+    updateTask: getIt<UpdateTask>(),
   )..start();
   late final StatsCubit _stats =
       StatsCubit(repository: getIt<TaskRepository>());
@@ -59,6 +64,14 @@ class _TasksPageState extends State<TasksPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // Meet the user once: ask what to call them and how to talk.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ProfileController profile = getIt<ProfileController>();
+      if (mounted && !profile.asked) {
+        unawaited(profile.markAsked());
+        unawaited(showProfileSheet(context, welcome: true));
+      }
+    });
   }
 
   @override
@@ -287,7 +300,14 @@ class _LoadedBody extends StatelessWidget {
 
     return AppPage(
       largeTitle: false,
-      trailing: const LanguageButton(),
+      trailing: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          ProfileButton(),
+          SizedBox(width: 8),
+          LanguageButton(),
+        ],
+      ),
       bottomPadding: AppGlassTabBar.bottomPaddingOf(context),
       children: <Widget>[
         Padding(
@@ -315,6 +335,48 @@ class _LoadedBody extends StatelessWidget {
             },
           ),
         ),
+        if (now.weekday == DateTime.sunday)
+          BlocBuilder<StatsCubit, TaskStats>(
+            builder: (BuildContext context, TaskStats stats) {
+              if (stats.doneThisWeek == 0 && stats.donePrevWeek == 0) {
+                return const SizedBox.shrink();
+              }
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppTheme.screenPadding,
+                  0,
+                  AppTheme.screenPadding,
+                  16,
+                ),
+                child: _NoteCard(
+                  icon: Icons.insights_rounded,
+                  title: context.l10n.recapTitle,
+                  body: context.copy.recap(
+                    count: stats.doneThisWeek,
+                    previous: stats.donePrevWeek,
+                  ),
+                ),
+              );
+            },
+          ),
+        if (TodayProgress.of(state.allTasks, now: now).overdue >= 3)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppTheme.screenPadding,
+              0,
+              AppTheme.screenPadding,
+              16,
+            ),
+            child: _NoteCard(
+              icon: Icons.local_fire_department_rounded,
+              body: context.copy.rescueText(
+                TodayProgress.of(state.allTasks, now: now).overdue,
+              ),
+              actionLabel: context.copy.rescueAction,
+              onAction: () =>
+                  unawaited(context.read<TasksCubit>().moveOverdueToTomorrow()),
+            ),
+          ),
         const SizedBox(height: 16),
         Padding(
           padding: const EdgeInsets.symmetric(
@@ -352,6 +414,9 @@ class _LoadedBody extends StatelessWidget {
                       context.read<TasksCubit>().toggleSection(section.kind);
                     },
                     onToggleDone: (Task task) {
+                      if (!task.isDone) {
+                        _cheer(context, task);
+                      }
                       context.read<TasksCubit>().toggleDone(task);
                     },
                     onTapTask: (Task task) => onEditTask?.call(task),
@@ -364,6 +429,26 @@ class _LoadedBody extends StatelessWidget {
           ),
       ],
     );
+  }
+
+  /// A short pat on the back; a bigger one for the last task of the day.
+  void _cheer(BuildContext context, Task done) {
+    final TodayProgress p = TodayProgress.of(state.allTasks, now: now);
+    final bool counted = DateTimeUtils.isSameCalendarDay(done.dueAt, now) ||
+        done.dueAt.isBefore(now);
+    final bool last = counted && p.left == 1;
+    final String text = context.copy.cheer(
+      name: context.profile.name,
+      last: last,
+    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(text),
+          duration: const Duration(milliseconds: 1600),
+        ),
+      );
   }
 
   Future<void> _onDelete(BuildContext context, Task task) async {
@@ -384,5 +469,70 @@ class _LoadedBody extends StatelessWidget {
           ),
         ),
       );
+  }
+}
+
+/// A soft card for a recap or a nudge, with an optional action.
+class _NoteCard extends StatelessWidget {
+  const _NoteCard({
+    required this.icon,
+    required this.body,
+    this.title,
+    this.actionLabel,
+    this.onAction,
+  });
+
+  final IconData icon;
+  final String? title;
+  final String body;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final Tokens t = context.tokens;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: t.violetSoft,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Icon(icon, color: t.violetInk),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                if (title != null)
+                  Text(
+                    title!,
+                    style: t.callout.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: t.violetInk,
+                    ),
+                  ),
+                Text(body, style: t.callout.copyWith(color: t.ink)),
+                if (actionLabel != null) ...<Widget>[
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: onAction,
+                    child: Text(
+                      actionLabel!,
+                      style: t.callout.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: t.violetInk,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

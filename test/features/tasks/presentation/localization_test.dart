@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:umytpa/core/copy/copy_pack.dart';
 import 'package:umytpa/core/theme/app_theme.dart';
 import 'package:umytpa/features/tasks/domain/entities/task_category.dart';
 import 'package:umytpa/features/tasks/presentation/utils/task_l10n.dart';
@@ -28,7 +29,14 @@ void main() {
       const Locale('ru'),
       TasksHeader(now: DateTime(2026, 11, 5, 10)),
     );
-    expect(find.text('Доброе утро'), findsOneWidget);
+    expect(
+      find.text(
+        CopyPack.of('ru', CopyTone.friendly).greeting(
+          now: DateTime(2026, 11, 5, 10),
+        ),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('header greets in English', (tester) async {
@@ -37,7 +45,14 @@ void main() {
       const Locale('en'),
       TasksHeader(now: DateTime(2026, 11, 5, 10)),
     );
-    expect(find.text('Good morning'), findsOneWidget);
+    expect(
+      find.text(
+        CopyPack.of('en', CopyTone.friendly).greeting(
+          now: DateTime(2026, 11, 5, 10),
+        ),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('domain values are translated', (tester) async {
@@ -55,6 +70,6 @@ void main() {
     expect(ru.categoryLabel(TaskCategory.work), 'Работа');
     expect(ru.reminderBefore(const Duration(hours: 1)), 'за 1 ч');
     expect(ru.reminderBefore(const Duration(days: 2)), 'за 2 дня');
-    expect(ru.domainMessage('Title is required'), 'Введите название');
+    expect(ru.domainMessage('Title is required'), 'Напиши, что надо сделать');
   });
 }

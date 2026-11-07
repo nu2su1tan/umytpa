@@ -42,6 +42,7 @@ class TaskFormCubit extends Cubit<TaskFormState> {
   late DateTime _baselineDueAt;
   late TaskCategory _baselineCategory;
   late ReminderPreset _baselineReminder;
+  Duration? _baselineCustom;
   RepeatRule _baselineRepeat = RepeatRule.none;
   List<Subtask> _baselineSubtasks = const <Subtask>[];
   bool _permissionPrompted = false;
@@ -55,6 +56,9 @@ class TaskFormCubit extends Cubit<TaskFormState> {
       _baselineDueAt = task.dueAt;
       _baselineCategory = task.category;
       _baselineReminder = ReminderPreset.fromDuration(task.remindBefore);
+      _baselineCustom = _baselineReminder == ReminderPreset.custom
+          ? task.remindBefore
+          : null;
       _baselineRepeat = task.repeat;
       _baselineSubtasks = task.subtasks;
       emit(
@@ -63,10 +67,12 @@ class TaskFormCubit extends Cubit<TaskFormState> {
           dueAt: task.dueAt,
           category: task.category,
           reminder: _baselineReminder,
+          customBefore: _baselineCustom,
           validation: _validate(
             title: task.title,
             dueAt: task.dueAt,
             reminder: _baselineReminder,
+            customOverride: _baselineCustom,
           ),
           repeat: task.repeat,
           subtasks: task.subtasks,
@@ -247,7 +253,10 @@ class TaskFormCubit extends Cubit<TaskFormState> {
     );
   }
 
-  Future<void> reminderChanged(ReminderPreset reminder) async {
+  Future<void> reminderChanged(
+    ReminderPreset reminder, {
+    Duration? custom,
+  }) async {
     final TaskFormReady? current = _ready;
     if (current == null) {
       return;
@@ -282,19 +291,25 @@ class TaskFormCubit extends Cubit<TaskFormState> {
     // The user may have kept typing while permission dialogs were open;
     // build on the latest state so those edits aren't thrown away.
     final TaskFormReady latest = _ready ?? current;
+    final Duration? nextCustom = reminder == ReminderPreset.custom
+        ? (custom ?? latest.customBefore)
+        : null;
     emit(
       latest.copyWith(
         reminder: reminder,
+        customBefore: () => nextCustom,
         validation: _validate(
           title: latest.title,
           dueAt: latest.dueAt,
           reminder: reminder,
+          customOverride: nextCustom,
         ),
         isDirty: _computeDirty(
           title: latest.title,
           dueAt: latest.dueAt,
           category: latest.category,
           reminder: reminder,
+          customOverride: nextCustom,
         ),
         showPermissionHelp: showHelp,
         pendingRationale: () => nextRationale,
@@ -350,7 +365,7 @@ class TaskFormCubit extends Cubit<TaskFormState> {
         title: current.title.trim(),
         dueAt: current.dueAt,
         category: current.category,
-        remindBefore: () => current.reminder.duration,
+        remindBefore: () => current.remindBefore,
         repeat: current.repeat,
         subtasks: current.subtasks,
       );
@@ -364,7 +379,7 @@ class TaskFormCubit extends Cubit<TaskFormState> {
         title: current.title.trim(),
         dueAt: current.dueAt,
         category: current.category,
-        remindBefore: current.reminder.duration,
+        remindBefore: current.remindBefore,
         repeat: current.repeat,
         subtasks: current.subtasks,
       ),
@@ -412,11 +427,13 @@ class TaskFormCubit extends Cubit<TaskFormState> {
     required String title,
     required DateTime dueAt,
     required ReminderPreset reminder,
+    Duration? customOverride,
   }) {
+    final Duration? custom = customOverride ?? _ready?.customBefore;
     return TaskInputValidator.validate(
       title: title,
       dueAt: dueAt,
-      remindBefore: reminder.duration,
+      remindBefore: reminder == ReminderPreset.custom ? custom : reminder.duration,
       isNew: !isEdit,
       now: _now(),
     );
@@ -429,8 +446,10 @@ class TaskFormCubit extends Cubit<TaskFormState> {
     required ReminderPreset reminder,
     RepeatRule? repeatOverride,
     List<Subtask>? subtasksOverride,
+    Duration? customOverride,
   }) {
     final TaskFormReady? cur = _ready;
+    final Duration? custom = customOverride ?? cur?.customBefore;
     final RepeatRule repeat = repeatOverride ?? cur?.repeat ?? RepeatRule.none;
     final List<Subtask> subtasks =
         subtasksOverride ?? cur?.subtasks ?? const <Subtask>[];
@@ -438,6 +457,7 @@ class TaskFormCubit extends Cubit<TaskFormState> {
         dueAt != _baselineDueAt ||
         category != _baselineCategory ||
         reminder != _baselineReminder ||
+        (reminder == ReminderPreset.custom && custom != _baselineCustom) ||
         repeat != _baselineRepeat ||
         !_sameSubtasks(subtasks, _baselineSubtasks);
   }

@@ -1203,4 +1203,74 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allDoneCelebrate => 'All done for today!';
+
+  @override
+  String get profileTitle => 'Make it yours';
+
+  @override
+  String get profileButton => 'Personalize';
+
+  @override
+  String get profileWelcomeTitle => 'Let’s get acquainted';
+
+  @override
+  String get profileWelcomeBody =>
+      'What should I call you? You can skip this and change it later.';
+
+  @override
+  String get profileNameLabel => 'Your name';
+
+  @override
+  String get profileNameHint => 'Name or nickname';
+
+  @override
+  String get profileToneTitle => 'How should I talk to you?';
+
+  @override
+  String get toneFriendly => 'Friendly';
+
+  @override
+  String get toneFriendlyDesc => 'Casual, with slang and emoji';
+
+  @override
+  String get toneCalm => 'Calm';
+
+  @override
+  String get toneCalmDesc => 'Polite and gentle';
+
+  @override
+  String get toneCoach => 'Strict coach';
+
+  @override
+  String get toneCoachDesc => 'Short and demanding';
+
+  @override
+  String get profileDone => 'Done';
+
+  @override
+  String get profileSkip => 'Skip';
+
+  @override
+  String get recapTitle => 'Week in review';
+
+  @override
+  String get reminderCustom => 'Custom';
+
+  @override
+  String get customReminderTitle => 'Remind me before the deadline';
+
+  @override
+  String get unitMinutes => 'minutes';
+
+  @override
+  String get unitHours => 'hours';
+
+  @override
+  String get unitDays => 'days';
+
+  @override
+  String get customReminderApply => 'Set';
+
+  @override
+  String get customReminderHint => 'Amount';
 }

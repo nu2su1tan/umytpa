@@ -105,6 +105,42 @@ void main() {
     when(() => scheduler.openSystemSettings()).thenAnswer((_) async {});
   });
 
+  group('TaskFormCubit custom reminder', () {
+    test('any offset is kept and saved', () async {
+      when(() => createTask(any(), now: any(named: 'now'))).thenAnswer(
+        (_) async => Success<Task>(buildTask()),
+      );
+      final TaskFormCubit cubit = buildCreateCubit();
+      cubit.titleChanged('Lab');
+      await cubit.reminderChanged(
+        ReminderPreset.custom,
+        custom: const Duration(minutes: 47),
+      );
+
+      final TaskFormReady ready = cubit.state as TaskFormReady;
+      expect(ready.reminder, ReminderPreset.custom);
+      expect(ready.remindBefore, const Duration(minutes: 47));
+
+      await cubit.save();
+      final NewTask saved = verify(
+        () => createTask(captureAny(), now: any(named: 'now')),
+      ).captured.single as NewTask;
+      expect(saved.remindBefore, const Duration(minutes: 47));
+      await cubit.close();
+    });
+
+    test('editing a task with an odd offset shows it as custom', () async {
+      final TaskFormCubit cubit = buildEditCubit(
+        task: buildTask(remindBefore: const Duration(minutes: 90)),
+      );
+      final TaskFormReady ready = cubit.state as TaskFormReady;
+      expect(ready.reminder, ReminderPreset.custom);
+      expect(ready.remindBefore, const Duration(minutes: 90));
+      expect(ready.isDirty, isFalse);
+      await cubit.close();
+    });
+  });
+
   group('TaskFormCubit create', () {
     blocTest<TaskFormCubit, TaskFormState>(
       'starts ready with next rounded hour and default reminder',

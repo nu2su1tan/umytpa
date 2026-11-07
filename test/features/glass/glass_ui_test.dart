@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:umytpa/core/copy/copy_pack.dart';
 import 'package:umytpa/core/theme/app_theme.dart';
 import 'package:umytpa/core/ui/glass/glass.dart';
 import 'package:umytpa/features/tasks/presentation/widgets/category_filter_bar.dart';
@@ -22,7 +23,14 @@ void main() {
 
       expect(find.byIcon(Icons.calendar_today), findsNothing);
       expect(find.byTooltip('Week Calendar'), findsNothing);
-      expect(find.text('Good morning'), findsOneWidget);
+      expect(
+        find.text(
+          CopyPack.of('en', CopyTone.friendly).greeting(
+            now: DateTime(2026, 11, 5, 10),
+          ),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('AppGlass renders frosted fallback in test environment', (WidgetTester tester) async {

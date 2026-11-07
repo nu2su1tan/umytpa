@@ -32,6 +32,7 @@ extension TaskL10n on AppLocalizations {
         ReminderPreset.thirtyMinutes => reminderPreset30m,
         ReminderPreset.oneHour => reminderPreset1h,
         ReminderPreset.oneDay => reminderPreset1d,
+        ReminderPreset.custom => reminderCustom,
       };
 
   String repeatName(RepeatRule rule) => switch (rule) {

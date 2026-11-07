@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+
+import '../../../../core/copy/profile_controller.dart';
 import 'package:intl/intl.dart';
 
 import '../../../week_counter/ui/theme/tokens.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../utils/task_l10n.dart';
 
 /// Date eyebrow and a large greeting, in the same type as the Week screens.
 class TasksHeader extends StatelessWidget {
@@ -26,7 +27,14 @@ class TasksHeader extends StatelessWidget {
         const SizedBox(height: 4),
         Semantics(
           header: true,
-          child: Text(context.l10n.greeting(now), style: t.largeTitle),
+          child: Text(
+            context.copy.greeting(
+              now: now,
+              name: context.profile.name,
+              comeback: context.profile.isComeback(now),
+            ),
+            style: t.largeTitle,
+          ),
         ),
       ],
     );

@@ -52,7 +52,8 @@ void main() {
     });
 
     test('ReminderPreset.fromDuration round-trips', () {
-      for (final ReminderPreset preset in ReminderPreset.values) {
+      for (final ReminderPreset preset in ReminderPreset.values
+          .where((ReminderPreset p) => p != ReminderPreset.custom)) {
         expect(ReminderPreset.fromDuration(preset.duration), preset);
       }
     });

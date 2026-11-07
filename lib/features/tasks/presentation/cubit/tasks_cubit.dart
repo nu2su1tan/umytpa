@@ -10,6 +10,7 @@ import '../../domain/usecases/create_task.dart';
 import '../../domain/usecases/delete_task.dart';
 import '../../domain/usecases/group_tasks_by_date.dart';
 import '../../domain/usecases/toggle_task_done.dart';
+import '../../domain/usecases/update_task.dart';
 import '../../domain/usecases/watch_tasks.dart';
 import 'tasks_state.dart';
 
@@ -20,6 +21,7 @@ class TasksCubit extends Cubit<TasksState> {
     required this.deleteTaskUseCase,
     required this.createTask,
     required this.groupTasksByDate,
+    this.updateTask,
     DateTime Function()? now,
   })  : _now = now ?? DateTime.now,
         super(const TasksInitial());
@@ -29,6 +31,7 @@ class TasksCubit extends Cubit<TasksState> {
   final DeleteTask deleteTaskUseCase;
   final CreateTask createTask;
   final GroupTasksByDate groupTasksByDate;
+  final UpdateTask? updateTask;
   final DateTime Function() _now;
 
   StreamSubscription<List<Task>>? _subscription;
@@ -102,6 +105,41 @@ class TasksCubit extends Cubit<TasksState> {
       },
       onSuccess: (_) => task,
     );
+  }
+
+  /// Moves every overdue open task to tomorrow, keeping its time of day.
+  Future<void> moveOverdueToTomorrow() async {
+    final UpdateTask? update = updateTask;
+    if (update == null) {
+      return;
+    }
+    final DateTime now = _now();
+    final DateTime tomorrow = DateTime(now.year, now.month, now.day + 1);
+    for (final Task task in _allTasks) {
+      final bool today = task.dueAt.year == now.year &&
+          task.dueAt.month == now.month &&
+          task.dueAt.day == now.day;
+      if (task.isDone || today || !task.dueAt.isBefore(now)) {
+        continue;
+      }
+      final Result<Task> result = await update(
+        task.copyWith(
+          dueAt: DateTime(
+            tomorrow.year,
+            tomorrow.month,
+            tomorrow.day,
+            task.dueAt.hour,
+            task.dueAt.minute,
+          ),
+        ),
+        now: now,
+      );
+      if (result case Err<Task>(:final failure)) {
+        emit(TasksFailure(failure.message));
+        _emitLoaded();
+        return;
+      }
+    }
   }
 
   Future<void> undoDelete(Task task) async {

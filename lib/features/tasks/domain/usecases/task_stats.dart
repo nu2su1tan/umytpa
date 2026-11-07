@@ -18,6 +18,7 @@ class TaskStats extends Equatable {
     required this.focusSessions,
     required this.doneToday,
     required this.weekdayHistogram,
+    this.donePrevWeek = 0,
   });
 
   final int totalDone;
@@ -36,6 +37,9 @@ class TaskStats extends Equatable {
 
   /// Completed tasks by weekday (index 0 = Monday).
   final List<int> weekdayHistogram;
+
+  /// Completed tasks in the 7 days before [doneLast7].
+  final int donePrevWeek;
 
   int get doneThisWeek => doneLast7.fold(0, (int a, int b) => a + b);
 
@@ -139,6 +143,9 @@ class TaskStats extends Equatable {
       focusSessions: sessions.length,
       doneToday: doneByDay[today] ?? 0,
       weekdayHistogram: weekdays,
+      donePrevWeek: <int>[
+        for (int i = 13; i >= 7; i--) doneByDay[back(i)] ?? 0,
+      ].fold(0, (int a, int b) => a + b),
     );
   }
 
@@ -154,5 +161,6 @@ class TaskStats extends Equatable {
         focusSessions,
         doneToday,
         weekdayHistogram,
+        donePrevWeek,
       ];
 }
