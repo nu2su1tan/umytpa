@@ -15,12 +15,19 @@ class CreateTask {
   final TaskRepository repository;
   final ReminderScheduler reminderScheduler;
 
-  Future<Result<Task>> call(NewTask input, {required DateTime now}) async {
+  /// [restoring] is for putting back a task the user just deleted (Undo):
+  /// its deadline may already be in the past, which is fine for an existing
+  /// task.
+  Future<Result<Task>> call(
+    NewTask input, {
+    required DateTime now,
+    bool restoring = false,
+  }) async {
     final TaskInputValidation validation = TaskInputValidator.validate(
       title: input.title,
       dueAt: input.dueAt,
       remindBefore: input.remindBefore,
-      isNew: true,
+      isNew: !restoring,
       now: now,
     );
     if (!validation.isValid) {
@@ -34,6 +41,10 @@ class CreateTask {
       dueAt: input.dueAt,
       category: input.category,
       remindBefore: input.remindBefore,
+      repeat: input.repeat,
+      subtasks: input.subtasks
+          .where((s) => s.title.trim().isNotEmpty)
+          .toList(growable: false),
     );
 
     final Result<Task> created = await repository.create(normalized);

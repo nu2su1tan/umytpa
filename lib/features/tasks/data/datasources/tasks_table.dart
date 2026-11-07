@@ -21,4 +21,27 @@ class Tasks extends Table {
 
   /// Stored in UTC.
   DateTimeColumn get createdAt => dateTime()();
+
+  /// [RepeatRule] enum name.
+  TextColumn get repeat => text().withDefault(const Constant('none'))();
+
+  /// JSON list of `{t, d}` checklist items.
+  TextColumn get subtasksJson => text().withDefault(const Constant('[]'))();
+
+  /// Stored in UTC; `null` while the task is open.
+  DateTimeColumn get completedAt => dateTime().nullable()();
+}
+
+/// One finished focus (Pomodoro) session.
+@DataClassName('FocusSessionRecord')
+class FocusSessions extends Table {
+  IntColumn get id => integer().autoIncrement()();
+
+  /// The task worked on, if any (kept after the task is deleted).
+  IntColumn get taskId => integer().nullable()();
+
+  /// Stored in UTC.
+  DateTimeColumn get startedAt => dateTime()();
+
+  IntColumn get minutes => integer()();
 }

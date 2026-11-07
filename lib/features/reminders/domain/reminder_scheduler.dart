@@ -33,5 +33,14 @@ abstract interface class ReminderScheduler {
   /// Requests full-screen intent permission (Android 14+).
   Future<ReminderPermissionStatus> requestFullScreenIntentPermission();
 
+  /// Rings once at [at] to end a focus session while the app is closed.
+  Future<void> scheduleFocusEnd({
+    required DateTime at,
+    required String title,
+    required String body,
+  });
+
+  Future<void> cancelFocusEnd();
+
   Future<void> openSystemSettings();
 }

@@ -3,6 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:umytpa/core/error/failure.dart';
 import 'package:umytpa/core/error/result.dart';
 import 'package:umytpa/features/reminders/domain/reminder_scheduler.dart';
+import 'package:umytpa/features/tasks/domain/entities/repeat_rule.dart';
 import 'package:umytpa/features/tasks/domain/entities/task.dart';
 import 'package:umytpa/features/tasks/domain/entities/task_category.dart';
 import 'package:umytpa/features/tasks/domain/repositories/task_repository.dart';
@@ -117,6 +118,30 @@ void main() {
       verifyNever(() => scheduler.schedule(any()));
     });
 
+    test('restoring a deleted overdue task skips the future-deadline check',
+        () async {
+      final Task saved = buildTask(due: now.subtract(const Duration(hours: 2)));
+      when(() => repository.create(any())).thenAnswer(
+        (_) async => Success<Task>(saved),
+      );
+      final CreateTask useCase = CreateTask(
+        repository: repository,
+        reminderScheduler: scheduler,
+      );
+      final NewTask input = NewTask(
+        title: 'Overdue',
+        dueAt: now.subtract(const Duration(hours: 2)),
+        category: TaskCategory.work,
+        remindBefore: null,
+      );
+
+      expect(await useCase(input, now: now), isA<Err<Task>>());
+      expect(
+        await useCase(input, now: now, restoring: true),
+        isA<Success<Task>>(),
+      );
+    });
+
     test('returns ValidationFailure for empty title', () async {
       final CreateTask useCase = CreateTask(
         repository: repository,
@@ -180,7 +205,7 @@ void main() {
     test('cancels reminder when marked done', () async {
       final Task done = buildTask(isDone: true);
       when(
-        () => repository.setDone(id: 1, isDone: true),
+        () => repository.setDone(id: 1, isDone: true, now: now),
       ).thenAnswer((_) async => Success<Task>(done));
 
       final ToggleTaskDone useCase = ToggleTaskDone(
@@ -194,10 +219,41 @@ void main() {
       verifyNever(() => scheduler.schedule(any()));
     });
 
+    test('completing a repeating task creates the next occurrence', () async {
+      final Task done = Task(
+        id: 1,
+        title: 'Stretch',
+        dueAt: now.add(const Duration(hours: 1)),
+        category: TaskCategory.personal,
+        remindBefore: null,
+        isDone: true,
+        createdAt: now,
+        repeat: RepeatRule.daily,
+      );
+      when(
+        () => repository.setDone(id: 1, isDone: true, now: now),
+      ).thenAnswer((_) async => Success<Task>(done));
+      when(() => repository.create(any())).thenAnswer(
+        (_) async => Success<Task>(done.copyWith(id: 2, isDone: false)),
+      );
+
+      final ToggleTaskDone useCase = ToggleTaskDone(
+        repository: repository,
+        reminderScheduler: scheduler,
+      );
+      await useCase(id: 1, isDone: true, now: now);
+
+      final NewTask created =
+          verify(() => repository.create(captureAny())).captured.single
+              as NewTask;
+      expect(created.repeat, RepeatRule.daily);
+      expect(created.dueAt, done.dueAt.add(const Duration(days: 1)));
+    });
+
     test('reschedules when unmarked and remindAt is future', () async {
       final Task open = buildTask();
       when(
-        () => repository.setDone(id: 1, isDone: false),
+        () => repository.setDone(id: 1, isDone: false, now: now),
       ).thenAnswer((_) async => Success<Task>(open));
 
       final ToggleTaskDone useCase = ToggleTaskDone(

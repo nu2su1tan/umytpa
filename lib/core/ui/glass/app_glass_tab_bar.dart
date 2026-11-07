@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:liquid_glass_tab_bar/liquid_glass_tab_bar.dart';
-import '../../theme/app_colors.dart';
+import 'package:umytpa/features/week_counter/ui/theme/tokens.dart';
+import '../../../l10n/app_localizations.dart';
 
-/// Wraps [LiquidGlassTabBar] with the two main tabs:
-/// - Checklist icon "Tracker"
-/// - Calendar icon "Calendar"
-/// Accent is set to the app's existing orange.
+/// Wraps [LiquidGlassTabBar] with the main tabs: Tracker and Week.
+/// Accent is the shared violet from the design tokens.
 class AppGlassTabBar extends StatelessWidget {
   const AppGlassTabBar({
     super.key,
@@ -24,23 +23,21 @@ class AppGlassTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final bool isDark = theme.brightness == Brightness.dark;
-    final Color accent = isDark ? AppColors.darkPrimary : AppColors.lightPrimary;
+    final Color accent = context.tokens.violetInk;
 
     return LiquidGlassTabBar(
       currentIndex: currentIndex,
       onTap: onTap,
       selectedColor: accent,
       style: const LiquidGlassTabBarStyle(),
-      items: const <LiquidGlassTabItem>[
+      items: <LiquidGlassTabItem>[
         LiquidGlassTabItem(
-          icon: Icon(Icons.checklist_rounded),
-          label: 'Tracker',
+          icon: const Icon(Icons.checklist_rounded),
+          label: context.l10n.tabTracker,
         ),
         LiquidGlassTabItem(
-          icon: Icon(Icons.timer_rounded),
-          label: 'Week',
+          icon: const Icon(Icons.timer_rounded),
+          label: context.l10n.navCountdown,
         ),
       ],
     );

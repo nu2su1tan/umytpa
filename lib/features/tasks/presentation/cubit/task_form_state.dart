@@ -2,7 +2,10 @@ import 'package:equatable/equatable.dart';
 
 import '../../../reminders/domain/reminder_permission_status.dart';
 import '../../domain/entities/reminder_preset.dart';
+import '../../domain/entities/repeat_rule.dart';
+import '../../domain/entities/subtask.dart';
 import '../../domain/entities/task.dart';
+import '../../domain/usecases/parse_smart_input.dart';
 import '../../domain/entities/task_category.dart';
 import '../../domain/validation/task_input_validator.dart';
 
@@ -28,6 +31,9 @@ final class TaskFormReady extends TaskFormState {
     required this.isDirty,
     required this.isSubmitting,
     required this.showPermissionHelp,
+    this.repeat = RepeatRule.none,
+    this.subtasks = const <Subtask>[],
+    this.smart,
     this.existingTask,
     this.submitError,
     this.pendingRationale,
@@ -42,6 +48,11 @@ final class TaskFormReady extends TaskFormState {
   final bool isDirty;
   final bool isSubmitting;
   final bool showPermissionHelp;
+  final RepeatRule repeat;
+  final List<Subtask> subtasks;
+
+  /// Dates/categories recognised in the title, offered as a one-tap apply.
+  final SmartInput? smart;
   final Task? existingTask;
   final String? submitError;
   final ReminderPermissionRationale? pendingRationale;
@@ -57,6 +68,9 @@ final class TaskFormReady extends TaskFormState {
     bool? isDirty,
     bool? isSubmitting,
     bool? showPermissionHelp,
+    RepeatRule? repeat,
+    List<Subtask>? subtasks,
+    SmartInput? Function()? smart,
     String? Function()? submitError,
     ReminderPermissionRationale? Function()? pendingRationale,
   }) {
@@ -70,6 +84,9 @@ final class TaskFormReady extends TaskFormState {
       isDirty: isDirty ?? this.isDirty,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       showPermissionHelp: showPermissionHelp ?? this.showPermissionHelp,
+      repeat: repeat ?? this.repeat,
+      subtasks: subtasks ?? this.subtasks,
+      smart: smart != null ? smart() : this.smart,
       existingTask: existingTask,
       submitError: submitError != null ? submitError() : this.submitError,
       pendingRationale: pendingRationale != null
@@ -89,6 +106,9 @@ final class TaskFormReady extends TaskFormState {
         isDirty,
         isSubmitting,
         showPermissionHelp,
+        repeat,
+        subtasks,
+        smart,
         existingTask,
         submitError,
         pendingRationale,

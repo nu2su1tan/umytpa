@@ -33,11 +33,12 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
     required this.controller,
-    required this.onOpenTab,
+    this.onOpenTab,
   });
 
   final AppController controller;
-  final ValueChanged<AppTab> onOpenTab;
+  /// Switches tabs; when null, the calendar shortcuts are hidden.
+  final ValueChanged<AppTab>? onOpenTab;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -143,7 +144,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 now: now,
                 fontSize: (width * 0.21).clamp(56, 88).toDouble(),
                 onOpenSettings: () => ScheduleScreen.open(context, _controller),
-                onOpenCalendar: () => widget.onOpenTab(AppTab.calendar),
+                onOpenCalendar: widget.onOpenTab == null
+                    ? null
+                    : () => widget.onOpenTab!(AppTab.calendar),
               ),
             ),
             if (hint != null)
@@ -235,9 +238,11 @@ class _HomeScreenState extends State<HomeScreen> {
           icon: Icons.beach_access_rounded,
           title: onVacation ? l10n.vacationActive : l10n.kindLabel(block.kind),
           subtitle: l10n.untilInclusive(l10n.dayMonth(block.last)),
-          onTap: () => onVacation
-              ? VacationScreen.open(context, _controller)
-              : widget.onOpenTab(AppTab.calendar),
+          onTap: onVacation
+              ? () => VacationScreen.open(context, _controller)
+              : widget.onOpenTab == null
+                  ? null
+                  : () => widget.onOpenTab!(AppTab.calendar),
         );
       case OffNow(:final block, :final backToWork)
           when block.kind == BlockKind.holiday && backToWork != null:
@@ -275,14 +280,14 @@ class _Hero extends StatelessWidget {
     required this.now,
     required this.fontSize,
     required this.onOpenSettings,
-    required this.onOpenCalendar,
+    this.onOpenCalendar,
   });
 
   final CountdownState state;
   final DateTime now;
   final double fontSize;
   final VoidCallback onOpenSettings;
-  final VoidCallback onOpenCalendar;
+  final VoidCallback? onOpenCalendar;
 
   @override
   Widget build(BuildContext context) {
@@ -369,7 +374,7 @@ class _Hero extends StatelessWidget {
         return message(
           l10n.noDaysOffTitle,
           l10n.noDaysOffBody,
-          l10n.openCalendar,
+          onOpenCalendar == null ? null : l10n.openCalendar,
           onOpenCalendar,
         );
     }

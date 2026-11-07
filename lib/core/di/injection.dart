@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 
+import '../l10n/locale_controller.dart';
 import '../../features/reminders/data/local_reminder_scheduler.dart';
 import '../../features/reminders/data/notification_details_factory.dart';
 import '../../features/reminders/domain/reminder_scheduler.dart';
@@ -22,14 +23,17 @@ final GetIt getIt = GetIt.instance;
 
 /// Registers application dependencies.
 Future<void> configureDependencies() async {
+  final LocaleController localeController = await LocaleController.load();
   final AppDatabase database = AppDatabase();
   const NotificationDetailsFactory detailsFactory = NotificationDetailsFactory();
   final LocalReminderScheduler scheduler = LocalReminderScheduler(
     detailsFactory: detailsFactory,
+    languageCode: () => localeController.locale?.languageCode,
   );
   await scheduler.initialize();
 
   getIt
+    ..registerSingleton<LocaleController>(localeController)
     ..registerSingleton<AppDatabase>(database)
     ..registerSingleton<TasksDao>(database.tasksDao)
     ..registerSingleton<NotificationDetailsFactory>(detailsFactory)

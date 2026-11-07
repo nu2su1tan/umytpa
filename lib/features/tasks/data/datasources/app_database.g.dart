@@ -86,6 +86,39 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, TaskRecord> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _repeatMeta = const VerificationMeta('repeat');
+  @override
+  late final GeneratedColumn<String> repeat = GeneratedColumn<String>(
+    'repeat',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('none'),
+  );
+  static const VerificationMeta _subtasksJsonMeta = const VerificationMeta(
+    'subtasksJson',
+  );
+  @override
+  late final GeneratedColumn<String> subtasksJson = GeneratedColumn<String>(
+    'subtasks_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _completedAtMeta = const VerificationMeta(
+    'completedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> completedAt = GeneratedColumn<DateTime>(
+    'completed_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -95,6 +128,9 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, TaskRecord> {
     remindBeforeMinutes,
     isDone,
     createdAt,
+    repeat,
+    subtasksJson,
+    completedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -150,6 +186,30 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, TaskRecord> {
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('repeat')) {
+      context.handle(
+        _repeatMeta,
+        repeat.isAcceptableOrUnknown(data['repeat']!, _repeatMeta),
+      );
+    }
+    if (data.containsKey('subtasks_json')) {
+      context.handle(
+        _subtasksJsonMeta,
+        subtasksJson.isAcceptableOrUnknown(
+          data['subtasks_json']!,
+          _subtasksJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('completed_at')) {
+      context.handle(
+        _completedAtMeta,
+        completedAt.isAcceptableOrUnknown(
+          data['completed_at']!,
+          _completedAtMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -189,6 +249,18 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, TaskRecord> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      repeat: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}repeat'],
+      )!,
+      subtasksJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}subtasks_json'],
+      )!,
+      completedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}completed_at'],
+      ),
     );
   }
 
@@ -215,6 +287,15 @@ class TaskRecord extends DataClass implements Insertable<TaskRecord> {
 
   /// Stored in UTC.
   final DateTime createdAt;
+
+  /// [RepeatRule] enum name.
+  final String repeat;
+
+  /// JSON list of `{t, d}` checklist items.
+  final String subtasksJson;
+
+  /// Stored in UTC; `null` while the task is open.
+  final DateTime? completedAt;
   const TaskRecord({
     required this.id,
     required this.title,
@@ -223,6 +304,9 @@ class TaskRecord extends DataClass implements Insertable<TaskRecord> {
     this.remindBeforeMinutes,
     required this.isDone,
     required this.createdAt,
+    required this.repeat,
+    required this.subtasksJson,
+    this.completedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -240,6 +324,11 @@ class TaskRecord extends DataClass implements Insertable<TaskRecord> {
     }
     map['is_done'] = Variable<bool>(isDone);
     map['created_at'] = Variable<DateTime>(createdAt);
+    map['repeat'] = Variable<String>(repeat);
+    map['subtasks_json'] = Variable<String>(subtasksJson);
+    if (!nullToAbsent || completedAt != null) {
+      map['completed_at'] = Variable<DateTime>(completedAt);
+    }
     return map;
   }
 
@@ -254,6 +343,11 @@ class TaskRecord extends DataClass implements Insertable<TaskRecord> {
           : Value(remindBeforeMinutes),
       isDone: Value(isDone),
       createdAt: Value(createdAt),
+      repeat: Value(repeat),
+      subtasksJson: Value(subtasksJson),
+      completedAt: completedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(completedAt),
     );
   }
 
@@ -274,6 +368,9 @@ class TaskRecord extends DataClass implements Insertable<TaskRecord> {
       ),
       isDone: serializer.fromJson<bool>(json['isDone']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      repeat: serializer.fromJson<String>(json['repeat']),
+      subtasksJson: serializer.fromJson<String>(json['subtasksJson']),
+      completedAt: serializer.fromJson<DateTime?>(json['completedAt']),
     );
   }
   @override
@@ -289,6 +386,9 @@ class TaskRecord extends DataClass implements Insertable<TaskRecord> {
       'remindBeforeMinutes': serializer.toJson<int?>(remindBeforeMinutes),
       'isDone': serializer.toJson<bool>(isDone),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'repeat': serializer.toJson<String>(repeat),
+      'subtasksJson': serializer.toJson<String>(subtasksJson),
+      'completedAt': serializer.toJson<DateTime?>(completedAt),
     };
   }
 
@@ -300,6 +400,9 @@ class TaskRecord extends DataClass implements Insertable<TaskRecord> {
     Value<int?> remindBeforeMinutes = const Value.absent(),
     bool? isDone,
     DateTime? createdAt,
+    String? repeat,
+    String? subtasksJson,
+    Value<DateTime?> completedAt = const Value.absent(),
   }) => TaskRecord(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -310,6 +413,9 @@ class TaskRecord extends DataClass implements Insertable<TaskRecord> {
         : this.remindBeforeMinutes,
     isDone: isDone ?? this.isDone,
     createdAt: createdAt ?? this.createdAt,
+    repeat: repeat ?? this.repeat,
+    subtasksJson: subtasksJson ?? this.subtasksJson,
+    completedAt: completedAt.present ? completedAt.value : this.completedAt,
   );
   TaskRecord copyWithCompanion(TasksCompanion data) {
     return TaskRecord(
@@ -322,6 +428,13 @@ class TaskRecord extends DataClass implements Insertable<TaskRecord> {
           : this.remindBeforeMinutes,
       isDone: data.isDone.present ? data.isDone.value : this.isDone,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      repeat: data.repeat.present ? data.repeat.value : this.repeat,
+      subtasksJson: data.subtasksJson.present
+          ? data.subtasksJson.value
+          : this.subtasksJson,
+      completedAt: data.completedAt.present
+          ? data.completedAt.value
+          : this.completedAt,
     );
   }
 
@@ -334,7 +447,10 @@ class TaskRecord extends DataClass implements Insertable<TaskRecord> {
           ..write('category: $category, ')
           ..write('remindBeforeMinutes: $remindBeforeMinutes, ')
           ..write('isDone: $isDone, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('repeat: $repeat, ')
+          ..write('subtasksJson: $subtasksJson, ')
+          ..write('completedAt: $completedAt')
           ..write(')'))
         .toString();
   }
@@ -348,6 +464,9 @@ class TaskRecord extends DataClass implements Insertable<TaskRecord> {
     remindBeforeMinutes,
     isDone,
     createdAt,
+    repeat,
+    subtasksJson,
+    completedAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -359,7 +478,10 @@ class TaskRecord extends DataClass implements Insertable<TaskRecord> {
           other.category == this.category &&
           other.remindBeforeMinutes == this.remindBeforeMinutes &&
           other.isDone == this.isDone &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.repeat == this.repeat &&
+          other.subtasksJson == this.subtasksJson &&
+          other.completedAt == this.completedAt);
 }
 
 class TasksCompanion extends UpdateCompanion<TaskRecord> {
@@ -370,6 +492,9 @@ class TasksCompanion extends UpdateCompanion<TaskRecord> {
   final Value<int?> remindBeforeMinutes;
   final Value<bool> isDone;
   final Value<DateTime> createdAt;
+  final Value<String> repeat;
+  final Value<String> subtasksJson;
+  final Value<DateTime?> completedAt;
   const TasksCompanion({
     this.id = const Value.absent(),
     this.title = const Value.absent(),
@@ -378,6 +503,9 @@ class TasksCompanion extends UpdateCompanion<TaskRecord> {
     this.remindBeforeMinutes = const Value.absent(),
     this.isDone = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.repeat = const Value.absent(),
+    this.subtasksJson = const Value.absent(),
+    this.completedAt = const Value.absent(),
   });
   TasksCompanion.insert({
     this.id = const Value.absent(),
@@ -387,6 +515,9 @@ class TasksCompanion extends UpdateCompanion<TaskRecord> {
     this.remindBeforeMinutes = const Value.absent(),
     this.isDone = const Value.absent(),
     required DateTime createdAt,
+    this.repeat = const Value.absent(),
+    this.subtasksJson = const Value.absent(),
+    this.completedAt = const Value.absent(),
   }) : title = Value(title),
        dueAt = Value(dueAt),
        category = Value(category),
@@ -399,6 +530,9 @@ class TasksCompanion extends UpdateCompanion<TaskRecord> {
     Expression<int>? remindBeforeMinutes,
     Expression<bool>? isDone,
     Expression<DateTime>? createdAt,
+    Expression<String>? repeat,
+    Expression<String>? subtasksJson,
+    Expression<DateTime>? completedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -409,6 +543,9 @@ class TasksCompanion extends UpdateCompanion<TaskRecord> {
         'remind_before_minutes': remindBeforeMinutes,
       if (isDone != null) 'is_done': isDone,
       if (createdAt != null) 'created_at': createdAt,
+      if (repeat != null) 'repeat': repeat,
+      if (subtasksJson != null) 'subtasks_json': subtasksJson,
+      if (completedAt != null) 'completed_at': completedAt,
     });
   }
 
@@ -420,6 +557,9 @@ class TasksCompanion extends UpdateCompanion<TaskRecord> {
     Value<int?>? remindBeforeMinutes,
     Value<bool>? isDone,
     Value<DateTime>? createdAt,
+    Value<String>? repeat,
+    Value<String>? subtasksJson,
+    Value<DateTime?>? completedAt,
   }) {
     return TasksCompanion(
       id: id ?? this.id,
@@ -429,6 +569,9 @@ class TasksCompanion extends UpdateCompanion<TaskRecord> {
       remindBeforeMinutes: remindBeforeMinutes ?? this.remindBeforeMinutes,
       isDone: isDone ?? this.isDone,
       createdAt: createdAt ?? this.createdAt,
+      repeat: repeat ?? this.repeat,
+      subtasksJson: subtasksJson ?? this.subtasksJson,
+      completedAt: completedAt ?? this.completedAt,
     );
   }
 
@@ -458,6 +601,15 @@ class TasksCompanion extends UpdateCompanion<TaskRecord> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (repeat.present) {
+      map['repeat'] = Variable<String>(repeat.value);
+    }
+    if (subtasksJson.present) {
+      map['subtasks_json'] = Variable<String>(subtasksJson.value);
+    }
+    if (completedAt.present) {
+      map['completed_at'] = Variable<DateTime>(completedAt.value);
+    }
     return map;
   }
 
@@ -470,7 +622,314 @@ class TasksCompanion extends UpdateCompanion<TaskRecord> {
           ..write('category: $category, ')
           ..write('remindBeforeMinutes: $remindBeforeMinutes, ')
           ..write('isDone: $isDone, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('repeat: $repeat, ')
+          ..write('subtasksJson: $subtasksJson, ')
+          ..write('completedAt: $completedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FocusSessionsTable extends FocusSessions
+    with TableInfo<$FocusSessionsTable, FocusSessionRecord> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FocusSessionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _taskIdMeta = const VerificationMeta('taskId');
+  @override
+  late final GeneratedColumn<int> taskId = GeneratedColumn<int>(
+    'task_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _startedAtMeta = const VerificationMeta(
+    'startedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startedAt = GeneratedColumn<DateTime>(
+    'started_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _minutesMeta = const VerificationMeta(
+    'minutes',
+  );
+  @override
+  late final GeneratedColumn<int> minutes = GeneratedColumn<int>(
+    'minutes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, taskId, startedAt, minutes];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'focus_sessions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FocusSessionRecord> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('task_id')) {
+      context.handle(
+        _taskIdMeta,
+        taskId.isAcceptableOrUnknown(data['task_id']!, _taskIdMeta),
+      );
+    }
+    if (data.containsKey('started_at')) {
+      context.handle(
+        _startedAtMeta,
+        startedAt.isAcceptableOrUnknown(data['started_at']!, _startedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startedAtMeta);
+    }
+    if (data.containsKey('minutes')) {
+      context.handle(
+        _minutesMeta,
+        minutes.isAcceptableOrUnknown(data['minutes']!, _minutesMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_minutesMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FocusSessionRecord map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FocusSessionRecord(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      taskId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}task_id'],
+      ),
+      startedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}started_at'],
+      )!,
+      minutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}minutes'],
+      )!,
+    );
+  }
+
+  @override
+  $FocusSessionsTable createAlias(String alias) {
+    return $FocusSessionsTable(attachedDatabase, alias);
+  }
+}
+
+class FocusSessionRecord extends DataClass
+    implements Insertable<FocusSessionRecord> {
+  final int id;
+
+  /// The task worked on, if any (kept after the task is deleted).
+  final int? taskId;
+
+  /// Stored in UTC.
+  final DateTime startedAt;
+  final int minutes;
+  const FocusSessionRecord({
+    required this.id,
+    this.taskId,
+    required this.startedAt,
+    required this.minutes,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || taskId != null) {
+      map['task_id'] = Variable<int>(taskId);
+    }
+    map['started_at'] = Variable<DateTime>(startedAt);
+    map['minutes'] = Variable<int>(minutes);
+    return map;
+  }
+
+  FocusSessionsCompanion toCompanion(bool nullToAbsent) {
+    return FocusSessionsCompanion(
+      id: Value(id),
+      taskId: taskId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(taskId),
+      startedAt: Value(startedAt),
+      minutes: Value(minutes),
+    );
+  }
+
+  factory FocusSessionRecord.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FocusSessionRecord(
+      id: serializer.fromJson<int>(json['id']),
+      taskId: serializer.fromJson<int?>(json['taskId']),
+      startedAt: serializer.fromJson<DateTime>(json['startedAt']),
+      minutes: serializer.fromJson<int>(json['minutes']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'taskId': serializer.toJson<int?>(taskId),
+      'startedAt': serializer.toJson<DateTime>(startedAt),
+      'minutes': serializer.toJson<int>(minutes),
+    };
+  }
+
+  FocusSessionRecord copyWith({
+    int? id,
+    Value<int?> taskId = const Value.absent(),
+    DateTime? startedAt,
+    int? minutes,
+  }) => FocusSessionRecord(
+    id: id ?? this.id,
+    taskId: taskId.present ? taskId.value : this.taskId,
+    startedAt: startedAt ?? this.startedAt,
+    minutes: minutes ?? this.minutes,
+  );
+  FocusSessionRecord copyWithCompanion(FocusSessionsCompanion data) {
+    return FocusSessionRecord(
+      id: data.id.present ? data.id.value : this.id,
+      taskId: data.taskId.present ? data.taskId.value : this.taskId,
+      startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
+      minutes: data.minutes.present ? data.minutes.value : this.minutes,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FocusSessionRecord(')
+          ..write('id: $id, ')
+          ..write('taskId: $taskId, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('minutes: $minutes')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, taskId, startedAt, minutes);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FocusSessionRecord &&
+          other.id == this.id &&
+          other.taskId == this.taskId &&
+          other.startedAt == this.startedAt &&
+          other.minutes == this.minutes);
+}
+
+class FocusSessionsCompanion extends UpdateCompanion<FocusSessionRecord> {
+  final Value<int> id;
+  final Value<int?> taskId;
+  final Value<DateTime> startedAt;
+  final Value<int> minutes;
+  const FocusSessionsCompanion({
+    this.id = const Value.absent(),
+    this.taskId = const Value.absent(),
+    this.startedAt = const Value.absent(),
+    this.minutes = const Value.absent(),
+  });
+  FocusSessionsCompanion.insert({
+    this.id = const Value.absent(),
+    this.taskId = const Value.absent(),
+    required DateTime startedAt,
+    required int minutes,
+  }) : startedAt = Value(startedAt),
+       minutes = Value(minutes);
+  static Insertable<FocusSessionRecord> custom({
+    Expression<int>? id,
+    Expression<int>? taskId,
+    Expression<DateTime>? startedAt,
+    Expression<int>? minutes,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (taskId != null) 'task_id': taskId,
+      if (startedAt != null) 'started_at': startedAt,
+      if (minutes != null) 'minutes': minutes,
+    });
+  }
+
+  FocusSessionsCompanion copyWith({
+    Value<int>? id,
+    Value<int?>? taskId,
+    Value<DateTime>? startedAt,
+    Value<int>? minutes,
+  }) {
+    return FocusSessionsCompanion(
+      id: id ?? this.id,
+      taskId: taskId ?? this.taskId,
+      startedAt: startedAt ?? this.startedAt,
+      minutes: minutes ?? this.minutes,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (taskId.present) {
+      map['task_id'] = Variable<int>(taskId.value);
+    }
+    if (startedAt.present) {
+      map['started_at'] = Variable<DateTime>(startedAt.value);
+    }
+    if (minutes.present) {
+      map['minutes'] = Variable<int>(minutes.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FocusSessionsCompanion(')
+          ..write('id: $id, ')
+          ..write('taskId: $taskId, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('minutes: $minutes')
           ..write(')'))
         .toString();
   }
@@ -480,6 +939,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $TasksTable tasks = $TasksTable(this);
+  late final $FocusSessionsTable focusSessions = $FocusSessionsTable(this);
   late final Index idxTasksDueAt = Index(
     'idx_tasks_due_at',
     'CREATE INDEX idx_tasks_due_at ON tasks (due_at)',
@@ -489,7 +949,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [tasks, idxTasksDueAt];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    tasks,
+    focusSessions,
+    idxTasksDueAt,
+  ];
 }
 
 typedef $$TasksTableCreateCompanionBuilder =
@@ -501,6 +965,9 @@ typedef $$TasksTableCreateCompanionBuilder =
       Value<int?> remindBeforeMinutes,
       Value<bool> isDone,
       required DateTime createdAt,
+      Value<String> repeat,
+      Value<String> subtasksJson,
+      Value<DateTime?> completedAt,
     });
 typedef $$TasksTableUpdateCompanionBuilder =
     TasksCompanion Function({
@@ -511,6 +978,9 @@ typedef $$TasksTableUpdateCompanionBuilder =
       Value<int?> remindBeforeMinutes,
       Value<bool> isDone,
       Value<DateTime> createdAt,
+      Value<String> repeat,
+      Value<String> subtasksJson,
+      Value<DateTime?> completedAt,
     });
 
 class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
@@ -554,6 +1024,21 @@ class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get repeat => $composableBuilder(
+    column: $table.repeat,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get subtasksJson => $composableBuilder(
+    column: $table.subtasksJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -601,6 +1086,21 @@ class $$TasksTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get repeat => $composableBuilder(
+    column: $table.repeat,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get subtasksJson => $composableBuilder(
+    column: $table.subtasksJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$TasksTableAnnotationComposer
@@ -634,6 +1134,19 @@ class $$TasksTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get repeat =>
+      $composableBuilder(column: $table.repeat, builder: (column) => column);
+
+  GeneratedColumn<String> get subtasksJson => $composableBuilder(
+    column: $table.subtasksJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get completedAt => $composableBuilder(
+    column: $table.completedAt,
+    builder: (column) => column,
+  );
 }
 
 class $$TasksTableTableManager
@@ -671,6 +1184,9 @@ class $$TasksTableTableManager
                 Value<int?> remindBeforeMinutes = const Value.absent(),
                 Value<bool> isDone = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<String> repeat = const Value.absent(),
+                Value<String> subtasksJson = const Value.absent(),
+                Value<DateTime?> completedAt = const Value.absent(),
               }) => TasksCompanion(
                 id: id,
                 title: title,
@@ -679,6 +1195,9 @@ class $$TasksTableTableManager
                 remindBeforeMinutes: remindBeforeMinutes,
                 isDone: isDone,
                 createdAt: createdAt,
+                repeat: repeat,
+                subtasksJson: subtasksJson,
+                completedAt: completedAt,
               ),
           createCompanionCallback:
               ({
@@ -689,6 +1208,9 @@ class $$TasksTableTableManager
                 Value<int?> remindBeforeMinutes = const Value.absent(),
                 Value<bool> isDone = const Value.absent(),
                 required DateTime createdAt,
+                Value<String> repeat = const Value.absent(),
+                Value<String> subtasksJson = const Value.absent(),
+                Value<DateTime?> completedAt = const Value.absent(),
               }) => TasksCompanion.insert(
                 id: id,
                 title: title,
@@ -697,6 +1219,9 @@ class $$TasksTableTableManager
                 remindBeforeMinutes: remindBeforeMinutes,
                 isDone: isDone,
                 createdAt: createdAt,
+                repeat: repeat,
+                subtasksJson: subtasksJson,
+                completedAt: completedAt,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -729,10 +1254,200 @@ typedef $$TasksTableProcessedTableManager =
       TaskRecord,
       PrefetchHooks Function()
     >;
+typedef $$FocusSessionsTableCreateCompanionBuilder =
+    FocusSessionsCompanion Function({
+      Value<int> id,
+      Value<int?> taskId,
+      required DateTime startedAt,
+      required int minutes,
+    });
+typedef $$FocusSessionsTableUpdateCompanionBuilder =
+    FocusSessionsCompanion Function({
+      Value<int> id,
+      Value<int?> taskId,
+      Value<DateTime> startedAt,
+      Value<int> minutes,
+    });
+
+class $$FocusSessionsTableFilterComposer
+    extends Composer<_$AppDatabase, $FocusSessionsTable> {
+  $$FocusSessionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get taskId => $composableBuilder(
+    column: $table.taskId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get minutes => $composableBuilder(
+    column: $table.minutes,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FocusSessionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $FocusSessionsTable> {
+  $$FocusSessionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get taskId => $composableBuilder(
+    column: $table.taskId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get minutes => $composableBuilder(
+    column: $table.minutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FocusSessionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FocusSessionsTable> {
+  $$FocusSessionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get taskId =>
+      $composableBuilder(column: $table.taskId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get minutes =>
+      $composableBuilder(column: $table.minutes, builder: (column) => column);
+}
+
+class $$FocusSessionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FocusSessionsTable,
+          FocusSessionRecord,
+          $$FocusSessionsTableFilterComposer,
+          $$FocusSessionsTableOrderingComposer,
+          $$FocusSessionsTableAnnotationComposer,
+          $$FocusSessionsTableCreateCompanionBuilder,
+          $$FocusSessionsTableUpdateCompanionBuilder,
+          (
+            FocusSessionRecord,
+            BaseReferences<
+              _$AppDatabase,
+              $FocusSessionsTable,
+              FocusSessionRecord
+            >,
+          ),
+          FocusSessionRecord,
+          PrefetchHooks Function()
+        > {
+  $$FocusSessionsTableTableManager(_$AppDatabase db, $FocusSessionsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FocusSessionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FocusSessionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FocusSessionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int?> taskId = const Value.absent(),
+                Value<DateTime> startedAt = const Value.absent(),
+                Value<int> minutes = const Value.absent(),
+              }) => FocusSessionsCompanion(
+                id: id,
+                taskId: taskId,
+                startedAt: startedAt,
+                minutes: minutes,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int?> taskId = const Value.absent(),
+                required DateTime startedAt,
+                required int minutes,
+              }) => FocusSessionsCompanion.insert(
+                id: id,
+                taskId: taskId,
+                startedAt: startedAt,
+                minutes: minutes,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$FocusSessionsTable, FocusSessionRecord>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $FocusSessionsTable,
+                    FocusSessionRecord
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FocusSessionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FocusSessionsTable,
+      FocusSessionRecord,
+      $$FocusSessionsTableFilterComposer,
+      $$FocusSessionsTableOrderingComposer,
+      $$FocusSessionsTableAnnotationComposer,
+      $$FocusSessionsTableCreateCompanionBuilder,
+      $$FocusSessionsTableUpdateCompanionBuilder,
+      (
+        FocusSessionRecord,
+        BaseReferences<_$AppDatabase, $FocusSessionsTable, FocusSessionRecord>,
+      ),
+      FocusSessionRecord,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
   $$TasksTableTableManager get tasks =>
       $$TasksTableTableManager(_db, _db.tasks);
+  $$FocusSessionsTableTableManager get focusSessions =>
+      $$FocusSessionsTableTableManager(_db, _db.focusSessions);
 }

@@ -4,6 +4,15 @@ import 'package:equatable/equatable.dart';
 abstract final class TaskInputValidator {
   static const int maxTitleLength = 120;
 
+  // Messages are public so the UI can map them to the current language.
+  static const String titleRequiredMessage = 'Title is required';
+  static const String deadlinePastMessage = 'Deadline must be in the future';
+  static const String reminderPassedMessage =
+      'Reminder time has already passed. The task will be saved without a notification.';
+
+  static String titleTooLongMessage(int max) =>
+      'Title must be at most $max characters';
+
   static TaskInputValidation validate({
     required String title,
     required DateTime dueAt,
@@ -15,22 +24,25 @@ abstract final class TaskInputValidator {
 
     String? titleError;
     if (trimmed.isEmpty) {
-      titleError = 'Title is required';
+      titleError = titleRequiredMessage;
     } else if (trimmed.length > maxTitleLength) {
-      titleError = 'Title must be at most $maxTitleLength characters';
+      titleError = titleTooLongMessage(maxTitleLength);
     }
 
     String? dueAtError;
-    if (isNew && !dueAt.isAfter(now)) {
-      dueAtError = 'Deadline must be in the future';
+    // Minute precision: the picker has no seconds, so the current minute
+    // (e.g. 21:47 at 21:47:30) is still a valid deadline.
+    final DateTime currentMinute =
+        DateTime(now.year, now.month, now.day, now.hour, now.minute);
+    if (isNew && dueAt.isBefore(currentMinute)) {
+      dueAtError = deadlinePastMessage;
     }
 
     String? reminderWarning;
     if (remindBefore != null) {
       final DateTime remindAt = dueAt.subtract(remindBefore);
       if (!remindAt.isAfter(now)) {
-        reminderWarning =
-            'Reminder time has already passed. The task will be saved without a notification.';
+        reminderWarning = reminderPassedMessage;
       }
     }
 

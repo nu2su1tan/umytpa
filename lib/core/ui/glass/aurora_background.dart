@@ -2,7 +2,7 @@ import 'dart:io' show Platform;
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import '../../theme/app_colors.dart';
+import 'package:umytpa/features/week_counter/ui/theme/tokens.dart';
 
 /// An animated ambient background providing colorful, softly blurred blobs
 /// behind liquid glass surfaces so their refraction and lighting are visible.
@@ -87,8 +87,7 @@ class _AuroraPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // 1. Warm base color
-    final Color baseColor =
-        isDark ? AppColors.darkBackground : AppColors.lightBackground;
+    final Color baseColor = isDark ? Tokens.dark.bg : Tokens.light.bg;
     canvas.drawColor(baseColor, BlendMode.src);
 
     final double t = animation.value;
@@ -96,7 +95,7 @@ class _AuroraPainter extends CustomPainter {
     // 2. Three soft blurred blobs (orange, lilac, light blue ~0.3 opacity)
     // Blob 1: Orange
     final Paint orangePaint = Paint()
-      ..color = const Color(0x4DED760E) // orange ~0.3 opacity
+      ..color = const Color(0x33C8F53C) // lime ~0.2 opacity
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 75);
 
     final Offset orangeCenter = Offset(
@@ -107,7 +106,7 @@ class _AuroraPainter extends CustomPainter {
 
     // Blob 2: Lilac
     final Paint lilacPaint = Paint()
-      ..color = const Color(0x4D8B5CF6) // lilac ~0.3 opacity
+      ..color = const Color(0x337C4DF0) // violet ~0.2 opacity
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 85);
 
     final Offset lilacCenter = Offset(
@@ -118,7 +117,7 @@ class _AuroraPainter extends CustomPainter {
 
     // Blob 3: Light blue
     final Paint bluePaint = Paint()
-      ..color = const Color(0x4D38BDF8) // light blue ~0.3 opacity
+      ..color = const Color(0x267C4DF0) // violet ~0.15 opacity
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 80);
 
     final Offset blueCenter = Offset(

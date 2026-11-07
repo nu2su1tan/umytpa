@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import 'repeat_rule.dart';
+import 'subtask.dart';
 import 'task_category.dart';
 
 class Task extends Equatable {
@@ -11,6 +13,9 @@ class Task extends Equatable {
     required this.remindBefore,
     required this.isDone,
     required this.createdAt,
+    this.repeat = RepeatRule.none,
+    this.subtasks = const <Subtask>[],
+    this.completedAt,
   });
 
   final int id;
@@ -22,6 +27,13 @@ class Task extends Equatable {
   final Duration? remindBefore;
   final bool isDone;
   final DateTime createdAt;
+  final RepeatRule repeat;
+  final List<Subtask> subtasks;
+
+  /// When the task was last marked done; `null` while open.
+  final DateTime? completedAt;
+
+  int get subtasksDone => subtasks.where((Subtask s) => s.isDone).length;
 
   DateTime? get remindAt =>
       remindBefore == null ? null : dueAt.subtract(remindBefore!);
@@ -34,6 +46,9 @@ class Task extends Equatable {
     Duration? Function()? remindBefore,
     bool? isDone,
     DateTime? createdAt,
+    RepeatRule? repeat,
+    List<Subtask>? subtasks,
+    DateTime? Function()? completedAt,
   }) {
     return Task(
       id: id ?? this.id,
@@ -44,6 +59,9 @@ class Task extends Equatable {
           remindBefore != null ? remindBefore() : this.remindBefore,
       isDone: isDone ?? this.isDone,
       createdAt: createdAt ?? this.createdAt,
+      repeat: repeat ?? this.repeat,
+      subtasks: subtasks ?? this.subtasks,
+      completedAt: completedAt != null ? completedAt() : this.completedAt,
     );
   }
 
@@ -56,6 +74,9 @@ class Task extends Equatable {
         remindBefore,
         isDone,
         createdAt,
+        repeat,
+        subtasks,
+        completedAt,
       ];
 }
 
@@ -66,14 +87,18 @@ class NewTask extends Equatable {
     required this.dueAt,
     required this.category,
     required this.remindBefore,
+    this.repeat = RepeatRule.none,
+    this.subtasks = const <Subtask>[],
   });
 
   final String title;
   final DateTime dueAt;
   final TaskCategory category;
   final Duration? remindBefore;
+  final RepeatRule repeat;
+  final List<Subtask> subtasks;
 
   @override
   List<Object?> get props =>
-      <Object?>[title, dueAt, category, remindBefore];
+      <Object?>[title, dueAt, category, remindBefore, repeat, subtasks];
 }

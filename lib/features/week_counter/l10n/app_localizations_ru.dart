@@ -771,4 +771,459 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get widgetSetUp => 'Откройте приложение для настройки';
+
+  @override
+  String get tabTracker => 'Трекер';
+
+  @override
+  String get greetingMorning => 'Доброе утро';
+
+  @override
+  String get greetingAfternoon => 'Добрый день';
+
+  @override
+  String get greetingEvening => 'Добрый вечер';
+
+  @override
+  String get sectionOverdue => 'Просрочено';
+
+  @override
+  String get sectionToday => 'Сегодня';
+
+  @override
+  String get sectionTomorrow => 'Завтра';
+
+  @override
+  String get sectionLater => 'Позже';
+
+  @override
+  String get sectionCompleted => 'Выполнено';
+
+  @override
+  String get categoryStudy => 'Учёба';
+
+  @override
+  String get categoryWork => 'Работа';
+
+  @override
+  String get categoryPersonal => 'Личное';
+
+  @override
+  String get categoryOther => 'Другое';
+
+  @override
+  String get filterAll => 'Все';
+
+  @override
+  String get reminderPresetNone => 'Без напоминания';
+
+  @override
+  String get reminderPreset5m => '5 мин';
+
+  @override
+  String get reminderPreset30m => '30 мин';
+
+  @override
+  String get reminderPreset1h => '1 час';
+
+  @override
+  String get reminderPreset1d => '1 день';
+
+  @override
+  String reminderBeforeMinutes(int count) {
+    return 'за $count мин';
+  }
+
+  @override
+  String reminderBeforeHours(int count) {
+    return 'за $count ч';
+  }
+
+  @override
+  String reminderBeforeDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'за $count дня',
+      many: 'за $count дней',
+      few: 'за $count дня',
+      one: 'за $count день',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String dueYesterday(String time) {
+    return 'Вчера, $time';
+  }
+
+  @override
+  String dueTomorrow(String time) {
+    return 'Завтра, $time';
+  }
+
+  @override
+  String dueOnDate(String date, String time) {
+    return '$date, $time';
+  }
+
+  @override
+  String get tasksEmptyTitle => 'Задач пока нет';
+
+  @override
+  String get tasksEmptyBody => 'Добавьте первую';
+
+  @override
+  String get addTask => 'Добавить задачу';
+
+  @override
+  String get tasksFilterEmptyTitle => 'В этой категории нет задач';
+
+  @override
+  String get tasksFilterEmptyBody =>
+      'Выберите другой фильтр или добавьте задачу';
+
+  @override
+  String get errorTitle => 'Что-то пошло не так';
+
+  @override
+  String taskDeleted(String title) {
+    return 'Удалено: «$title»';
+  }
+
+  @override
+  String get undo => 'Отменить';
+
+  @override
+  String get markDone => 'Отметить выполненной';
+
+  @override
+  String get markNotDone => 'Снять отметку';
+
+  @override
+  String get discardTitle => 'Отменить изменения?';
+
+  @override
+  String get discardBody => 'У вас есть несохранённые изменения.';
+
+  @override
+  String get keepEditing => 'Продолжить';
+
+  @override
+  String get discard => 'Отменить';
+
+  @override
+  String get taskHint => 'Что нужно сделать?';
+
+  @override
+  String get remindMe => 'Напомнить';
+
+  @override
+  String get saveChanges => 'Сохранить изменения';
+
+  @override
+  String get delete => 'Удалить';
+
+  @override
+  String get dateToday => 'Сегодня';
+
+  @override
+  String get dateTomorrow => 'Завтра';
+
+  @override
+  String get permExactTitle => 'Разрешение на точные будильники';
+
+  @override
+  String get permExactBody =>
+      'Umytpa нужно разрешение на точные будильники, чтобы напоминания приходили вовремя. Нажмите «Продолжить», чтобы открыть настройки.';
+
+  @override
+  String get permFullScreenTitle => 'Разрешение на полноэкранные напоминания';
+
+  @override
+  String get permFullScreenBody =>
+      'Umytpa может показывать напоминания поверх заблокированного экрана, как будильник. Нажмите «Продолжить», чтобы включить это в настройках.';
+
+  @override
+  String get continueLabel => 'Продолжить';
+
+  @override
+  String get notificationsOffBanner =>
+      'Уведомления выключены. Задачу можно сохранить, но напоминания не сработают.';
+
+  @override
+  String get openSettingsAction => 'Открыть настройки';
+
+  @override
+  String get errTitleRequired => 'Введите название';
+
+  @override
+  String errTitleTooLong(int max) {
+    return 'Название не длиннее $max символов';
+  }
+
+  @override
+  String get errDeadlinePast => 'Срок должен быть в будущем';
+
+  @override
+  String get warnReminderPassed =>
+      'Время напоминания уже прошло. Задача сохранится без уведомления.';
+
+  @override
+  String get errInvalidInput => 'Некорректные данные';
+
+  @override
+  String get languageTitle => 'Язык';
+
+  @override
+  String get languageSystem => 'Как в системе';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageRussian => 'Русский';
+
+  @override
+  String get languageButton => 'Сменить язык';
+
+  @override
+  String get repeatLabel => 'Повтор';
+
+  @override
+  String get repeatNone => 'Нет';
+
+  @override
+  String get repeatDaily => 'Каждый день';
+
+  @override
+  String get repeatWeekdays => 'По будням';
+
+  @override
+  String get repeatWeekly => 'Каждую неделю';
+
+  @override
+  String get subtasksLabel => 'Чек-лист';
+
+  @override
+  String get subtaskHint => 'Добавить шаг';
+
+  @override
+  String subtaskProgress(int done, int total) {
+    return '$done/$total';
+  }
+
+  @override
+  String get widgetToday => 'Сегодня';
+
+  @override
+  String get widgetNothingNext => 'Ничего не запланировано';
+
+  @override
+  String get widgetAllDone => 'Всё сделано 🎉';
+
+  @override
+  String todayLeft(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Осталось $count задач',
+      many: 'Осталось $count задач',
+      few: 'Осталось $count задачи',
+      one: 'Осталась $count задача',
+      zero: 'Всё сделано',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String todayDoneOf(int done, int total) {
+    return '$done из $total выполнено';
+  }
+
+  @override
+  String get todayNothingPlanned => 'На сегодня ничего не запланировано';
+
+  @override
+  String get todayAllDone => 'Всё сделано — отличная работа!';
+
+  @override
+  String todayNext(String title) {
+    return 'Далее: $title';
+  }
+
+  @override
+  String streakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Серия $count дней',
+      many: 'Серия $count дней',
+      few: 'Серия $count дня',
+      one: 'Серия $count день',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get statsTitle => 'Статистика';
+
+  @override
+  String get statsOpen => 'Статистика';
+
+  @override
+  String get statsDoneTotal => 'Выполнено';
+
+  @override
+  String get statsCurrentStreak => 'Текущая серия';
+
+  @override
+  String get statsBestStreak => 'Лучшая серия';
+
+  @override
+  String get statsFocusTotal => 'Время фокуса';
+
+  @override
+  String get statsLast7Done => 'Выполнено за 7 дней';
+
+  @override
+  String get statsLast7Focus => 'Минуты фокуса за 7 дней';
+
+  @override
+  String get statsByCategory => 'По категориям';
+
+  @override
+  String get statsBestDay => 'Самый продуктивный день';
+
+  @override
+  String get statsNoData => 'Выполни задачу, чтобы увидеть статистику';
+
+  @override
+  String get statsBadges => 'Награды';
+
+  @override
+  String get statsDaysShort => 'д';
+
+  @override
+  String minutesShort(int count) {
+    return '$count мин';
+  }
+
+  @override
+  String hoursMinutesShort(int hours, int minutes) {
+    return '$hours ч $minutes мин';
+  }
+
+  @override
+  String get badgeFirstDone => 'Первый шаг';
+
+  @override
+  String get badgeFirstDoneDesc => 'Выполни задачу';
+
+  @override
+  String get badgeTenDone => 'Разгон';
+
+  @override
+  String get badgeTenDoneDesc => 'Выполни 10 задач';
+
+  @override
+  String get badgeFiftyDone => 'В ударе';
+
+  @override
+  String get badgeFiftyDoneDesc => 'Выполни 50 задач';
+
+  @override
+  String get badgeHundredDone => 'Сотня';
+
+  @override
+  String get badgeHundredDoneDesc => 'Выполни 100 задач';
+
+  @override
+  String get badgeStreak3 => 'Три подряд';
+
+  @override
+  String get badgeStreak3Desc => 'Серия 3 дня';
+
+  @override
+  String get badgeStreak7 => 'Идеальная неделя';
+
+  @override
+  String get badgeStreak7Desc => 'Серия 7 дней';
+
+  @override
+  String get badgeStreak30 => 'Неудержимый';
+
+  @override
+  String get badgeStreak30Desc => 'Серия 30 дней';
+
+  @override
+  String get badgeFocusHour => 'В потоке';
+
+  @override
+  String get badgeFocusHourDesc => 'Сфокусируйся в сумме на 1 час';
+
+  @override
+  String get badgeFocusTen => 'Глубокая работа';
+
+  @override
+  String get badgeFocusTenDesc => 'Сфокусируйся в сумме на 10 часов';
+
+  @override
+  String get focusTitle => 'Фокус';
+
+  @override
+  String get focusStart => 'Начать фокус';
+
+  @override
+  String get focusStop => 'Остановить';
+
+  @override
+  String focusWithTask(String title) {
+    return 'Работаю над: $title';
+  }
+
+  @override
+  String get focusNoTask => 'Свободная сессия';
+
+  @override
+  String focusMinutesOption(int count) {
+    return '$count мин';
+  }
+
+  @override
+  String get focusDoneTitle => 'Сессия завершена!';
+
+  @override
+  String focusDoneBody(int count) {
+    return 'Сохранено $count мин фокуса.';
+  }
+
+  @override
+  String get focusMarkTaskDone => 'Отметить задачу выполненной';
+
+  @override
+  String get focusClose => 'Закрыть';
+
+  @override
+  String get focusRunning => 'Не отвлекайся';
+
+  @override
+  String get focusNotifTitle => 'Фокус-сессия завершена';
+
+  @override
+  String get focusNotifBody => 'Пора отдохнуть.';
+
+  @override
+  String get focusTask => 'Фокус на этой задаче';
+
+  @override
+  String smartApply(String summary) {
+    return 'Применить: $summary';
+  }
+
+  @override
+  String get smartHint => 'Подсказка: «Лаба завтра в 18:00 #учёба»';
+
+  @override
+  String get allDoneCelebrate => 'На сегодня всё!';
 }

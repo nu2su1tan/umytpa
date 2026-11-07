@@ -37,10 +37,21 @@ class TasksCubit extends Cubit<TasksState> {
     TaskSectionKind.completed,
   };
   List<Task> _allTasks = const <Task>[];
+  Timer? _clock;
 
   void start() {
-    emit(const TasksLoading());
+    if (state is! TasksLoaded) {
+      emit(const TasksLoading());
+    }
     unawaited(_subscription?.cancel());
+    // Tasks turn overdue and "tomorrow" becomes "today" as time passes, even
+    // when the data itself doesn't change.
+    _clock?.cancel();
+    _clock = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (state is TasksLoaded) {
+        _emitLoaded();
+      }
+    });
     _subscription = watchTasks().listen(
       _onTasks,
       onError: (Object error, StackTrace stackTrace) {
@@ -100,12 +111,21 @@ class TasksCubit extends Cubit<TasksState> {
         dueAt: task.dueAt,
         category: task.category,
         remindBefore: task.remindBefore,
+        repeat: task.repeat,
+        subtasks: task.subtasks,
       ),
       now: _now(),
+      restoring: true,
     );
-    if (result case Err<Task>(:final failure)) {
-      emit(TasksFailure(failure.message));
-      _emitLoaded();
+    switch (result) {
+      case Err<Task>(:final failure):
+        emit(TasksFailure(failure.message));
+        _emitLoaded();
+      case Success<Task>(:final value):
+        // Keep a finished task finished.
+        if (task.isDone) {
+          await toggleTaskDone(id: value.id, isDone: true, now: _now());
+        }
     }
   }
 
@@ -133,6 +153,7 @@ class TasksCubit extends Cubit<TasksState> {
 
   @override
   Future<void> close() async {
+    _clock?.cancel();
     await _subscription?.cancel();
     return super.close();
   }

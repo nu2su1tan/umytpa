@@ -142,7 +142,11 @@ abstract final class Motion {
 }
 
 extension TokensContext on BuildContext {
-  Tokens get tokens => Theme.of(this).extension<Tokens>()!;
+  Tokens get tokens {
+    final theme = Theme.of(this);
+    return theme.extension<Tokens>() ??
+        (theme.brightness == Brightness.dark ? Tokens.dark : Tokens.light);
+  }
 
   /// True when the user asked the system to reduce motion.
   bool get reduceMotion => MediaQuery.disableAnimationsOf(this);

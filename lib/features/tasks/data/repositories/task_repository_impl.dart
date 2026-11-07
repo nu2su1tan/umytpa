@@ -3,6 +3,9 @@ import 'dart:developer' as developer;
 
 import '../../../../core/error/failure.dart';
 import '../../../../core/error/result.dart';
+import 'package:drift/drift.dart' show Value;
+
+import '../../domain/entities/focus_session.dart';
 import '../../domain/entities/task.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../datasources/app_database.dart';
@@ -20,6 +23,37 @@ class TaskRepositoryImpl implements TaskRepository {
           (List<TaskRecord> rows) =>
               rows.map(TaskMapper.toDomain).toList(growable: false),
         );
+  }
+
+  @override
+  Stream<List<FocusSession>> watchFocusSessions() {
+    return _dao.watchFocusSessions().map(
+          (List<FocusSessionRecord> rows) => rows
+              .map(
+                (FocusSessionRecord r) => FocusSession(
+                  startedAt: r.startedAt.toLocal(),
+                  minutes: r.minutes,
+                  taskId: r.taskId,
+                ),
+              )
+              .toList(growable: false),
+        );
+  }
+
+  @override
+  Future<Result<void>> addFocusSession(FocusSession session) async {
+    try {
+      await _dao.insertFocusSession(
+        FocusSessionsCompanion.insert(
+          startedAt: session.startedAt.toUtc(),
+          minutes: session.minutes,
+          taskId: Value<int?>(session.taskId),
+        ),
+      );
+      return const Success<void>(null);
+    } on Object catch (error, stackTrace) {
+      return _databaseErr<void>(error, stackTrace);
+    }
   }
 
   @override
@@ -87,9 +121,14 @@ class TaskRepositoryImpl implements TaskRepository {
   Future<Result<Task>> setDone({
     required int id,
     required bool isDone,
+    DateTime? now,
   }) async {
     try {
-      final int updated = await _dao.setDone(id: id, isDone: isDone);
+      final int updated = await _dao.setDone(
+        id: id,
+        isDone: isDone,
+        now: now ?? DateTime.now(),
+      );
       if (updated == 0) {
         return const Err<Task>(NotFoundFailure('Task not found'));
       }

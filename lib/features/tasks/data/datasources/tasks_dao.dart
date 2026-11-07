@@ -5,7 +5,7 @@ import 'tasks_table.dart';
 
 part 'tasks_dao.g.dart';
 
-@DriftAccessor(tables: <Type>[Tasks])
+@DriftAccessor(tables: <Type>[Tasks, FocusSessions])
 class TasksDao extends DatabaseAccessor<AppDatabase> with _$TasksDaoMixin {
   TasksDao(super.db);
 
@@ -33,9 +33,24 @@ class TasksDao extends DatabaseAccessor<AppDatabase> with _$TasksDaoMixin {
     return (delete(tasks)..where((Tasks t) => t.id.equals(id))).go();
   }
 
-  Future<int> setDone({required int id, required bool isDone}) {
+  Future<int> setDone({
+    required int id,
+    required bool isDone,
+    required DateTime now,
+  }) {
     return (update(tasks)..where((Tasks t) => t.id.equals(id))).write(
-      TasksCompanion(isDone: Value<bool>(isDone)),
+      TasksCompanion(
+        isDone: Value<bool>(isDone),
+        completedAt: Value<DateTime?>(isDone ? now.toUtc() : null),
+      ),
     );
+  }
+
+  Future<int> insertFocusSession(FocusSessionsCompanion companion) {
+    return into(focusSessions).insert(companion);
+  }
+
+  Stream<List<FocusSessionRecord>> watchFocusSessions() {
+    return select(focusSessions).watch();
   }
 }

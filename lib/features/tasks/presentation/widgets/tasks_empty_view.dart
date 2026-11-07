@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_theme.dart';
+import '../../../week_counter/ui/kit/buttons.dart';
+import '../../../week_counter/ui/theme/tokens.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class TasksEmptyView extends StatelessWidget {
   const TasksEmptyView({required this.onAddTask, super.key});
@@ -9,35 +12,29 @@ class TasksEmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    final Tokens t = context.tokens;
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.screenPadding),
+        padding: const EdgeInsets.all(AppTheme.screenPadding * 1.5),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const _EmptyIllustration(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
             Text(
-              'No tasks yet',
-              style: theme.textTheme.headlineLarge?.copyWith(fontSize: 24),
+              context.l10n.tasksEmptyTitle,
+              style: t.largeTitle.copyWith(fontSize: 28, height: 34 / 28),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              'Add your first one',
-              style: theme.textTheme.bodyMedium,
+              context.l10n.tasksEmptyBody,
+              style: t.body.copyWith(color: t.ink2),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
-            ConstrainedBox(
-              constraints: const BoxConstraints(minWidth: 160, minHeight: 48),
-              child: FilledButton(
-                onPressed: onAddTask,
-                child: const Text('Add task'),
-              ),
-            ),
+            const SizedBox(height: 28),
+            AppButton(label: context.l10n.addTask, onTap: onAddTask, expand: false),
           ],
         ),
       ),
@@ -50,28 +47,36 @@ class TasksFilterEmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    final Tokens t = context.tokens;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.screenPadding),
+        padding: const EdgeInsets.all(AppTheme.screenPadding * 1.5),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Icon(
-              Icons.filter_list_off_outlined,
-              size: 48,
-              color: theme.colorScheme.onSurfaceVariant,
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: t.surface2,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.filter_list_off_rounded,
+                size: 30,
+                color: t.ink2,
+              ),
             ),
             const SizedBox(height: 16),
             Text(
-              'No tasks in this category',
-              style: theme.textTheme.titleMedium,
+              context.l10n.tasksFilterEmptyTitle,
+              style: t.navTitle,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
-              'Try another filter or add a new task',
-              style: theme.textTheme.bodyMedium,
+              context.l10n.tasksFilterEmptyBody,
+              style: t.callout,
               textAlign: TextAlign.center,
             ),
           ],
@@ -86,14 +91,13 @@ class _EmptyIllustration extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color line = Theme.of(context).colorScheme.onSurface;
-    final Color accent = Theme.of(context).colorScheme.primary;
+    final Tokens t = context.tokens;
 
     return SizedBox(
       width: 88,
       height: 96,
       child: CustomPaint(
-        painter: _EmptyPainter(line: line, accent: accent),
+        painter: _EmptyPainter(line: t.ink, accent: t.violetInk),
       ),
     );
   }
@@ -114,7 +118,7 @@ class _EmptyPainter extends CustomPainter {
 
     final RRect card = RRect.fromRectAndRadius(
       Rect.fromLTWH(8, 12, size.width - 20, size.height - 20),
-      const Radius.circular(12),
+      const Radius.circular(14),
     );
     canvas.drawRRect(card, stroke);
 
@@ -134,7 +138,13 @@ class _EmptyPainter extends CustomPainter {
         ..drawLine(Offset(38, y), Offset(size.width - 28, y), bar);
     }
 
-    canvas.drawCircle(Offset(size.width - 10, 18), 5, stroke);
+    canvas.drawCircle(
+      Offset(size.width - 10, 18),
+      5,
+      Paint()
+        ..color = Tokens.lime
+        ..style = PaintingStyle.fill,
+    );
   }
 
   @override

@@ -190,6 +190,7 @@ class InlineCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: t.surface,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: t.line, width: 0.5),
       ),
       child: Row(
         children: [

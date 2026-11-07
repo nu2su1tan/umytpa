@@ -11,3 +11,16 @@ export 'package:umytpa/features/week_counter/l10n/jokes.dart';
 export 'package:umytpa/features/week_counter/l10n/labels.dart';
 export 'package:umytpa/features/week_counter/l10n/country_names.dart';
 
+
+// ignore_for_file: directives_ordering
+import 'package:flutter/widgets.dart';
+import 'package:umytpa/features/week_counter/l10n/app_localizations.dart';
+import 'package:umytpa/features/week_counter/l10n/app_localizations_en.dart';
+
+/// `context.l10n` — the current strings, English when no delegate is mounted
+/// (e.g. a bare widget under test).
+extension AppL10nContext on BuildContext {
+  AppLocalizations get l10n =>
+      Localizations.of<AppLocalizations>(this, AppLocalizations) ??
+      AppLocalizationsEn();
+}

@@ -41,7 +41,7 @@ void main() {
       expect(result.dueAtError, isNotNull);
     });
 
-    test('rejects deadline equal to now for new tasks', () {
+    test('accepts a deadline within the current minute for new tasks', () {
       final TaskInputValidation result = TaskInputValidator.validate(
         title: 'Lab',
         dueAt: now,
@@ -49,7 +49,17 @@ void main() {
         isNew: true,
         now: now,
       );
-      expect(result.isValid, isFalse);
+      expect(result.dueAtError, isNull);
+    });
+
+    test('rejects a deadline in a previous minute for new tasks', () {
+      final TaskInputValidation result = TaskInputValidator.validate(
+        title: 'Lab',
+        dueAt: now.subtract(const Duration(minutes: 1)),
+        remindBefore: null,
+        isNew: true,
+        now: now,
+      );
       expect(result.dueAtError, isNotNull);
     });
 

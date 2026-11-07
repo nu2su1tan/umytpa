@@ -15,7 +15,7 @@ Future<void> main() async {
   await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
     DeviceOrientation.portraitUp,
   ]);
-  await initializeDateFormatting('en');
+  await initializeDateFormatting();
   await configureDependencies();
 
   final Result<void> reschedule =

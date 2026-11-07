@@ -3,7 +3,6 @@
   "appTitle": "Week Counter",
   "navCountdown": "Week",
   "navCalendar": "Calendar",
-
   "untilWeekend": "Weekend in",
   "untilLongWeekend": "Long weekend in",
   "untilHoliday": "Holiday in",
@@ -11,22 +10,37 @@
   "youreOff": "You're off!",
   "backToWorkIn": "Back to work in",
   "backToWorkAt": "Back to work {when}",
-  "@backToWorkAt": {"placeholders": {"when": {"type": "String"}}},
+  "@backToWorkAt": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
   "noWorkAhead": "No workdays ahead",
   "inShiftUntil": "In shift until {time}",
-  "@inShiftUntil": {"placeholders": {"time": {"type": "String"}}},
+  "@inShiftUntil": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "daysOffCount": "{count, plural, =1{1 day off} other{{count} days off}}",
-  "@daysOffCount": {"placeholders": {"count": {"type": "int"}}},
-
+  "@daysOffCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dayShort": "d",
   "hourShort": "h",
   "minuteShort": "m",
-
   "kindWeekend": "Weekend",
   "kindLongWeekend": "Long weekend",
   "kindHoliday": "Holiday",
   "kindDaysOff": "Days off",
-
   "noneComing": "None in the next year",
   "noWorkdaysTitle": "No workdays set",
   "noWorkdaysBody": "Choose your workdays in Schedule to start the countdown.",
@@ -35,9 +49,14 @@
   "openSettings": "Open schedule",
   "openCalendar": "Open calendar",
   "holidaysNotLoaded": "Couldn't load public holidays for {years}. Weekends are still counted.",
-  "@holidaysNotLoaded": {"placeholders": {"years": {"type": "String"}}},
+  "@holidaysNotLoaded": {
+    "placeholders": {
+      "years": {
+        "type": "String"
+      }
+    }
+  },
   "retry": "Retry",
-
   "legendWeekend": "weekends",
   "legendHoliday": "holiday",
   "legendDayOff": "vacation",
@@ -53,16 +72,27 @@
   "save": "Save",
   "cancel": "Cancel",
   "daysSelected": "{count, plural, =1{1 day selected} other{{count} days selected}}",
-  "@daysSelected": {"placeholders": {"count": {"type": "int"}}},
+  "@daysSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "markDaysOff": "Mark as days off",
   "resetToAuto": "Reset",
-
   "country": "Country",
   "noCountry": "Not selected",
   "searchCountry": "Search country",
   "noCountryOption": "No public holidays",
   "holidaysUpdated": "Updated {date}",
-  "@holidaysUpdated": {"placeholders": {"date": {"type": "String"}}},
+  "@holidaysUpdated": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "holidaysNotLoadedYet": "Not loaded yet",
   "refresh": "Refresh",
   "loadFailed": "Couldn't load. Check your internet connection.",
@@ -75,26 +105,70 @@
   "allow": "Allow",
   "sectionAbout": "About",
   "dataSource": "Public holidays from Nager.Date (date.nager.at)",
-
   "weekdayName": "{day, select, 1{Monday} 2{Tuesday} 3{Wednesday} 4{Thursday} 5{Friday} 6{Saturday} 7{Sunday} other{Friday}}",
-  "@weekdayName": {"placeholders": {"day": {"type": "String"}}},
+  "@weekdayName": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
   "monthIn": "{month, select, 1{in January} 2{in February} 3{in March} 4{in April} 5{in May} 6{in June} 7{in July} 8{in August} 9{in September} 10{in October} 11{in November} 12{in December} other{this month}}",
-  "@monthIn": {"placeholders": {"month": {"type": "String"}}},
+  "@monthIn": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
   "durationDays": "{count, plural, =1{1 day} other{{count} days}}",
-  "@durationDays": {"placeholders": {"count": {"type": "int"}}},
+  "@durationDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "durationHours": "{count, plural, =1{1 hour} other{{count} hours}}",
-  "@durationHours": {"placeholders": {"count": {"type": "int"}}},
+  "@durationHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "durationMinutes": "{count} min",
-  "@durationMinutes": {"placeholders": {"count": {"type": "int"}}},
+  "@durationMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "durationSeconds": "{count, plural, =1{1 second} other{{count} seconds}}",
-  "@durationSeconds": {"placeholders": {"count": {"type": "int"}}},
+  "@durationSeconds": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "timerDay": "d",
   "timerHour": "h",
   "timerMinute": "m",
   "whenToday": "today",
   "whenTomorrow": "tomorrow",
   "whenAt": "{day}, {time}",
-  "@whenAt": {"placeholders": {"day": {"type": "String"}, "time": {"type": "String"}}},
+  "@whenAt": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "eyebrowUntil": "until",
   "eyebrowFreedom": "freedom",
   "eyebrowLastHourPrefix": "freedom in",
@@ -106,18 +180,36 @@
   "eyebrowHolidayStrike": "workday",
   "eyebrowHolidayLeft": "holiday",
   "weekDone": "{percent}% of the week done",
-  "@weekDone": {"placeholders": {"percent": {"type": "int"}}},
+  "@weekDone": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "backToWorkLower": "back to work",
   "orbTip": "tap the orb for a new line",
   "orbLabel": "{percent}% done. Tap for a new line",
-  "@orbLabel": {"placeholders": {"percent": {"type": "int"}}},
+  "@orbLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "jokesLabel": "Lines of the week",
   "jokesMore": "Other lines",
   "hintCountryTitle": "Count public holidays",
   "hintCountryBody": "Choose your country so holidays shorten the week",
   "hintHolidaysFailedTitle": "Holidays not loaded",
   "weekendLonger": "{count, plural, =1{The weekend is 1 day longer} other{The weekend is {count} days longer}}",
-  "@weekendLonger": {"placeholders": {"count": {"type": "int"}}},
+  "@weekendLonger": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "widgetTipTitle": "Countdown on your home screen",
   "widgetTipBody": "Add the widget in half a minute",
   "widgetsTitle": "Widgets",
@@ -134,9 +226,21 @@
   "back": "Back",
   "today": "Today",
   "daysOffIn": "Days off {monthIn}",
-  "@daysOffIn": {"placeholders": {"monthIn": {"type": "String"}}},
+  "@daysOffIn": {
+    "placeholders": {
+      "monthIn": {
+        "type": "String"
+      }
+    }
+  },
   "holidayOn": "holiday {date}",
-  "@holidayOn": {"placeholders": {"date": {"type": "String"}}},
+  "@holidayOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "noHolidaysShort": "no holidays",
   "upcomingHolidays": "Upcoming holidays",
   "noUpcomingHolidays": "Choose a country to see public holidays",
@@ -152,12 +256,23 @@
   "celebrateLateEyebrow": "late, but from the heart",
   "celebrateWas": "work",
   "celebrateBody": "Work's over. The next {duration} are yours.",
-  "@celebrateBody": {"placeholders": {"duration": {"type": "String"}}},
+  "@celebrateBody": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
   "celebrateBodyOpen": "Work's over. Enjoy it.",
   "celebrateLateBody": "The week ended {when}. Celebrating anyway.",
-  "@celebrateLateBody": {"placeholders": {"when": {"type": "String"}}},
+  "@celebrateLateBody": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
   "celebrateCta": "Yay, time to rest",
-
   "navAwards": "Awards",
   "scheduleTitle": "Schedule",
   "weekHeader": "Week",
@@ -170,31 +285,76 @@
   "confettiHint": "With Reduce Motion on, you get a still card instead",
   "confettiHintAndroid": "With animations off in Settings, you get a still card instead",
   "weeksCount": "{count, plural, =1{1 week} other{{count} weeks}}",
-  "@weeksCount": {"placeholders": {"count": {"type": "int"}}},
+  "@weeksCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "vacationTitle": "Vacation",
   "vacationNone": "None",
   "vacationIntro": "On vacation we count the days until you're back. Weeks for awards are kept.",
   "vacationHowLong": "How long",
   "vacationFrom": "Starting",
   "vacationWeeks": "{count} wk",
-  "@vacationWeeks": {"placeholders": {"count": {"type": "int"}}},
+  "@vacationWeeks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "vacationFromTomorrow": "Tomorrow",
   "vacationFromMonday": "Monday",
   "vacationGo": "Go on vacation for {days}",
-  "@vacationGo": {"placeholders": {"days": {"type": "String"}}},
+  "@vacationGo": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
   "vacationActive": "You're on vacation",
   "vacationPlanned": "Vacation planned",
   "vacationActiveBody": "Until {date} inclusive. We count the days until you're back; weeks for awards are kept.",
-  "@vacationActiveBody": {"placeholders": {"date": {"type": "String"}}},
+  "@vacationActiveBody": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "vacationPlannedBody": "From {from} to {to} inclusive. We count the days until you're back; weeks for awards are kept.",
-  "@vacationPlannedBody": {"placeholders": {"from": {"type": "String"}, "to": {"type": "String"}}},
+  "@vacationPlannedBody": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
   "vacationEndEarly": "Come back early",
   "vacationCancel": "Cancel vacation",
   "vacationNote": "Vacation",
   "untilInclusive": "Until {date} inclusive",
-  "@untilInclusive": {"placeholders": {"date": {"type": "String"}}},
+  "@untilInclusive": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "holidayMidweek": "A holiday mid-week. Back to work {when}",
-  "@holidayMidweek": {"placeholders": {"when": {"type": "String"}}},
+  "@holidayMidweek": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
   "eyebrowVacationPrefix": "vacation · until",
   "eyebrowVacationStrike": "work",
   "eyebrowVacationSuffix": "you're back",
@@ -202,7 +362,16 @@
   "onbStart": "Get started",
   "onbNext": "Next",
   "onbStep": "Step {n} of {m}",
-  "@onbStep": {"placeholders": {"n": {"type": "int"}, "m": {"type": "int"}}},
+  "@onbStep": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "m": {
+        "type": "int"
+      }
+    }
+  },
   "onbWelcomePrefix": "Counting down to",
   "onbWelcomeStrike": "Friday",
   "onbWelcomeSuffix": "freedom",
@@ -218,27 +387,360 @@
   "onbNotNow": "Not now",
   "awardsHero": "times you made it\nto the weekend",
   "awardsCount": "{count, plural, =0{no awards yet} =1{1 award} other{{count} awards}}",
-  "@awardsCount": {"placeholders": {"count": {"type": "int"}}},
+  "@awardsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "awardsMore": "and {count} more",
-  "@awardsMore": {"placeholders": {"count": {"type": "int"}}},
+  "@awardsMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "awardsWeekly": "Weeks",
   "awardsSpecial": "Special",
   "awardsProgress": "{got} of {total} earned",
-  "@awardsProgress": {"placeholders": {"got": {"type": "int"}, "total": {"type": "int"}}},
+  "@awardsProgress": {
+    "placeholders": {
+      "got": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "awardLocked": "not earned yet",
   "awardEarnedOn": "earned {date}",
-  "@awardEarnedOn": {"placeholders": {"date": {"type": "String"}}},
+  "@awardEarnedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "awardWeeksLeft": "{weeks} to go",
-  "@awardWeeksLeft": {"placeholders": {"weeks": {"type": "String"}}},
+  "@awardWeeksLeft": {
+    "placeholders": {
+      "weeks": {
+        "type": "String"
+      }
+    }
+  },
   "awardNew": "New award: {name}",
-  "@awardNew": {"placeholders": {"name": {"type": "String"}}},
+  "@awardNew": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "celebrateWeeks": "{weeks} behind you",
-  "@celebrateWeeks": {"placeholders": {"weeks": {"type": "String"}}},
+  "@celebrateWeeks": {
+    "placeholders": {
+      "weeks": {
+        "type": "String"
+      }
+    }
+  },
   "celebrateNext": "{weeks} to “{name}”",
-  "@celebrateNext": {"placeholders": {"weeks": {"type": "String"}, "name": {"type": "String"}}},
+  "@celebrateNext": {
+    "placeholders": {
+      "weeks": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "celebrateAllDone": "Every weekly award is yours",
   "atNight": "{day}, at night",
-  "@atNight": {"placeholders": {"day": {"type": "String"}}},
-
-  "widgetSetUp": "Open the app to set up"
+  "@atNight": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "widgetSetUp": "Open the app to set up",
+  "tabTracker": "Tracker",
+  "greetingMorning": "Good morning",
+  "greetingAfternoon": "Good afternoon",
+  "greetingEvening": "Good evening",
+  "sectionOverdue": "Overdue",
+  "sectionToday": "Today",
+  "sectionTomorrow": "Tomorrow",
+  "sectionLater": "Later",
+  "sectionCompleted": "Completed",
+  "categoryStudy": "Study",
+  "categoryWork": "Work",
+  "categoryPersonal": "Personal",
+  "categoryOther": "Other",
+  "filterAll": "All",
+  "reminderPresetNone": "None",
+  "reminderPreset5m": "5 min",
+  "reminderPreset30m": "30 min",
+  "reminderPreset1h": "1 hour",
+  "reminderPreset1d": "1 day",
+  "reminderBeforeMinutes": "{count} min before",
+  "@reminderBeforeMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderBeforeHours": "{count}h before",
+  "@reminderBeforeHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderBeforeDays": "{count, plural, =1{1 day before} other{{count} days before}}",
+  "@reminderBeforeDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dueYesterday": "Yesterday, {time}",
+  "@dueYesterday": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "dueTomorrow": "Tomorrow, {time}",
+  "@dueTomorrow": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "dueOnDate": "{date}, {time}",
+  "@dueOnDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "tasksEmptyTitle": "No tasks yet",
+  "tasksEmptyBody": "Add your first one",
+  "addTask": "Add task",
+  "tasksFilterEmptyTitle": "No tasks in this category",
+  "tasksFilterEmptyBody": "Try another filter or add a new task",
+  "errorTitle": "Something went wrong",
+  "taskDeleted": "Deleted \"{title}\"",
+  "@taskDeleted": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "undo": "Undo",
+  "markDone": "Mark as done",
+  "markNotDone": "Mark as not done",
+  "discardTitle": "Discard changes?",
+  "discardBody": "You have unsaved changes.",
+  "keepEditing": "Keep editing",
+  "discard": "Discard",
+  "taskHint": "What needs to be done?",
+  "remindMe": "Remind me",
+  "saveChanges": "Save changes",
+  "delete": "Delete",
+  "dateToday": "Today",
+  "dateTomorrow": "Tomorrow",
+  "permExactTitle": "Exact alarms permission",
+  "permExactBody": "Umytpa needs permission to schedule exact alarms so your reminders ring right on time. Tap Continue to open settings.",
+  "permFullScreenTitle": "Full-screen reminder permission",
+  "permFullScreenBody": "Umytpa can display reminders over locked screens like an alarm clock. Tap Continue to enable full-screen alerts in settings.",
+  "continueLabel": "Continue",
+  "notificationsOffBanner": "Notifications are off. The task can still be saved, but reminders will not fire.",
+  "openSettingsAction": "Open settings",
+  "errTitleRequired": "Title is required",
+  "errTitleTooLong": "Title must be at most {max} characters",
+  "@errTitleTooLong": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "errDeadlinePast": "Deadline must be in the future",
+  "warnReminderPassed": "Reminder time has already passed. The task will be saved without a notification.",
+  "errInvalidInput": "Invalid input",
+  "languageTitle": "Language",
+  "languageSystem": "System",
+  "languageEnglish": "English",
+  "languageRussian": "Русский",
+  "languageButton": "Change language",
+  "repeatLabel": "Repeat",
+  "repeatNone": "Never",
+  "repeatDaily": "Daily",
+  "repeatWeekdays": "Weekdays",
+  "repeatWeekly": "Weekly",
+  "subtasksLabel": "Checklist",
+  "subtaskHint": "Add a step",
+  "subtaskProgress": "{done}/{total}",
+  "@subtaskProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "widgetToday": "Today",
+  "widgetNothingNext": "Nothing planned",
+  "widgetAllDone": "All done 🎉",
+  "todayLeft": "{count, plural, =0{Nothing left} =1{1 task left} other{{count} tasks left}}",
+  "@todayLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "todayDoneOf": "{done} of {total} done",
+  "@todayDoneOf": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "todayNothingPlanned": "Nothing planned for today",
+  "todayAllDone": "Everything done — nice work!",
+  "todayNext": "Next: {title}",
+  "@todayNext": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "streakDays": "{count, plural, =1{1 day streak} other{{count} day streak}}",
+  "@streakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statsTitle": "Statistics",
+  "statsOpen": "Statistics",
+  "statsDoneTotal": "Completed",
+  "statsCurrentStreak": "Current streak",
+  "statsBestStreak": "Best streak",
+  "statsFocusTotal": "Focus time",
+  "statsLast7Done": "Completed, last 7 days",
+  "statsLast7Focus": "Focus minutes, last 7 days",
+  "statsByCategory": "By category",
+  "statsBestDay": "Most productive day",
+  "statsNoData": "Finish a task to see your stats",
+  "statsBadges": "Badges",
+  "statsDaysShort": "d",
+  "minutesShort": "{count} min",
+  "@minutesShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursMinutesShort": "{hours}h {minutes}m",
+  "@hoursMinutesShort": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "badgeFirstDone": "First step",
+  "badgeFirstDoneDesc": "Complete a task",
+  "badgeTenDone": "Getting going",
+  "badgeTenDoneDesc": "Complete 10 tasks",
+  "badgeFiftyDone": "On a roll",
+  "badgeFiftyDoneDesc": "Complete 50 tasks",
+  "badgeHundredDone": "Centurion",
+  "badgeHundredDoneDesc": "Complete 100 tasks",
+  "badgeStreak3": "Three in a row",
+  "badgeStreak3Desc": "3-day streak",
+  "badgeStreak7": "Perfect week",
+  "badgeStreak7Desc": "7-day streak",
+  "badgeStreak30": "Unstoppable",
+  "badgeStreak30Desc": "30-day streak",
+  "badgeFocusHour": "In the zone",
+  "badgeFocusHourDesc": "Focus for 1 hour in total",
+  "badgeFocusTen": "Deep work",
+  "badgeFocusTenDesc": "Focus for 10 hours in total",
+  "focusTitle": "Focus",
+  "focusStart": "Start focus",
+  "focusStop": "Stop",
+  "focusWithTask": "Working on: {title}",
+  "@focusWithTask": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "focusNoTask": "Free focus session",
+  "focusMinutesOption": "{count} min",
+  "@focusMinutesOption": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "focusDoneTitle": "Session complete!",
+  "focusDoneBody": "{count} minutes of focus saved.",
+  "@focusDoneBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "focusMarkTaskDone": "Mark task done",
+  "focusClose": "Close",
+  "focusRunning": "Stay with it",
+  "focusNotifTitle": "Focus session finished",
+  "focusNotifBody": "Time for a break.",
+  "focusTask": "Focus on this task",
+  "smartApply": "Apply: {summary}",
+  "@smartApply": {
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "smartHint": "Tip: “Lab report tomorrow 18:00 #study”",
+  "allDoneCelebrate": "All done for today!"
 }

@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/di/injection.dart';
+import '../../../../core/l10n/locale_controller.dart';
+import '../../../../core/ui/language_sheet.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/labels.dart';
 import '../../models/work_schedule.dart';
@@ -92,6 +95,20 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               onTap: () => Navigator.of(context).pop(),
             ),
             children: [
+              GroupHeader(l10n.languageTitle),
+              Group(
+                children: [
+                  GroupRow(
+                    icon: Icons.translate_rounded,
+                    title: l10n.languageTitle,
+                    value: languageName(
+                      context,
+                      getIt<LocaleController>().locale,
+                    ),
+                    onTap: () => showLanguageSheet(context),
+                  ),
+                ],
+              ),
               GroupHeader(l10n.weekHeader),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),

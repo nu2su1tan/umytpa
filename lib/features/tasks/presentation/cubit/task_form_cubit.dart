@@ -5,9 +5,12 @@ import '../../../../core/utils/date_time_utils.dart';
 import '../../../reminders/domain/reminder_permission_status.dart';
 import '../../../reminders/domain/reminder_scheduler.dart';
 import '../../domain/entities/reminder_preset.dart';
+import '../../domain/entities/repeat_rule.dart';
+import '../../domain/entities/subtask.dart';
 import '../../domain/entities/task.dart';
 import '../../domain/entities/task_category.dart';
 import '../../domain/usecases/create_task.dart';
+import '../../domain/usecases/parse_smart_input.dart';
 import '../../domain/usecases/delete_task.dart';
 import '../../domain/usecases/update_task.dart';
 import '../../domain/validation/task_input_validator.dart';
@@ -39,6 +42,8 @@ class TaskFormCubit extends Cubit<TaskFormState> {
   late DateTime _baselineDueAt;
   late TaskCategory _baselineCategory;
   late ReminderPreset _baselineReminder;
+  RepeatRule _baselineRepeat = RepeatRule.none;
+  List<Subtask> _baselineSubtasks = const <Subtask>[];
   bool _permissionPrompted = false;
 
   bool get isEdit => initialTask != null;
@@ -50,6 +55,8 @@ class TaskFormCubit extends Cubit<TaskFormState> {
       _baselineDueAt = task.dueAt;
       _baselineCategory = task.category;
       _baselineReminder = ReminderPreset.fromDuration(task.remindBefore);
+      _baselineRepeat = task.repeat;
+      _baselineSubtasks = task.subtasks;
       emit(
         TaskFormReady(
           title: task.title,
@@ -61,6 +68,8 @@ class TaskFormCubit extends Cubit<TaskFormState> {
             dueAt: task.dueAt,
             reminder: _baselineReminder,
           ),
+          repeat: task.repeat,
+          subtasks: task.subtasks,
           isEdit: true,
           isDirty: false,
           isSubmitting: false,
@@ -114,6 +123,56 @@ class TaskFormCubit extends Cubit<TaskFormState> {
           category: current.category,
           reminder: current.reminder,
         ),
+        smart: () => _smartFor(title),
+        submitError: () => null,
+      ),
+    );
+  }
+
+  SmartInput? _smartFor(String title) {
+    if (isEdit) {
+      return null;
+    }
+    final SmartInput parsed = SmartInputParser.parse(title, now: _now());
+    return parsed.found && parsed.title.isNotEmpty ? parsed : null;
+  }
+
+  /// Fills the form from what was recognised in the title.
+  void applySmartInput() {
+    final TaskFormReady? current = _ready;
+    final SmartInput? smart = current?.smart;
+    if (current == null || smart == null) {
+      return;
+    }
+    final DateTime base = smart.date ?? current.dueAt;
+    final DateTime dueAt = DateTime(
+      base.year,
+      base.month,
+      base.day,
+      smart.hour ?? current.dueAt.hour,
+      smart.minute ?? current.dueAt.minute,
+    );
+    final TaskCategory category = smart.category ?? current.category;
+    final RepeatRule repeat = smart.repeat ?? current.repeat;
+    emit(
+      current.copyWith(
+        title: smart.title,
+        dueAt: dueAt,
+        category: category,
+        repeat: repeat,
+        validation: _validate(
+          title: smart.title,
+          dueAt: dueAt,
+          reminder: current.reminder,
+        ),
+        isDirty: _computeDirty(
+          title: smart.title,
+          dueAt: dueAt,
+          category: category,
+          reminder: current.reminder,
+          repeatOverride: repeat,
+        ),
+        smart: () => null,
         submitError: () => null,
       ),
     );
@@ -220,18 +279,21 @@ class TaskFormCubit extends Cubit<TaskFormState> {
       }
     }
 
+    // The user may have kept typing while permission dialogs were open;
+    // build on the latest state so those edits aren't thrown away.
+    final TaskFormReady latest = _ready ?? current;
     emit(
-      current.copyWith(
+      latest.copyWith(
         reminder: reminder,
         validation: _validate(
-          title: current.title,
-          dueAt: current.dueAt,
+          title: latest.title,
+          dueAt: latest.dueAt,
           reminder: reminder,
         ),
         isDirty: _computeDirty(
-          title: current.title,
-          dueAt: current.dueAt,
-          category: current.category,
+          title: latest.title,
+          dueAt: latest.dueAt,
+          category: latest.category,
           reminder: reminder,
         ),
         showPermissionHelp: showHelp,
@@ -257,10 +319,10 @@ class TaskFormCubit extends Cubit<TaskFormState> {
         final ReminderPermissionRationale? next = !fullStatus.isGranted
             ? ReminderPermissionRationale.fullScreenIntent
             : null;
-        emit(current.copyWith(pendingRationale: () => next));
+        emit((_ready ?? current).copyWith(pendingRationale: () => next));
       case ReminderPermissionRationale.fullScreenIntent:
         await reminderScheduler.requestFullScreenIntentPermission();
-        emit(current.copyWith(pendingRationale: () => null));
+        emit((_ready ?? current).copyWith(pendingRationale: () => null));
     }
   }
 
@@ -289,6 +351,8 @@ class TaskFormCubit extends Cubit<TaskFormState> {
         dueAt: current.dueAt,
         category: current.category,
         remindBefore: () => current.reminder.duration,
+        repeat: current.repeat,
+        subtasks: current.subtasks,
       );
       final Result<Task> result = await updateTask(updated, now: now);
       _handleSaveResult(current, result);
@@ -301,6 +365,8 @@ class TaskFormCubit extends Cubit<TaskFormState> {
         dueAt: current.dueAt,
         category: current.category,
         remindBefore: current.reminder.duration,
+        repeat: current.repeat,
+        subtasks: current.subtasks,
       ),
       now: now,
     );
@@ -361,11 +427,96 @@ class TaskFormCubit extends Cubit<TaskFormState> {
     required DateTime dueAt,
     required TaskCategory category,
     required ReminderPreset reminder,
+    RepeatRule? repeatOverride,
+    List<Subtask>? subtasksOverride,
   }) {
+    final TaskFormReady? cur = _ready;
+    final RepeatRule repeat = repeatOverride ?? cur?.repeat ?? RepeatRule.none;
+    final List<Subtask> subtasks =
+        subtasksOverride ?? cur?.subtasks ?? const <Subtask>[];
     return title.trim() != _baselineTitle.trim() ||
         dueAt != _baselineDueAt ||
         category != _baselineCategory ||
-        reminder != _baselineReminder;
+        reminder != _baselineReminder ||
+        repeat != _baselineRepeat ||
+        !_sameSubtasks(subtasks, _baselineSubtasks);
+  }
+
+  bool _sameSubtasks(List<Subtask> a, List<Subtask> b) {
+    if (a.length != b.length) {
+      return false;
+    }
+    for (int i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void repeatChanged(RepeatRule repeat) {
+    final TaskFormReady? current = _ready;
+    if (current == null) {
+      return;
+    }
+    emit(
+      current.copyWith(
+        repeat: repeat,
+        isDirty: _computeDirty(
+          title: current.title,
+          dueAt: current.dueAt,
+          category: current.category,
+          reminder: current.reminder,
+          repeatOverride: repeat,
+        ),
+      ),
+    );
+  }
+
+  void _setSubtasks(List<Subtask> items) {
+    final TaskFormReady? current = _ready;
+    if (current == null) {
+      return;
+    }
+    emit(
+      current.copyWith(
+        subtasks: items,
+        isDirty: _computeDirty(
+          title: current.title,
+          dueAt: current.dueAt,
+          category: current.category,
+          reminder: current.reminder,
+          subtasksOverride: items,
+        ),
+      ),
+    );
+  }
+
+  void subtaskAdded(String title) {
+    final String trimmed = title.trim();
+    final TaskFormReady? current = _ready;
+    if (trimmed.isEmpty || current == null) {
+      return;
+    }
+    _setSubtasks(<Subtask>[...current.subtasks, Subtask(title: trimmed)]);
+  }
+
+  void subtaskToggled(int index) {
+    final TaskFormReady? current = _ready;
+    if (current == null || index < 0 || index >= current.subtasks.length) {
+      return;
+    }
+    final List<Subtask> next = List<Subtask>.of(current.subtasks);
+    next[index] = next[index].copyWith(isDone: !next[index].isDone);
+    _setSubtasks(next);
+  }
+
+  void subtaskRemoved(int index) {
+    final TaskFormReady? current = _ready;
+    if (current == null || index < 0 || index >= current.subtasks.length) {
+      return;
+    }
+    _setSubtasks(List<Subtask>.of(current.subtasks)..removeAt(index));
   }
 
   TaskFormReady? get _ready => state is TaskFormReady ? state as TaskFormReady : null;

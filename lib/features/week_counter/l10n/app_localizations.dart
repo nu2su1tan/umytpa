@@ -1267,6 +1267,780 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open the app to set up'**
   String get widgetSetUp;
+
+  /// No description provided for @tabTracker.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracker'**
+  String get tabTracker;
+
+  /// No description provided for @greetingMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning'**
+  String get greetingMorning;
+
+  /// No description provided for @greetingAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Good afternoon'**
+  String get greetingAfternoon;
+
+  /// No description provided for @greetingEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Good evening'**
+  String get greetingEvening;
+
+  /// No description provided for @sectionOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get sectionOverdue;
+
+  /// No description provided for @sectionToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get sectionToday;
+
+  /// No description provided for @sectionTomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get sectionTomorrow;
+
+  /// No description provided for @sectionLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get sectionLater;
+
+  /// No description provided for @sectionCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get sectionCompleted;
+
+  /// No description provided for @categoryStudy.
+  ///
+  /// In en, this message translates to:
+  /// **'Study'**
+  String get categoryStudy;
+
+  /// No description provided for @categoryWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Work'**
+  String get categoryWork;
+
+  /// No description provided for @categoryPersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal'**
+  String get categoryPersonal;
+
+  /// No description provided for @categoryOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get categoryOther;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @reminderPresetNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get reminderPresetNone;
+
+  /// No description provided for @reminderPreset5m.
+  ///
+  /// In en, this message translates to:
+  /// **'5 min'**
+  String get reminderPreset5m;
+
+  /// No description provided for @reminderPreset30m.
+  ///
+  /// In en, this message translates to:
+  /// **'30 min'**
+  String get reminderPreset30m;
+
+  /// No description provided for @reminderPreset1h.
+  ///
+  /// In en, this message translates to:
+  /// **'1 hour'**
+  String get reminderPreset1h;
+
+  /// No description provided for @reminderPreset1d.
+  ///
+  /// In en, this message translates to:
+  /// **'1 day'**
+  String get reminderPreset1d;
+
+  /// No description provided for @reminderBeforeMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min before'**
+  String reminderBeforeMinutes(int count);
+
+  /// No description provided for @reminderBeforeHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h before'**
+  String reminderBeforeHours(int count);
+
+  /// No description provided for @reminderBeforeDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day before} other{{count} days before}}'**
+  String reminderBeforeDays(int count);
+
+  /// No description provided for @dueYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday, {time}'**
+  String dueYesterday(String time);
+
+  /// No description provided for @dueTomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow, {time}'**
+  String dueTomorrow(String time);
+
+  /// No description provided for @dueOnDate.
+  ///
+  /// In en, this message translates to:
+  /// **'{date}, {time}'**
+  String dueOnDate(String date, String time);
+
+  /// No description provided for @tasksEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks yet'**
+  String get tasksEmptyTitle;
+
+  /// No description provided for @tasksEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first one'**
+  String get tasksEmptyBody;
+
+  /// No description provided for @addTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Add task'**
+  String get addTask;
+
+  /// No description provided for @tasksFilterEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks in this category'**
+  String get tasksFilterEmptyTitle;
+
+  /// No description provided for @tasksFilterEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another filter or add a new task'**
+  String get tasksFilterEmptyBody;
+
+  /// No description provided for @errorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get errorTitle;
+
+  /// No description provided for @taskDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted \"{title}\"'**
+  String taskDeleted(String title);
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
+
+  /// No description provided for @markDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as done'**
+  String get markDone;
+
+  /// No description provided for @markNotDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as not done'**
+  String get markNotDone;
+
+  /// No description provided for @discardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get discardTitle;
+
+  /// No description provided for @discardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved changes.'**
+  String get discardBody;
+
+  /// No description provided for @keepEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get keepEditing;
+
+  /// No description provided for @discard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get discard;
+
+  /// No description provided for @taskHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What needs to be done?'**
+  String get taskHint;
+
+  /// No description provided for @remindMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me'**
+  String get remindMe;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get saveChanges;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @dateToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get dateToday;
+
+  /// No description provided for @dateTomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get dateTomorrow;
+
+  /// No description provided for @permExactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exact alarms permission'**
+  String get permExactTitle;
+
+  /// No description provided for @permExactBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Umytpa needs permission to schedule exact alarms so your reminders ring right on time. Tap Continue to open settings.'**
+  String get permExactBody;
+
+  /// No description provided for @permFullScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Full-screen reminder permission'**
+  String get permFullScreenTitle;
+
+  /// No description provided for @permFullScreenBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Umytpa can display reminders over locked screens like an alarm clock. Tap Continue to enable full-screen alerts in settings.'**
+  String get permFullScreenBody;
+
+  /// No description provided for @continueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueLabel;
+
+  /// No description provided for @notificationsOffBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are off. The task can still be saved, but reminders will not fire.'**
+  String get notificationsOffBanner;
+
+  /// No description provided for @openSettingsAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get openSettingsAction;
+
+  /// No description provided for @errTitleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Title is required'**
+  String get errTitleRequired;
+
+  /// No description provided for @errTitleTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Title must be at most {max} characters'**
+  String errTitleTooLong(int max);
+
+  /// No description provided for @errDeadlinePast.
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline must be in the future'**
+  String get errDeadlinePast;
+
+  /// No description provided for @warnReminderPassed.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder time has already passed. The task will be saved without a notification.'**
+  String get warnReminderPassed;
+
+  /// No description provided for @errInvalidInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid input'**
+  String get errInvalidInput;
+
+  /// No description provided for @languageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get languageTitle;
+
+  /// No description provided for @languageSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get languageSystem;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// No description provided for @languageRussian.
+  ///
+  /// In en, this message translates to:
+  /// **'Русский'**
+  String get languageRussian;
+
+  /// No description provided for @languageButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Change language'**
+  String get languageButton;
+
+  /// No description provided for @repeatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat'**
+  String get repeatLabel;
+
+  /// No description provided for @repeatNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get repeatNone;
+
+  /// No description provided for @repeatDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get repeatDaily;
+
+  /// No description provided for @repeatWeekdays.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekdays'**
+  String get repeatWeekdays;
+
+  /// No description provided for @repeatWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get repeatWeekly;
+
+  /// No description provided for @subtasksLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Checklist'**
+  String get subtasksLabel;
+
+  /// No description provided for @subtaskHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a step'**
+  String get subtaskHint;
+
+  /// No description provided for @subtaskProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{done}/{total}'**
+  String subtaskProgress(int done, int total);
+
+  /// No description provided for @widgetToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get widgetToday;
+
+  /// No description provided for @widgetNothingNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing planned'**
+  String get widgetNothingNext;
+
+  /// No description provided for @widgetAllDone.
+  ///
+  /// In en, this message translates to:
+  /// **'All done 🎉'**
+  String get widgetAllDone;
+
+  /// No description provided for @todayLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Nothing left} =1{1 task left} other{{count} tasks left}}'**
+  String todayLeft(int count);
+
+  /// No description provided for @todayDoneOf.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total} done'**
+  String todayDoneOf(int done, int total);
+
+  /// No description provided for @todayNothingPlanned.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing planned for today'**
+  String get todayNothingPlanned;
+
+  /// No description provided for @todayAllDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything done — nice work!'**
+  String get todayAllDone;
+
+  /// No description provided for @todayNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next: {title}'**
+  String todayNext(String title);
+
+  /// No description provided for @streakDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day streak} other{{count} day streak}}'**
+  String streakDays(int count);
+
+  /// No description provided for @statsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get statsTitle;
+
+  /// No description provided for @statsOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get statsOpen;
+
+  /// No description provided for @statsDoneTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get statsDoneTotal;
+
+  /// No description provided for @statsCurrentStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Current streak'**
+  String get statsCurrentStreak;
+
+  /// No description provided for @statsBestStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Best streak'**
+  String get statsBestStreak;
+
+  /// No description provided for @statsFocusTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus time'**
+  String get statsFocusTotal;
+
+  /// No description provided for @statsLast7Done.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed, last 7 days'**
+  String get statsLast7Done;
+
+  /// No description provided for @statsLast7Focus.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus minutes, last 7 days'**
+  String get statsLast7Focus;
+
+  /// No description provided for @statsByCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'By category'**
+  String get statsByCategory;
+
+  /// No description provided for @statsBestDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Most productive day'**
+  String get statsBestDay;
+
+  /// No description provided for @statsNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish a task to see your stats'**
+  String get statsNoData;
+
+  /// No description provided for @statsBadges.
+  ///
+  /// In en, this message translates to:
+  /// **'Badges'**
+  String get statsBadges;
+
+  /// No description provided for @statsDaysShort.
+  ///
+  /// In en, this message translates to:
+  /// **'d'**
+  String get statsDaysShort;
+
+  /// No description provided for @minutesShort.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min'**
+  String minutesShort(int count);
+
+  /// No description provided for @hoursMinutesShort.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h {minutes}m'**
+  String hoursMinutesShort(int hours, int minutes);
+
+  /// No description provided for @badgeFirstDone.
+  ///
+  /// In en, this message translates to:
+  /// **'First step'**
+  String get badgeFirstDone;
+
+  /// No description provided for @badgeFirstDoneDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete a task'**
+  String get badgeFirstDoneDesc;
+
+  /// No description provided for @badgeTenDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting going'**
+  String get badgeTenDone;
+
+  /// No description provided for @badgeTenDoneDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete 10 tasks'**
+  String get badgeTenDoneDesc;
+
+  /// No description provided for @badgeFiftyDone.
+  ///
+  /// In en, this message translates to:
+  /// **'On a roll'**
+  String get badgeFiftyDone;
+
+  /// No description provided for @badgeFiftyDoneDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete 50 tasks'**
+  String get badgeFiftyDoneDesc;
+
+  /// No description provided for @badgeHundredDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Centurion'**
+  String get badgeHundredDone;
+
+  /// No description provided for @badgeHundredDoneDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete 100 tasks'**
+  String get badgeHundredDoneDesc;
+
+  /// No description provided for @badgeStreak3.
+  ///
+  /// In en, this message translates to:
+  /// **'Three in a row'**
+  String get badgeStreak3;
+
+  /// No description provided for @badgeStreak3Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'3-day streak'**
+  String get badgeStreak3Desc;
+
+  /// No description provided for @badgeStreak7.
+  ///
+  /// In en, this message translates to:
+  /// **'Perfect week'**
+  String get badgeStreak7;
+
+  /// No description provided for @badgeStreak7Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'7-day streak'**
+  String get badgeStreak7Desc;
+
+  /// No description provided for @badgeStreak30.
+  ///
+  /// In en, this message translates to:
+  /// **'Unstoppable'**
+  String get badgeStreak30;
+
+  /// No description provided for @badgeStreak30Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'30-day streak'**
+  String get badgeStreak30Desc;
+
+  /// No description provided for @badgeFocusHour.
+  ///
+  /// In en, this message translates to:
+  /// **'In the zone'**
+  String get badgeFocusHour;
+
+  /// No description provided for @badgeFocusHourDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus for 1 hour in total'**
+  String get badgeFocusHourDesc;
+
+  /// No description provided for @badgeFocusTen.
+  ///
+  /// In en, this message translates to:
+  /// **'Deep work'**
+  String get badgeFocusTen;
+
+  /// No description provided for @badgeFocusTenDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus for 10 hours in total'**
+  String get badgeFocusTenDesc;
+
+  /// No description provided for @focusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus'**
+  String get focusTitle;
+
+  /// No description provided for @focusStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start focus'**
+  String get focusStart;
+
+  /// No description provided for @focusStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get focusStop;
+
+  /// No description provided for @focusWithTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Working on: {title}'**
+  String focusWithTask(String title);
+
+  /// No description provided for @focusNoTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Free focus session'**
+  String get focusNoTask;
+
+  /// No description provided for @focusMinutesOption.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min'**
+  String focusMinutesOption(int count);
+
+  /// No description provided for @focusDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Session complete!'**
+  String get focusDoneTitle;
+
+  /// No description provided for @focusDoneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} minutes of focus saved.'**
+  String focusDoneBody(int count);
+
+  /// No description provided for @focusMarkTaskDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark task done'**
+  String get focusMarkTaskDone;
+
+  /// No description provided for @focusClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get focusClose;
+
+  /// No description provided for @focusRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay with it'**
+  String get focusRunning;
+
+  /// No description provided for @focusNotifTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus session finished'**
+  String get focusNotifTitle;
+
+  /// No description provided for @focusNotifBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Time for a break.'**
+  String get focusNotifBody;
+
+  /// No description provided for @focusTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus on this task'**
+  String get focusTask;
+
+  /// No description provided for @smartApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply: {summary}'**
+  String smartApply(String summary);
+
+  /// No description provided for @smartHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: “Lab report tomorrow 18:00 #study”'**
+  String get smartHint;
+
+  /// No description provided for @allDoneCelebrate.
+  ///
+  /// In en, this message translates to:
+  /// **'All done for today!'**
+  String get allDoneCelebrate;
 }
 
 class _AppLocalizationsDelegate

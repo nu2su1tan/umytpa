@@ -16,8 +16,8 @@ abstract final class GlassTokens {
   // Tints
   static const Color defaultLightTint = Color(0x26FFFFFF);
   static const Color defaultDarkTint = Color(0x33000000);
-  static const Color accentOrange = Color(0xFFED760E);
-  static const Color accentOrangeTint = Color(0x38ED760E);
+  static const Color accentOrange = Color(0xFF7C4DF0);
+  static const Color accentTint = Color(0x387C4DF0);
 
   // Fallback (frosted) tokens
   static const double fallbackBlur = 18.0;

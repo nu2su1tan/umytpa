@@ -755,4 +755,452 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get widgetSetUp => 'Open the app to set up';
+
+  @override
+  String get tabTracker => 'Tracker';
+
+  @override
+  String get greetingMorning => 'Good morning';
+
+  @override
+  String get greetingAfternoon => 'Good afternoon';
+
+  @override
+  String get greetingEvening => 'Good evening';
+
+  @override
+  String get sectionOverdue => 'Overdue';
+
+  @override
+  String get sectionToday => 'Today';
+
+  @override
+  String get sectionTomorrow => 'Tomorrow';
+
+  @override
+  String get sectionLater => 'Later';
+
+  @override
+  String get sectionCompleted => 'Completed';
+
+  @override
+  String get categoryStudy => 'Study';
+
+  @override
+  String get categoryWork => 'Work';
+
+  @override
+  String get categoryPersonal => 'Personal';
+
+  @override
+  String get categoryOther => 'Other';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get reminderPresetNone => 'None';
+
+  @override
+  String get reminderPreset5m => '5 min';
+
+  @override
+  String get reminderPreset30m => '30 min';
+
+  @override
+  String get reminderPreset1h => '1 hour';
+
+  @override
+  String get reminderPreset1d => '1 day';
+
+  @override
+  String reminderBeforeMinutes(int count) {
+    return '$count min before';
+  }
+
+  @override
+  String reminderBeforeHours(int count) {
+    return '${count}h before';
+  }
+
+  @override
+  String reminderBeforeDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days before',
+      one: '1 day before',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String dueYesterday(String time) {
+    return 'Yesterday, $time';
+  }
+
+  @override
+  String dueTomorrow(String time) {
+    return 'Tomorrow, $time';
+  }
+
+  @override
+  String dueOnDate(String date, String time) {
+    return '$date, $time';
+  }
+
+  @override
+  String get tasksEmptyTitle => 'No tasks yet';
+
+  @override
+  String get tasksEmptyBody => 'Add your first one';
+
+  @override
+  String get addTask => 'Add task';
+
+  @override
+  String get tasksFilterEmptyTitle => 'No tasks in this category';
+
+  @override
+  String get tasksFilterEmptyBody => 'Try another filter or add a new task';
+
+  @override
+  String get errorTitle => 'Something went wrong';
+
+  @override
+  String taskDeleted(String title) {
+    return 'Deleted \"$title\"';
+  }
+
+  @override
+  String get undo => 'Undo';
+
+  @override
+  String get markDone => 'Mark as done';
+
+  @override
+  String get markNotDone => 'Mark as not done';
+
+  @override
+  String get discardTitle => 'Discard changes?';
+
+  @override
+  String get discardBody => 'You have unsaved changes.';
+
+  @override
+  String get keepEditing => 'Keep editing';
+
+  @override
+  String get discard => 'Discard';
+
+  @override
+  String get taskHint => 'What needs to be done?';
+
+  @override
+  String get remindMe => 'Remind me';
+
+  @override
+  String get saveChanges => 'Save changes';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get dateToday => 'Today';
+
+  @override
+  String get dateTomorrow => 'Tomorrow';
+
+  @override
+  String get permExactTitle => 'Exact alarms permission';
+
+  @override
+  String get permExactBody =>
+      'Umytpa needs permission to schedule exact alarms so your reminders ring right on time. Tap Continue to open settings.';
+
+  @override
+  String get permFullScreenTitle => 'Full-screen reminder permission';
+
+  @override
+  String get permFullScreenBody =>
+      'Umytpa can display reminders over locked screens like an alarm clock. Tap Continue to enable full-screen alerts in settings.';
+
+  @override
+  String get continueLabel => 'Continue';
+
+  @override
+  String get notificationsOffBanner =>
+      'Notifications are off. The task can still be saved, but reminders will not fire.';
+
+  @override
+  String get openSettingsAction => 'Open settings';
+
+  @override
+  String get errTitleRequired => 'Title is required';
+
+  @override
+  String errTitleTooLong(int max) {
+    return 'Title must be at most $max characters';
+  }
+
+  @override
+  String get errDeadlinePast => 'Deadline must be in the future';
+
+  @override
+  String get warnReminderPassed =>
+      'Reminder time has already passed. The task will be saved without a notification.';
+
+  @override
+  String get errInvalidInput => 'Invalid input';
+
+  @override
+  String get languageTitle => 'Language';
+
+  @override
+  String get languageSystem => 'System';
+
+  @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageRussian => 'Русский';
+
+  @override
+  String get languageButton => 'Change language';
+
+  @override
+  String get repeatLabel => 'Repeat';
+
+  @override
+  String get repeatNone => 'Never';
+
+  @override
+  String get repeatDaily => 'Daily';
+
+  @override
+  String get repeatWeekdays => 'Weekdays';
+
+  @override
+  String get repeatWeekly => 'Weekly';
+
+  @override
+  String get subtasksLabel => 'Checklist';
+
+  @override
+  String get subtaskHint => 'Add a step';
+
+  @override
+  String subtaskProgress(int done, int total) {
+    return '$done/$total';
+  }
+
+  @override
+  String get widgetToday => 'Today';
+
+  @override
+  String get widgetNothingNext => 'Nothing planned';
+
+  @override
+  String get widgetAllDone => 'All done 🎉';
+
+  @override
+  String todayLeft(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tasks left',
+      one: '1 task left',
+      zero: 'Nothing left',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String todayDoneOf(int done, int total) {
+    return '$done of $total done';
+  }
+
+  @override
+  String get todayNothingPlanned => 'Nothing planned for today';
+
+  @override
+  String get todayAllDone => 'Everything done — nice work!';
+
+  @override
+  String todayNext(String title) {
+    return 'Next: $title';
+  }
+
+  @override
+  String streakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count day streak',
+      one: '1 day streak',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get statsTitle => 'Statistics';
+
+  @override
+  String get statsOpen => 'Statistics';
+
+  @override
+  String get statsDoneTotal => 'Completed';
+
+  @override
+  String get statsCurrentStreak => 'Current streak';
+
+  @override
+  String get statsBestStreak => 'Best streak';
+
+  @override
+  String get statsFocusTotal => 'Focus time';
+
+  @override
+  String get statsLast7Done => 'Completed, last 7 days';
+
+  @override
+  String get statsLast7Focus => 'Focus minutes, last 7 days';
+
+  @override
+  String get statsByCategory => 'By category';
+
+  @override
+  String get statsBestDay => 'Most productive day';
+
+  @override
+  String get statsNoData => 'Finish a task to see your stats';
+
+  @override
+  String get statsBadges => 'Badges';
+
+  @override
+  String get statsDaysShort => 'd';
+
+  @override
+  String minutesShort(int count) {
+    return '$count min';
+  }
+
+  @override
+  String hoursMinutesShort(int hours, int minutes) {
+    return '${hours}h ${minutes}m';
+  }
+
+  @override
+  String get badgeFirstDone => 'First step';
+
+  @override
+  String get badgeFirstDoneDesc => 'Complete a task';
+
+  @override
+  String get badgeTenDone => 'Getting going';
+
+  @override
+  String get badgeTenDoneDesc => 'Complete 10 tasks';
+
+  @override
+  String get badgeFiftyDone => 'On a roll';
+
+  @override
+  String get badgeFiftyDoneDesc => 'Complete 50 tasks';
+
+  @override
+  String get badgeHundredDone => 'Centurion';
+
+  @override
+  String get badgeHundredDoneDesc => 'Complete 100 tasks';
+
+  @override
+  String get badgeStreak3 => 'Three in a row';
+
+  @override
+  String get badgeStreak3Desc => '3-day streak';
+
+  @override
+  String get badgeStreak7 => 'Perfect week';
+
+  @override
+  String get badgeStreak7Desc => '7-day streak';
+
+  @override
+  String get badgeStreak30 => 'Unstoppable';
+
+  @override
+  String get badgeStreak30Desc => '30-day streak';
+
+  @override
+  String get badgeFocusHour => 'In the zone';
+
+  @override
+  String get badgeFocusHourDesc => 'Focus for 1 hour in total';
+
+  @override
+  String get badgeFocusTen => 'Deep work';
+
+  @override
+  String get badgeFocusTenDesc => 'Focus for 10 hours in total';
+
+  @override
+  String get focusTitle => 'Focus';
+
+  @override
+  String get focusStart => 'Start focus';
+
+  @override
+  String get focusStop => 'Stop';
+
+  @override
+  String focusWithTask(String title) {
+    return 'Working on: $title';
+  }
+
+  @override
+  String get focusNoTask => 'Free focus session';
+
+  @override
+  String focusMinutesOption(int count) {
+    return '$count min';
+  }
+
+  @override
+  String get focusDoneTitle => 'Session complete!';
+
+  @override
+  String focusDoneBody(int count) {
+    return '$count minutes of focus saved.';
+  }
+
+  @override
+  String get focusMarkTaskDone => 'Mark task done';
+
+  @override
+  String get focusClose => 'Close';
+
+  @override
+  String get focusRunning => 'Stay with it';
+
+  @override
+  String get focusNotifTitle => 'Focus session finished';
+
+  @override
+  String get focusNotifBody => 'Time for a break.';
+
+  @override
+  String get focusTask => 'Focus on this task';
+
+  @override
+  String smartApply(String summary) {
+    return 'Apply: $summary';
+  }
+
+  @override
+  String get smartHint => 'Tip: “Lab report tomorrow 18:00 #study”';
+
+  @override
+  String get allDoneCelebrate => 'All done for today!';
 }

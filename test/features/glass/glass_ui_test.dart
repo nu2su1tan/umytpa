@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:umytpa/core/theme/app_theme.dart';
 import 'package:umytpa/core/ui/glass/glass.dart';
 import 'package:umytpa/features/tasks/presentation/widgets/category_filter_bar.dart';
@@ -7,6 +8,8 @@ import 'package:umytpa/features/tasks/presentation/widgets/tasks_header.dart';
 
 void main() {
   group('Liquid Glass Adapter & UI Layer', () {
+    setUpAll(initializeDateFormatting);
+
     testWidgets('TasksHeader does NOT have a calendar icon', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(

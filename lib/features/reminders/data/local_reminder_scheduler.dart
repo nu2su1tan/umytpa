@@ -1,5 +1,6 @@
 import 'dart:developer' as developer;
 import 'dart:io';
+import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -13,16 +14,21 @@ import '../../tasks/domain/usecases/should_schedule_reminder.dart';
 import '../domain/reminder_permission_status.dart';
 import '../domain/reminder_scheduler.dart';
 import 'notification_details_factory.dart';
+import 'reminder_actions.dart';
 import 'reminder_notification_text.dart';
 
 /// Local-notifications implementation of [ReminderScheduler].
 class LocalReminderScheduler implements ReminderScheduler {
   LocalReminderScheduler({
     required this.detailsFactory,
+    this.languageCode,
     FlutterLocalNotificationsPlugin? plugin,
   }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
 
   final NotificationDetailsFactory detailsFactory;
+
+  /// Language for notification text; `null` means the system language.
+  final String? Function()? languageCode;
   final FlutterLocalNotificationsPlugin _plugin;
   bool _initialized = false;
   bool _fullScreenRequested = false;
@@ -38,19 +44,43 @@ class LocalReminderScheduler implements ReminderScheduler {
 
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    const DarwinInitializationSettings darwinSettings =
+    final String lang = _lang;
+    final DarwinInitializationSettings darwinSettings =
         DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
       requestSoundPermission: false,
+      notificationCategories: <DarwinNotificationCategory>[
+        DarwinNotificationCategory(
+          ReminderActions.iosCategory,
+          actions: <DarwinNotificationAction>[
+            DarwinNotificationAction.plain(
+              ReminderActions.doneId,
+              ReminderNotificationText.doneLabel(languageCode: lang),
+            ),
+            DarwinNotificationAction.plain(
+              ReminderActions.snoozeId,
+              ReminderNotificationText.snoozeLabel(languageCode: lang),
+            ),
+          ],
+        ),
+      ],
     );
 
     await _plugin.initialize(
-      settings: const InitializationSettings(
+      settings: InitializationSettings(
         android: androidSettings,
         iOS: darwinSettings,
         macOS: darwinSettings,
       ),
+      onDidReceiveBackgroundNotificationResponse: reminderBackgroundHandler,
+      onDidReceiveNotificationResponse: (NotificationResponse r) {
+        // Buttons that don't open the UI arrive in the background handler;
+        // anything that reaches us here with an action is handled the same.
+        if (r.actionId != null) {
+          reminderBackgroundHandler(r);
+        }
+      },
     );
 
     final AndroidFlutterLocalNotificationsPlugin? android =
@@ -58,6 +88,9 @@ class LocalReminderScheduler implements ReminderScheduler {
             AndroidFlutterLocalNotificationsPlugin>();
     await android?.createNotificationChannel(
       detailsFactory.createAndroidChannel(),
+    );
+    await android?.createNotificationChannel(
+      detailsFactory.createReminderChannel(),
     );
 
     _initialized = true;
@@ -68,8 +101,11 @@ class LocalReminderScheduler implements ReminderScheduler {
     try {
       await initialize();
 
-      if (!shouldScheduleReminder(task, now: DateTime.now())) {
-        await cancel(task.id);
+      final DateTime now = DateTime.now();
+      final bool wantsReminder = shouldScheduleReminder(task, now: now);
+      final bool wantsAlarm = !task.isDone && task.dueAt.isAfter(now);
+      await cancel(task.id);
+      if (!wantsReminder && !wantsAlarm) {
         return const Success<void>(null);
       }
 
@@ -89,23 +125,89 @@ class LocalReminderScheduler implements ReminderScheduler {
         }
       }
 
-      final DateTime remindAt = task.remindAt!;
-      final tz.TZDateTime scheduled = tz.TZDateTime.from(remindAt, tz.local);
-      final (:String title, :String body) =
-          ReminderNotificationText.forTask(task);
+      final String lang = _lang;
 
-      await _plugin.zonedSchedule(
-        id: task.id,
-        title: title,
-        body: body,
-        scheduledDate: scheduled,
-        notificationDetails: detailsFactory.createNotificationDetails(),
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        payload: task.id.toString(),
-      );
+      if (wantsReminder) {
+        final (:String title, :String body) =
+            ReminderNotificationText.forTask(task, languageCode: lang);
+        await _plugin.zonedSchedule(
+          id: task.id,
+          title: title,
+          body: body,
+          scheduledDate: tz.TZDateTime.from(task.remindAt!, tz.local),
+          notificationDetails: detailsFactory.createReminderDetails(
+            doneLabel: ReminderNotificationText.doneLabel(languageCode: lang),
+            snoozeLabel:
+                ReminderNotificationText.snoozeLabel(languageCode: lang),
+          ),
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          payload: ReminderActions.encodePayload(
+            taskId: task.id,
+            title: title,
+            body: body,
+          ),
+        );
+      }
+
+      if (wantsAlarm) {
+        final (:String title, :String body) =
+            ReminderNotificationText.forDeadline(task, languageCode: lang);
+        await _plugin.zonedSchedule(
+          id: _alarmId(task.id),
+          title: title,
+          body: body,
+          scheduledDate: tz.TZDateTime.from(task.dueAt, tz.local),
+          notificationDetails: detailsFactory.createNotificationDetails(
+            doneLabel: ReminderNotificationText.doneLabel(languageCode: lang),
+            snoozeLabel:
+                ReminderNotificationText.snoozeLabel(languageCode: lang),
+          ),
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+          payload: ReminderActions.encodePayload(
+            taskId: task.id,
+            title: title,
+            body: body,
+          ),
+        );
+      }
       return const Success<void>(null);
     } on Object catch (error, stackTrace) {
       return _err(error, stackTrace);
+    }
+  }
+
+  String get _lang =>
+      languageCode?.call() ?? PlatformDispatcher.instance.locale.languageCode;
+
+  /// Rings the deadline alarm again after [delay] (the "+10 min" button).
+  Future<void> snooze({
+    required int taskId,
+    required String title,
+    required String body,
+    required Duration delay,
+  }) async {
+    try {
+      await initialize();
+      final String lang = _lang;
+      await _plugin.cancel(id: _alarmId(taskId));
+      await _plugin.zonedSchedule(
+        id: _alarmId(taskId),
+        title: title,
+        body: body,
+        scheduledDate: tz.TZDateTime.now(tz.local).add(delay),
+        notificationDetails: detailsFactory.createNotificationDetails(
+          doneLabel: ReminderNotificationText.doneLabel(languageCode: lang),
+          snoozeLabel: ReminderNotificationText.snoozeLabel(languageCode: lang),
+        ),
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        payload: ReminderActions.encodePayload(
+          taskId: taskId,
+          title: title,
+          body: body,
+        ),
+      );
+    } on Object catch (error, stackTrace) {
+      _err(error, stackTrace);
     }
   }
 
@@ -114,6 +216,7 @@ class LocalReminderScheduler implements ReminderScheduler {
     try {
       await initialize();
       await _plugin.cancel(id: taskId);
+      await _plugin.cancel(id: _alarmId(taskId));
       return const Success<void>(null);
     } on Object catch (error, stackTrace) {
       return _err(error, stackTrace);
@@ -126,7 +229,9 @@ class LocalReminderScheduler implements ReminderScheduler {
       await initialize();
       final DateTime now = DateTime.now();
       for (final Task task in tasks) {
-        if (shouldScheduleReminder(task, now: now)) {
+        if (!task.isDone &&
+            (shouldScheduleReminder(task, now: now) ||
+                task.dueAt.isAfter(now))) {
           final Result<void> result = await schedule(task);
           if (result is Err<void>) {
             developer.log(
@@ -295,6 +400,40 @@ class LocalReminderScheduler implements ReminderScheduler {
     return ReminderPermissionStatus.granted;
   }
 
+  static const int _focusEndId = 2000000000;
+
+  @override
+  Future<void> scheduleFocusEnd({
+    required DateTime at,
+    required String title,
+    required String body,
+  }) async {
+    try {
+      await initialize();
+      await _plugin.zonedSchedule(
+        id: _focusEndId,
+        title: title,
+        body: body,
+        scheduledDate: tz.TZDateTime.from(at, tz.local),
+        notificationDetails:
+            detailsFactory.createReminderDetails(withActions: false),
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      );
+    } on Object catch (error, stackTrace) {
+      _err(error, stackTrace);
+    }
+  }
+
+  @override
+  Future<void> cancelFocusEnd() async {
+    try {
+      await initialize();
+      await _plugin.cancel(id: _focusEndId);
+    } on Object catch (error, stackTrace) {
+      _err(error, stackTrace);
+    }
+  }
+
   @override
   Future<void> openSystemSettings() async {
     await initialize();
@@ -321,6 +460,9 @@ class LocalReminderScheduler implements ReminderScheduler {
         ? ReminderPermissionStatus.granted
         : ReminderPermissionStatus.notificationsDenied;
   }
+
+  /// The deadline alarm uses its own id so it can coexist with the reminder.
+  static int _alarmId(int taskId) => taskId + 1000000000;
 
   Err<void> _err(Object error, StackTrace stackTrace) {
     developer.log(

@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'app.dart';
@@ -14,7 +12,6 @@ import 'state/app_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  LicenseRegistry.addLicense(_fontLicenses);
   // The widget text is formatted before MaterialApp loads any locale data.
   await initializeDateFormatting();
   if (HomeWidgetSync.isSupported) await HomeWidgetSync.init();
@@ -33,13 +30,3 @@ Future<void> main() async {
   runApp(WeekCounterApp(controller: controller));
 }
 
-Stream<LicenseEntry> _fontLicenses() async* {
-  for (final (family, file) in [
-    ('Inter', 'OFL-Inter.txt'),
-    ('Inter Tight', 'OFL-InterTight.txt'),
-    ('JetBrains Mono', 'OFL-JetBrainsMono.txt'),
-  ]) {
-    final text = await rootBundle.loadString('assets/fonts/$file');
-    yield LicenseEntryWithLineBreaks([family], text);
-  }
-}
