@@ -31,9 +31,9 @@ class NotificationDetailsFactory {
   /// Loops the notification sound and vibration continuously until dismissed.
   static const int insistentFlag = 4;
 
-  /// Timeout in milliseconds (60 seconds) after which the Android notification
+  /// Timeout in milliseconds (10 minutes) after which the Android notification
   /// automatically dismisses so the insistent sound does not ring indefinitely.
-  static const int timeoutAfterMs = 120000;
+  static const int timeoutAfterMs = 600000;
 
   /// Regular (non-alarm) channel for "N minutes left" heads-up reminders.
   static const String reminderChannelId = 'task_reminder_v1';

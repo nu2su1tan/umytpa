@@ -61,6 +61,9 @@ class LocalReminderScheduler implements ReminderScheduler {
       notificationCategories: <DarwinNotificationCategory>[
         DarwinNotificationCategory(
           ReminderActions.iosCategory,
+          options: <DarwinNotificationCategoryOption>{
+            DarwinNotificationCategoryOption.customDismissAction,
+          },
           actions: <DarwinNotificationAction>[
             DarwinNotificationAction.plain(
               ReminderActions.doneId,
@@ -128,6 +131,7 @@ class LocalReminderScheduler implements ReminderScheduler {
           body: body,
           mode: mode,
           taskId: task.id,
+          kind: kindReminder,
           lang: lang,
         );
       }
@@ -141,6 +145,7 @@ class LocalReminderScheduler implements ReminderScheduler {
           body: body,
           mode: mode,
           taskId: task.id,
+          kind: kindAlarm,
           lang: lang,
         );
       }
@@ -214,17 +219,33 @@ class LocalReminderScheduler implements ReminderScheduler {
 
   /// iOS plays a notification sound once and for at most 30 seconds, so the
   /// alarm is repeated every [_repeatEvery] until the user reacts.
-  static const int _repeatCount = 6;
+  static const int _repeatCount = 15;
   static const Duration _repeatEvery = Duration(seconds: 30);
 
-  static int _repeatId(int taskId, int n) => 1100000000 + taskId * 8 + n;
+  /// iOS keeps at most 64 pending notifications; stay clear of the limit.
+  static const int _pendingBudget = 60;
 
-  Future<void> _cancelRepeats(int taskId) async {
+  /// The reminder and the alarm each get their own block of ids (`r` / `a`).
+  static int _repeatId(int taskId, String kind, int n) =>
+      1100000000 + taskId * 32 + (kind == kindAlarm ? 16 : 0) + n;
+
+  static const String kindReminder = 'r';
+  static const String kindAlarm = 'a';
+
+  /// Cancels the waiting repeats of one task; [kind] limits it to the
+  /// reminder's or the alarm's chain.
+  Future<void> cancelRepeats(int taskId, {String? kind}) async {
     if (!Platform.isIOS) {
       return;
     }
-    for (int n = 1; n <= _repeatCount; n++) {
-      await _plugin.cancel(id: _repeatId(taskId, n));
+    await initialize();
+    for (final String k in <String>[kindReminder, kindAlarm]) {
+      if (kind != null && kind != k) {
+        continue;
+      }
+      for (int n = 1; n <= _repeatCount; n++) {
+        await _plugin.cancel(id: _repeatId(taskId, k, n));
+      }
     }
   }
 
@@ -237,6 +258,7 @@ class LocalReminderScheduler implements ReminderScheduler {
     required String body,
     required AndroidScheduleMode mode,
     required int taskId,
+    required String kind,
     required String lang,
   }) async {
     final AlarmSound sound = await AlarmSound.load();
@@ -259,6 +281,7 @@ class LocalReminderScheduler implements ReminderScheduler {
       taskId: taskId,
       title: title,
       body: body,
+      kind: kind,
     );
     await _plugin.zonedSchedule(
       id: id,
@@ -272,9 +295,11 @@ class LocalReminderScheduler implements ReminderScheduler {
     if (!Platform.isIOS) {
       return;
     }
-    for (int n = 1; n <= _repeatCount; n++) {
+    final int pending = (await _plugin.pendingNotificationRequests()).length;
+    final int repeats = (_pendingBudget - pending).clamp(0, _repeatCount);
+    for (int n = 1; n <= repeats; n++) {
       await _plugin.zonedSchedule(
-        id: _repeatId(taskId, n),
+        id: _repeatId(taskId, kind, n),
         title: title,
         body: body,
         scheduledDate: tz.TZDateTime.from(at.add(_repeatEvery * n), tz.local),
@@ -323,7 +348,7 @@ class LocalReminderScheduler implements ReminderScheduler {
     try {
       await initialize();
       final String lang = _lang;
-      await _cancelRepeats(taskId);
+      await cancelRepeats(taskId);
       await _plugin.cancel(id: _alarmId(taskId));
       await _plugin.cancel(id: taskId);
       await _ring(
@@ -333,6 +358,7 @@ class LocalReminderScheduler implements ReminderScheduler {
         body: body,
         mode: AndroidScheduleMode.exactAllowWhileIdle,
         taskId: taskId,
+        kind: kindAlarm,
         lang: lang,
       );
     } on Object catch (error, stackTrace) {
@@ -346,7 +372,7 @@ class LocalReminderScheduler implements ReminderScheduler {
       await initialize();
       await _plugin.cancel(id: taskId);
       await _plugin.cancel(id: _alarmId(taskId));
-      await _cancelRepeats(taskId);
+      await cancelRepeats(taskId);
       return const Success<void>(null);
     } on Object catch (error, stackTrace) {
       return _err(error, stackTrace);
@@ -358,7 +384,11 @@ class LocalReminderScheduler implements ReminderScheduler {
     try {
       await initialize();
       final DateTime now = DateTime.now();
-      for (final Task task in tasks) {
+      // Soonest first, so the repeats that fit under the iOS limit go to the
+      // alarms that ring next.
+      final List<Task> ordered = <Task>[...tasks]
+        ..sort((Task a, Task b) => a.dueAt.compareTo(b.dueAt));
+      for (final Task task in ordered) {
         if (!task.isDone &&
             (shouldScheduleReminder(task, now: now) ||
                 task.dueAt.isAfter(now))) {
