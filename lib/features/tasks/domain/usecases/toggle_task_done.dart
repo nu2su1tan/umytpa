@@ -34,7 +34,7 @@ class ToggleTaskDone {
         if (task.repeat.repeats) {
           await _spawnNext(task, now: now);
         }
-      } else if (shouldScheduleReminder(task, now: now)) {
+      } else if (shouldScheduleNotifications(task, now: now)) {
         await reminderScheduler.schedule(task);
       }
       return Success<Task>(task);
@@ -56,7 +56,7 @@ class ToggleTaskDone {
       ),
     );
     if (created case Success<Task>(:final value)) {
-      if (shouldScheduleReminder(value, now: now)) {
+      if (shouldScheduleNotifications(value, now: now)) {
         await reminderScheduler.schedule(value);
       }
     }

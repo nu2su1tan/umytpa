@@ -100,7 +100,8 @@ extension TaskL10n on AppLocalizations {
   }
 
   /// Translates a message produced by the domain (validation, use cases).
-  /// Unknown messages are returned unchanged.
+  /// Anything else is technical (database, missing row, a raw exception), so
+  /// the user gets the generic localized error instead of English internals.
   String domainMessage(String message) {
     if (message == TaskInputValidator.titleRequiredMessage) {
       return errTitleRequired;
@@ -120,9 +121,6 @@ extension TaskL10n on AppLocalizations {
     if (message == 'Invalid input') {
       return errInvalidInput;
     }
-    if (message == 'Something went wrong') {
-      return errorTitle;
-    }
-    return message;
+    return errorTitle;
   }
 }

@@ -34,7 +34,7 @@ class UpdateTask {
 
     return updated.flatMap((Task saved) async {
       await reminderScheduler.cancel(saved.id);
-      if (shouldScheduleReminder(saved, now: now)) {
+      if (shouldScheduleNotifications(saved, now: now)) {
         await reminderScheduler.schedule(saved);
       }
       return Success<Task>(saved);

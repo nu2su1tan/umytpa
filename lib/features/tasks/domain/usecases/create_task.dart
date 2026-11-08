@@ -49,7 +49,7 @@ class CreateTask {
 
     final Result<Task> created = await repository.create(normalized);
     return created.flatMap((Task task) async {
-      if (shouldScheduleReminder(task, now: now)) {
+      if (shouldScheduleNotifications(task, now: now)) {
         await reminderScheduler.schedule(task);
       }
       return Success<Task>(task);

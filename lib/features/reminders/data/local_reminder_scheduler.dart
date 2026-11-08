@@ -389,9 +389,7 @@ class LocalReminderScheduler implements ReminderScheduler {
       final List<Task> ordered = <Task>[...tasks]
         ..sort((Task a, Task b) => a.dueAt.compareTo(b.dueAt));
       for (final Task task in ordered) {
-        if (!task.isDone &&
-            (shouldScheduleReminder(task, now: now) ||
-                task.dueAt.isAfter(now))) {
+        if (shouldScheduleNotifications(task, now: now)) {
           final Result<void> result = await schedule(task);
           if (result is Err<void>) {
             developer.log(

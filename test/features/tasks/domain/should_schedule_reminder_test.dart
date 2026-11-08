@@ -53,4 +53,38 @@ void main() {
       expect(shouldScheduleReminder(task, now: now), isFalse);
     });
   });
+
+  group('shouldScheduleNotifications', () {
+    test('true when the deadline is closer than the reminder lead time', () {
+      // remindAt is already past, but the deadline alarm is still ahead.
+      final Task task = _task(
+        dueAt: DateTime(2026, 10, 30, 16, 40),
+        remindBefore: const Duration(hours: 1),
+      );
+      expect(shouldScheduleReminder(task, now: now), isFalse);
+      expect(shouldScheduleNotifications(task, now: now), isTrue);
+    });
+
+    test('true with no reminder while the deadline is ahead', () {
+      final Task task = _task(dueAt: DateTime(2026, 10, 30, 18));
+      expect(shouldScheduleNotifications(task, now: now), isTrue);
+    });
+
+    test('false when done or the deadline has passed', () {
+      expect(
+        shouldScheduleNotifications(
+          _task(dueAt: DateTime(2026, 10, 30, 18), isDone: true),
+          now: now,
+        ),
+        isFalse,
+      );
+      expect(
+        shouldScheduleNotifications(
+          _task(dueAt: DateTime(2026, 10, 30, 15)),
+          now: now,
+        ),
+        isFalse,
+      );
+    });
+  });
 }

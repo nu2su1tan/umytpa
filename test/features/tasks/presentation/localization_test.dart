@@ -71,5 +71,9 @@ void main() {
     expect(ru.reminderBefore(const Duration(hours: 1)), 'за 1 ч');
     expect(ru.reminderBefore(const Duration(days: 2)), 'за 2 дня');
     expect(ru.domainMessage('Title is required'), 'Напиши, что надо сделать');
+    // Technical messages never reach the user in English.
+    expect(ru.domainMessage('Database error'), ru.errorTitle);
+    expect(ru.domainMessage('Task not found'), ru.errorTitle);
+    expect(ru.domainMessage('Exception: SqliteException(1)'), ru.errorTitle);
   });
 }

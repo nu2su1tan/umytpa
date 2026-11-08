@@ -56,20 +56,20 @@ void main() {
   setUp(() {
     repository = _MockTaskRepository();
     scheduler = _MockReminderScheduler();
-    when(() => scheduler.schedule(any())).thenAnswer(
-      (_) async => const Success<void>(null),
-    );
-    when(() => scheduler.cancel(any())).thenAnswer(
-      (_) async => const Success<void>(null),
-    );
+    when(
+      () => scheduler.schedule(any()),
+    ).thenAnswer((_) async => const Success<void>(null));
+    when(
+      () => scheduler.cancel(any()),
+    ).thenAnswer((_) async => const Success<void>(null));
   });
 
   group('CreateTask', () {
     test('persists and schedules when remindAt is in the future', () async {
       final Task saved = buildTask();
-      when(() => repository.create(any())).thenAnswer(
-        (_) async => Success<Task>(saved),
-      );
+      when(
+        () => repository.create(any()),
+      ).thenAnswer((_) async => Success<Task>(saved));
 
       final CreateTask useCase = CreateTask(
         repository: repository,
@@ -91,56 +91,61 @@ void main() {
       verify(() => scheduler.schedule(saved)).called(1);
     });
 
-    test('does not schedule when reminder already passed', () async {
-      final Task saved = buildTask(
-        due: now.add(const Duration(minutes: 30)),
-      );
-      when(() => repository.create(any())).thenAnswer(
-        (_) async => Success<Task>(saved),
-      );
+    test(
+      'still schedules the deadline alarm when the reminder already passed',
+      () async {
+        final Task saved = buildTask(due: now.add(const Duration(minutes: 30)));
+        when(
+          () => repository.create(any()),
+        ).thenAnswer((_) async => Success<Task>(saved));
 
-      final CreateTask useCase = CreateTask(
-        repository: repository,
-        reminderScheduler: scheduler,
-      );
+        final CreateTask useCase = CreateTask(
+          repository: repository,
+          reminderScheduler: scheduler,
+        );
 
-      final Result<Task> result = await useCase(
-        NewTask(
-          title: 'Soon',
-          dueAt: saved.dueAt,
+        final Result<Task> result = await useCase(
+          NewTask(
+            title: 'Soon',
+            dueAt: saved.dueAt,
+            category: TaskCategory.work,
+            remindBefore: const Duration(hours: 1),
+          ),
+          now: now,
+        );
+
+        expect(result.isSuccess, isTrue);
+        verify(() => scheduler.schedule(saved)).called(1);
+      },
+    );
+
+    test(
+      'restoring a deleted overdue task skips the future-deadline check',
+      () async {
+        final Task saved = buildTask(
+          due: now.subtract(const Duration(hours: 2)),
+        );
+        when(
+          () => repository.create(any()),
+        ).thenAnswer((_) async => Success<Task>(saved));
+        final CreateTask useCase = CreateTask(
+          repository: repository,
+          reminderScheduler: scheduler,
+        );
+        final NewTask input = NewTask(
+          title: 'Overdue',
+          dueAt: now.subtract(const Duration(hours: 2)),
           category: TaskCategory.work,
-          remindBefore: const Duration(hours: 1),
-        ),
-        now: now,
-      );
+          remindBefore: null,
+        );
 
-      expect(result.isSuccess, isTrue);
-      verifyNever(() => scheduler.schedule(any()));
-    });
-
-    test('restoring a deleted overdue task skips the future-deadline check',
-        () async {
-      final Task saved = buildTask(due: now.subtract(const Duration(hours: 2)));
-      when(() => repository.create(any())).thenAnswer(
-        (_) async => Success<Task>(saved),
-      );
-      final CreateTask useCase = CreateTask(
-        repository: repository,
-        reminderScheduler: scheduler,
-      );
-      final NewTask input = NewTask(
-        title: 'Overdue',
-        dueAt: now.subtract(const Duration(hours: 2)),
-        category: TaskCategory.work,
-        remindBefore: null,
-      );
-
-      expect(await useCase(input, now: now), isA<Err<Task>>());
-      expect(
-        await useCase(input, now: now, restoring: true),
-        isA<Success<Task>>(),
-      );
-    });
+        expect(await useCase(input, now: now), isA<Err<Task>>());
+        expect(
+          await useCase(input, now: now, restoring: true),
+          isA<Success<Task>>(),
+        );
+      },
+    );
 
     test('returns ValidationFailure for empty title', () async {
       final CreateTask useCase = CreateTask(
@@ -166,9 +171,9 @@ void main() {
   group('UpdateTask', () {
     test('cancels previous notification and schedules again', () async {
       final Task updated = buildTask(title: 'Updated');
-      when(() => repository.update(any())).thenAnswer(
-        (_) async => Success<Task>(updated),
-      );
+      when(
+        () => repository.update(any()),
+      ).thenAnswer((_) async => Success<Task>(updated));
 
       final UpdateTask useCase = UpdateTask(
         repository: repository,
@@ -185,9 +190,9 @@ void main() {
 
   group('DeleteTask', () {
     test('cancels notification then deletes', () async {
-      when(() => repository.delete(1)).thenAnswer(
-        (_) async => const Success<void>(null),
-      );
+      when(
+        () => repository.delete(1),
+      ).thenAnswer((_) async => const Success<void>(null));
 
       final DeleteTask useCase = DeleteTask(
         repository: repository,
@@ -272,14 +277,18 @@ void main() {
         createdAt: now,
         repeat: RepeatRule.daily,
       );
-      when(() => repository.getById(1))
-          .thenAnswer((_) async => Success<Task>(done));
-      when(() => repository.watchAll())
-          .thenAnswer((_) => Stream<List<Task>>.value(<Task>[done, spawned]));
-      when(() => repository.delete(2))
-          .thenAnswer((_) async => const Success<void>(null));
-      when(() => repository.setDone(id: 1, isDone: false, now: now))
-          .thenAnswer((_) async => Success<Task>(done.copyWith(isDone: false)));
+      when(
+        () => repository.getById(1),
+      ).thenAnswer((_) async => Success<Task>(done));
+      when(
+        () => repository.watchAll(),
+      ).thenAnswer((_) => Stream<List<Task>>.value(<Task>[done, spawned]));
+      when(
+        () => repository.delete(2),
+      ).thenAnswer((_) async => const Success<void>(null));
+      when(
+        () => repository.setDone(id: 1, isDone: false, now: now),
+      ).thenAnswer((_) async => Success<Task>(done.copyWith(isDone: false)));
 
       final ToggleTaskDone useCase = ToggleTaskDone(
         repository: repository,
@@ -292,8 +301,9 @@ void main() {
 
     test('reschedules when unmarked and remindAt is future', () async {
       final Task open = buildTask();
-      when(() => repository.getById(1))
-          .thenAnswer((_) async => Success<Task>(open));
+      when(
+        () => repository.getById(1),
+      ).thenAnswer((_) async => Success<Task>(open));
       when(
         () => repository.setDone(id: 1, isDone: false, now: now),
       ).thenAnswer((_) async => Success<Task>(open));
