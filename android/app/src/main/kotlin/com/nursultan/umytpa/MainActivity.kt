@@ -1,4 +1,4 @@
-package com.example.umytpa
+package com.nursultan.umytpa
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -8,7 +8,11 @@ class LocaleController extends ChangeNotifier {
   LocaleController._(this._prefs, this._locale);
 
   static const String _key = 'app_language';
-  static const List<Locale> supported = <Locale>[Locale('en'), Locale('ru')];
+  static const List<Locale> supported = <Locale>[
+    Locale('en'),
+    Locale('ru'),
+    Locale('kk'),
+  ];
 
   final SharedPreferences _prefs;
   Locale? _locale;

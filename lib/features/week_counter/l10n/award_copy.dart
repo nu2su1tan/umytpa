@@ -2,8 +2,11 @@
 /// what to do to get a special one. `mark` is stamped on the badge.
 typedef AwardCopy = ({String name, String why, String how, String mark});
 
-AwardCopy awardCopy(String localeName, String id) =>
-    (localeName.startsWith('ru') ? _ru : _en)[id]!;
+AwardCopy awardCopy(String localeName, String id) => (switch (localeName) {
+  final String l when l.startsWith('ru') => _ru,
+  final String l when l.startsWith('kk') => _kk,
+  _ => _en,
+})[id]!;
 
 const _en = <String, AwardCopy>{
   'w1': (
@@ -139,6 +142,75 @@ const _ru = <String, AwardCopy>{
     name: 'Прописался на экране',
     why: 'Поставили виджет: таймер видно без приложения',
     how: 'Поставьте виджет на главный экран',
+    mark: 'W',
+  ),
+};
+
+const _kk = <String, AwardCopy>{
+  'w1': (
+    name: 'Алғашқы жұма',
+    why: 'Таймермен бірінші апта артта қалды',
+    how: '',
+    mark: '1',
+  ),
+  'w4': (
+    name: 'Үрейсіз бір ай',
+    why: 'Демалысты төрт рет күттіңіз',
+    how: '',
+    mark: '4',
+  ),
+  'w10': (
+    name: 'Ондық',
+    why: 'Он апта. Бұл енді әдет',
+    how: '',
+    mark: '10',
+  ),
+  'w26': (
+    name: 'Жарты жылғы төзімділік',
+    why: 'Жиырма алты жұма сізді күтті',
+    how: '',
+    mark: '26',
+  ),
+  'w52': (
+    name: 'Жұмалар жылы',
+    why: 'Елу екі апта. Демалысқа шығуға болады',
+    how: '',
+    mark: '52',
+  ),
+  'friday13': (
+    name: 'Жұма, 13-і',
+    why: 'Жұма, 13-і күні демалысты күттіңіз де, байқамай қалдыңыз',
+    how: 'Жұма, 13-і күні демалысты күтіңіз',
+    mark: '13',
+  ),
+  'shortWeek': (
+    name: 'Қысқа апта',
+    why: 'Мереке бір жұмыс күнін алып кетті',
+    how: 'Мерекесі бар аптаны күтіңіз',
+    mark: '4к',
+  ),
+  'nightShift': (
+    name: 'Түнгі күзет',
+    why: 'Түнгі ауысымдармен демалысты күттіңіз',
+    how: 'Аптаны түнгі ауысымдармен өткізіңіз',
+    mark: 'Т',
+  ),
+  'vacation': (
+    name: 'Демалушы',
+    why: 'Алғашқы демалысты жоспарладыңыз',
+    how: '«Кестеде» демалыс жоспарлаңыз',
+    mark: 'Д',
+  ),
+  'lastMinute': (
+    name: 'Минуты-минутына',
+    why: 'Аптаның соңғы минутында қолданбада болдыңыз',
+    how: 'Аптаның соңғы минутында қолданбаны ашыңыз',
+    mark: '60',
+  ),
+  'widget': (
+    name: 'Экранға тіркелдім',
+    why: 'Виджет қойдыңыз: таймер қолданбасыз көрінеді',
+    how: 'Виджетті басты экранға қойыңыз',
     mark: 'W',
   ),
 };

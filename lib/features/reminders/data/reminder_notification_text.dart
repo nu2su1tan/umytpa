@@ -9,6 +9,9 @@ abstract final class ReminderNotificationText {
     if (languageCode == 'ru') {
       return _titleRu(remindBefore);
     }
+    if (languageCode == 'kk') {
+      return _titleKk(remindBefore);
+    }
     if (remindBefore == Duration.zero) {
       return 'Due now';
     }
@@ -37,15 +40,25 @@ abstract final class ReminderNotificationText {
   }
 
   static String doneLabel({String? languageCode}) =>
-      languageCode == 'ru' ? 'Сделал' : 'Done';
+      switch (languageCode) {
+        'ru' => 'Сделал',
+        'kk' => 'Дайын',
+        _ => 'Done',
+      };
 
   static String snoozeLabel({String? languageCode}) =>
-      languageCode == 'ru' ? '+10 мин' : '+10 min';
+      switch (languageCode) {
+        'ru' || 'kk' => '+10 мин',
+        _ => '+10 min',
+      };
 
   static String bodyFor(Task task, {String? languageCode}) {
     final String due = DateFormat.Hm().format(task.dueAt.toLocal());
     if (languageCode == 'ru') {
       return '${task.title} · до $due';
+    }
+    if (languageCode == 'kk') {
+      return '${task.title} · $due дейін';
     }
     return '${task.title} · due $due';
   }
@@ -101,5 +114,19 @@ abstract final class ReminderNotificationText {
       return 'Дедлайн через $h ${_plural(h, 'час', 'часа', 'часов')} ⏰';
     }
     return 'Дедлайн через $minutes ${_plural(minutes, 'минуту', 'минуты', 'минут')} ⏰';
+  }
+
+  static String _titleKk(Duration remindBefore) {
+    if (remindBefore == Duration.zero) {
+      return 'Дедлайн келді! ⏰';
+    }
+    final int minutes = remindBefore.inMinutes;
+    if (minutes % 1440 == 0) {
+      return 'Дедлайнға ${minutes ~/ 1440} күн қалды ⏰';
+    }
+    if (minutes % 60 == 0) {
+      return 'Дедлайнға ${minutes ~/ 60} сағат қалды ⏰';
+    }
+    return 'Дедлайнға $minutes минут қалды ⏰';
   }
 }

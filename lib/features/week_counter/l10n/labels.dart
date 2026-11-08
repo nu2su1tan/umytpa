@@ -22,9 +22,10 @@ extension Labels on AppLocalizations {
     BlockKind.daysOff => kindDaysOff,
   };
 
-  /// Russian names for Russian holidays, English names otherwise.
+  /// Local names for Russian/Kazakh holidays in ru/kk, English names otherwise.
   String holidayName(Holiday holiday) =>
-      localeName.startsWith('ru') && holiday.countryCode == 'RU'
+      (localeName.startsWith('ru') && holiday.countryCode == 'RU') ||
+          (localeName.startsWith('kk') && holiday.countryCode == 'KZ')
       ? holiday.localName
       : holiday.name;
 
@@ -39,7 +40,11 @@ extension Labels on AppLocalizations {
 
   /// The country's name in the app's language; [english] is the API's name.
   String countryLabel(String code, [String? english]) =>
-      (localeName.startsWith('ru') ? countryNamesRu[code] : null) ??
+      (switch (localeName) {
+        final String l when l.startsWith('ru') => countryNamesRu[code],
+        final String l when l.startsWith('kk') => countryNamesKk[code],
+        _ => null,
+      }) ??
       english ??
       code;
 

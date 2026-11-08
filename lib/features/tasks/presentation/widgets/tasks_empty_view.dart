@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/copy/profile_controller.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../week_counter/ui/kit/buttons.dart';
 import '../../../week_counter/ui/theme/tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 
+/// Shown under the filters when the user has no tasks at all.
 class TasksEmptyView extends StatelessWidget {
-  const TasksEmptyView({required this.onAddTask, super.key});
-
-  final VoidCallback onAddTask;
+  const TasksEmptyView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +17,7 @@ class TasksEmptyView extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(AppTheme.screenPadding * 1.5),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             const _EmptyIllustration(),
             const SizedBox(height: 28),
@@ -34,8 +32,6 @@ class TasksEmptyView extends StatelessWidget {
               style: t.body.copyWith(color: t.ink2),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 28),
-            AppButton(label: context.l10n.addTask, onTap: onAddTask, expand: false),
           ],
         ),
       ),

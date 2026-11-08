@@ -16,10 +16,11 @@ Future<void> main() async {
   await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
     DeviceOrientation.portraitUp,
   ]);
-  // Only the two languages the app ships, not all ~400 locales.
+  // Only the three languages the app ships, not all ~400 locales.
   await Future.wait(<Future<void>>[
     initializeDateFormatting('en'),
     initializeDateFormatting('ru'),
+    initializeDateFormatting('kk'),
   ]);
   await configureDependencies();
 

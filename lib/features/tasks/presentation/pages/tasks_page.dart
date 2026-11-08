@@ -38,9 +38,9 @@ import '../cubit/tasks_state.dart';
 import '../widgets/category_filter_bar.dart';
 import '../widgets/task_form_sheet.dart';
 import '../widgets/task_section_view.dart';
-import '../widgets/tasks_empty_view.dart';
 import '../widgets/tasks_error_view.dart';
 import '../widgets/tasks_header.dart';
+import '../widgets/tasks_empty_view.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class TasksPage extends StatefulWidget {
@@ -268,11 +268,6 @@ class _FabLayer extends StatelessWidget {
               ),
               child: BlocBuilder<TasksCubit, TasksState>(
                 builder: (BuildContext context, TasksState state) {
-                  final bool hideFab =
-                      state is TasksLoaded && state.isGloballyEmpty;
-                  if (hideFab) {
-                    return const SizedBox.shrink();
-                  }
                   return AppGlassFab(
                     onPressed: onAddTask,
                     tooltip: context.l10n.addTask,
@@ -302,12 +297,6 @@ class _LoadedBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (state.isGloballyEmpty) {
-      return SafeArea(
-        child: TasksEmptyView(onAddTask: onAddTask ?? () {}),
-      );
-    }
-
     return AppPage(
       largeTitle: false,
       trailing: const Row(
@@ -399,7 +388,12 @@ class _LoadedBody extends StatelessWidget {
             },
           ),
         ),
-        if (state.isFilterEmpty)
+        if (state.isGloballyEmpty)
+          const Padding(
+            padding: EdgeInsets.only(top: 32),
+            child: TasksEmptyView(),
+          )
+        else if (state.isFilterEmpty)
           const Padding(
             padding: EdgeInsets.only(top: 48),
             child: TasksFilterEmptyView(),

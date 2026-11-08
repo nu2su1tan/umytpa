@@ -102,12 +102,14 @@ class CopyPack {
   static final Map<int, int> _last = <int, int>{};
 
   static String _who(String s, String? name) {
-    final String? n = (name == null || name.trim().isEmpty) ? null : name.trim();
+    final String? n = (name == null || name.trim().isEmpty)
+        ? null
+        : name.trim();
     return s
         .replaceAll('{n}', n == null ? '' : ', $n')
         .replaceAll('{N}', n == null ? '' : '$n, ')
         .replaceFirstMapped(
-          RegExp(r'^[a-zа-яё]'),
+          RegExp(r'^[a-zа-яёәіңғүұқөһ]'),
           (Match m) => m.group(0)!.toUpperCase(),
         );
   }
@@ -158,32 +160,37 @@ class CopyPack {
     return _who(_stable(pool, _daySeed(now) + now.hour ~/ 6), name);
   }
 
-  String cheer({String? name, bool last = false}) => _who(
-        _fresh(last ? finalCheers : cheers, last ? 2 : 1),
-        name,
-      );
+  String cheer({String? name, bool last = false}) =>
+      _who(_fresh(last ? finalCheers : cheers, last ? 2 : 1), name);
 
   String emptyLine(DateTime now, {String? name}) =>
       _who(_stable(empty, _daySeed(now)), name);
 
   /// "Next up: 3 tasks"; varies between launches and as the count changes.
-  String leftLine(int count) => _stable(leftLines, sessionSeed + count)
-      .replaceAll('{tasks}', tasksPhrase(count));
+  String leftLine(int count) => _stable(
+    leftLines,
+    sessionSeed + count,
+  ).replaceAll('{tasks}', tasksPhrase(count));
 
   /// "Streak: 3 days"; varies between launches and as the streak grows.
-  String streakChip(int days) => _stable(streakChips, sessionSeed + days)
-      .replaceAll('{days}', daysPhrase(days));
+  String streakChip(int days) => _stable(
+    streakChips,
+    sessionSeed + days,
+  ).replaceAll('{days}', daysPhrase(days));
 
-  String tasksPhrase(int n) => lang == 'ru'
-      ? '$n ${_ru(n, 'задача', 'задачи', 'задач')}'
-      : '$n ${n == 1 ? 'task' : 'tasks'}';
+  String tasksPhrase(int n) => switch (lang) {
+    'ru' => '$n ${_ru(n, 'задача', 'задачи', 'задач')}',
+    'kk' => '$n тапсырма',
+    _ => '$n ${n == 1 ? 'task' : 'tasks'}',
+  };
 
-  String daysPhrase(int n) => lang == 'ru'
-      ? '$n ${_ru(n, 'день', 'дня', 'дней')}'
-      : '$n ${n == 1 ? 'day' : 'days'}';
+  String daysPhrase(int n) => switch (lang) {
+    'ru' => '$n ${_ru(n, 'день', 'дня', 'дней')}',
+    'kk' => '$n күн',
+    _ => '$n ${n == 1 ? 'day' : 'days'}',
+  };
 
-  String rescueText(int count) =>
-      rescueBanner.replaceAll('{count}', '$count');
+  String rescueText(int count) => rescueBanner.replaceAll('{count}', '$count');
 
   /// The line for a streak of [days], or `null` for no streak.
   String? streakNote(int days) {
@@ -207,18 +214,31 @@ class CopyPack {
     final List<String> pool = previous == 0
         ? recapFirst
         : count > previous
-            ? recapMore
-            : count == previous
-                ? recapSame
-                : recapLess;
-    return _stable(pool, count + previous)
-        .replaceAll('{count}', '$count')
-        .replaceAll('{diff}', '$diff');
+        ? recapMore
+        : count == previous
+        ? recapSame
+        : recapLess;
+    return _stable(
+      pool,
+      count + previous,
+    ).replaceAll('{count}', '$count').replaceAll('{diff}', '$diff');
   }
 
   /// "in 5 minutes" / "через 5 минут".
   String when(Duration d) {
     final int minutes = d.inMinutes;
+    if (lang == 'kk') {
+      if (minutes <= 0) {
+        return 'дәл қазір';
+      }
+      if (minutes % 1440 == 0) {
+        return '${minutes ~/ 1440} күннен кейін';
+      }
+      if (minutes % 60 == 0) {
+        return '${minutes ~/ 60} сағаттан кейін';
+      }
+      return '$minutes минуттан кейін';
+    }
     if (lang == 'ru') {
       if (minutes <= 0) {
         return 'прямо сейчас';
@@ -288,11 +308,22 @@ class CopyPack {
   }
 
   static CopyPack of(String languageCode, CopyTone tone) {
-    final bool ru = languageCode == 'ru';
     return switch (tone) {
-      CopyTone.friendly => ru ? _ruFriendly : _enFriendly,
-      CopyTone.calm => ru ? _ruCalm : _enCalm,
-      CopyTone.coach => ru ? _ruCoach : _enCoach,
+      CopyTone.friendly => switch (languageCode) {
+        'ru' => _ruFriendly,
+        'kk' => _kkFriendly,
+        _ => _enFriendly,
+      },
+      CopyTone.calm => switch (languageCode) {
+        'ru' => _ruCalm,
+        'kk' => _kkCalm,
+        _ => _enCalm,
+      },
+      CopyTone.coach => switch (languageCode) {
+        'ru' => _ruCoach,
+        'kk' => _kkCoach,
+        _ => _enCoach,
+      },
     };
   }
 }
@@ -324,14 +355,8 @@ const CopyPack _ruFriendly = CopyPack(
     '{N}ты вернулся! 🔥',
     'С возвращением{n}!',
   ],
-  monday: <String>[
-    'Понедельник{n}, погнали 🚀',
-    'Новая неделя{n} 🚀',
-  ],
-  friday: <String>[
-    'Пятница{n}! Добиваем 🎉',
-    'Пятница{n}, финальный рывок',
-  ],
+  monday: <String>['Понедельник{n}, погнали 🚀', 'Новая неделя{n} 🚀'],
+  friday: <String>['Пятница{n}! Добиваем 🎉', 'Пятница{n}, финальный рывок'],
   cheers: <String>[
     'Красава 🔥',
     'Ещё одна в копилку ✅',
@@ -360,8 +385,18 @@ const CopyPack _ruFriendly = CopyPack(
   todayNothing: 'На сегодня тишина — чилль 😎',
   todayAllDone: 'Всё закрыл — ты огонь! 🔥',
   streakLost: 'Серия сорвалась — бывает. Начнём заново, я с тобой 💪',
-  leftLines: <String>['Ещё {tasks} — и свободен', 'На очереди {tasks}', 'Впереди {tasks}', 'Добиваем: {tasks}'],
-  streakChips: <String>['{days} подряд', 'Серия: {days}', '{days} в огне', 'Уже {days} без пропусков'],
+  leftLines: <String>[
+    'Ещё {tasks} — и свободен',
+    'На очереди {tasks}',
+    'Впереди {tasks}',
+    'Добиваем: {tasks}',
+  ],
+  streakChips: <String>[
+    '{days} подряд',
+    'Серия: {days}',
+    '{days} в огне',
+    'Уже {days} без пропусков',
+  ],
   streakNotes: <int, String>{
     1: 'Первый день — поехали',
     3: '{count} дня подряд — разгоняемся 🚀',
@@ -372,7 +407,9 @@ const CopyPack _ruFriendly = CopyPack(
   recapMore: <String>[
     'За неделю закрыл {count} — это на {diff} больше, чем в прошлую 🔥',
   ],
-  recapSame: <String>['За неделю закрыл {count} — ровно как в прошлую, стабильно'],
+  recapSame: <String>[
+    'За неделю закрыл {count} — ровно как в прошлую, стабильно',
+  ],
   recapLess: <String>[
     'За неделю закрыл {count} — на {diff} меньше, зато впереди новая неделя',
   ],
@@ -394,22 +431,10 @@ const CopyPack _ruFriendly = CopyPack(
 const CopyPack _ruCalm = CopyPack(
   lang: 'ru',
   morning: <String>['Доброе утро{n}', 'Начнём спокойно{n}'],
-  afternoon: <String>[
-    'Добрый день{n}',
-    'Спокойного дня{n}',
-  ],
-  evening: <String>[
-    'Добрый вечер{n}',
-    'Время подвести итоги{n}',
-  ],
-  night: <String>[
-    'Уже поздно{n}',
-    'Пора отдохнуть{n}',
-  ],
-  comeback: <String>[
-    'Рады видеть{n}',
-    'С возвращением{n}',
-  ],
+  afternoon: <String>['Добрый день{n}', 'Спокойного дня{n}'],
+  evening: <String>['Добрый вечер{n}', 'Время подвести итоги{n}'],
+  night: <String>['Уже поздно{n}', 'Пора отдохнуть{n}'],
+  comeback: <String>['Рады видеть{n}', 'С возвращением{n}'],
   monday: <String>['Понедельник{n}. Шаг за шагом'],
   friday: <String>['Завершим неделю{n}'],
   cheers: <String>['Готово', 'Отлично', 'Хорошая работа', 'Шаг сделан'],
@@ -455,29 +480,19 @@ const CopyPack _ruCalm = CopyPack(
 
 const CopyPack _ruCoach = CopyPack(
   lang: 'ru',
-  morning: <String>[
-    'Подъём{n}!',
-    'Начинай с главного{n}',
-  ],
-  afternoon: <String>[
-    'Не сбавляй темп{n}',
-    'Что уже сделано{n}?',
-  ],
-  evening: <String>[
-    'Закрывай остатки{n}',
-    'Подведи итоги{n}',
-  ],
-  night: <String>[
-    'Пора спать{n}',
-    'Хватит на сегодня{n}',
-  ],
-  comeback: <String>[
-    'Возвращайся в ритм{n}',
-    'Начинаем сейчас{n}',
-  ],
+  morning: <String>['Подъём{n}!', 'Начинай с главного{n}'],
+  afternoon: <String>['Не сбавляй темп{n}', 'Что уже сделано{n}?'],
+  evening: <String>['Закрывай остатки{n}', 'Подведи итоги{n}'],
+  night: <String>['Пора спать{n}', 'Хватит на сегодня{n}'],
+  comeback: <String>['Возвращайся в ритм{n}', 'Начинаем сейчас{n}'],
   monday: <String>['Задай темп{n}'],
   friday: <String>['Закрой неделю сильно{n}'],
-  cheers: <String>['Сделано. Дальше.', 'Так и надо.', 'Следующая.', 'Результат есть.'],
+  cheers: <String>[
+    'Сделано. Дальше.',
+    'Так и надо.',
+    'Следующая.',
+    'Результат есть.',
+  ],
   finalCheers: <String>[
     'План на день выполнен{n}. Так держать',
     'Всё закрыто. Это результат дисциплины',
@@ -505,7 +520,9 @@ const CopyPack _ruCoach = CopyPack(
     30: '{count} дней. Железная дисциплина',
   },
   recapMore: <String>['За неделю закрыто {count}, на {diff} больше. Растёшь'],
-  recapSame: <String>['За неделю закрыто {count}, столько же. Пора поднять планку'],
+  recapSame: <String>[
+    'За неделю закрыто {count}, столько же. Пора поднять планку',
+  ],
   recapLess: <String>['За неделю закрыто {count}, на {diff} меньше. Подтянись'],
   recapFirst: <String>['За неделю закрыто {count}. Теперь только лучше'],
   reminderTitles: <String>['Срок {when}. Приступай'],
@@ -516,23 +533,18 @@ const CopyPack _ruCoach = CopyPack(
 
 const CopyPack _enFriendly = CopyPack(
   lang: 'en',
-  morning: <String>['Morning{n} ☀️', 'Rise and shine{n}', 'Good morning{n}, let’s go'],
+  morning: <String>[
+    'Morning{n} ☀️',
+    'Rise and shine{n}',
+    'Good morning{n}, let’s go',
+  ],
   afternoon: <String>[
     'Hey{n}, how’s the day going?',
     'Afternoon{n} — keep the pace',
   ],
-  evening: <String>[
-    'Evening{n} 🌙',
-    'Evening{n}, wrap it up',
-  ],
-  night: <String>[
-    'Still up{n}? 🌙',
-    'It’s late{n} 🌙',
-  ],
-  comeback: <String>[
-    'Finally{n}, I missed you 👀',
-    'You’re back{n}! 🔥',
-  ],
+  evening: <String>['Evening{n} 🌙', 'Evening{n}, wrap it up'],
+  night: <String>['Still up{n}? 🌙', 'It’s late{n} 🌙'],
+  comeback: <String>['Finally{n}, I missed you 👀', 'You’re back{n}! 🔥'],
   monday: <String>['Monday{n}, let’s go 🚀'],
   friday: <String>['Friday{n}! Finish strong 🎉'],
   cheers: <String>[
@@ -560,8 +572,18 @@ const CopyPack _enFriendly = CopyPack(
   todayNothing: 'Nothing planned today — chill 😎',
   todayAllDone: 'All done — you’re on fire! 🔥',
   streakLost: 'Streak broke — it happens. Let’s start over 💪',
-  leftLines: <String>['{tasks} to go', 'Next up: {tasks}', 'Only {tasks} left', 'Finish {tasks} and you’re free'],
-  streakChips: <String>['{days} in a row', 'Streak: {days}', '{days} on fire', '{days} and counting'],
+  leftLines: <String>[
+    '{tasks} to go',
+    'Next up: {tasks}',
+    'Only {tasks} left',
+    'Finish {tasks} and you’re free',
+  ],
+  streakChips: <String>[
+    '{days} in a row',
+    'Streak: {days}',
+    '{days} on fire',
+    '{days} and counting',
+  ],
   streakNotes: <int, String>{
     1: 'Day one — let’s go',
     3: '{count} days — warming up 🚀',
@@ -569,8 +591,12 @@ const CopyPack _enFriendly = CopyPack(
     14: 'Two weeks! That’s a habit',
     30: '{count} days — you’re a machine',
   },
-  recapMore: <String>['This week you finished {count} — {diff} more than last week 🔥'],
-  recapSame: <String>['This week you finished {count} — same as last week, steady'],
+  recapMore: <String>[
+    'This week you finished {count} — {diff} more than last week 🔥',
+  ],
+  recapSame: <String>[
+    'This week you finished {count} — same as last week, steady',
+  ],
   recapLess: <String>[
     'This week you finished {count} — {diff} fewer, but a new week is coming',
   ],
@@ -594,14 +620,8 @@ const CopyPack _enCalm = CopyPack(
   morning: <String>['Good morning{n}', 'Let’s begin gently{n}'],
   afternoon: <String>['Good afternoon{n}', 'Steady does it{n}'],
   evening: <String>['Good evening{n}', 'Time to review the day'],
-  night: <String>[
-    'It’s late{n}',
-    'Time to rest{n}',
-  ],
-  comeback: <String>[
-    'Good to see you again{n}',
-    'Welcome back{n}',
-  ],
+  night: <String>['It’s late{n}', 'Time to rest{n}'],
+  comeback: <String>['Good to see you again{n}', 'Welcome back{n}'],
   monday: <String>['A new week{n}'],
   friday: <String>['Let’s wrap up{n}'],
   cheers: <String>['Done', 'Well done', 'Good work', 'One step taken'],
@@ -631,9 +651,15 @@ const CopyPack _enCalm = CopyPack(
     14: 'Two weeks in a row',
     30: '{count} days in a row',
   },
-  recapMore: <String>['This week you completed {count} tasks, {diff} more than before'],
-  recapSame: <String>['This week you completed {count} tasks, same as last week'],
-  recapLess: <String>['This week you completed {count} tasks, {diff} fewer. That’s fine'],
+  recapMore: <String>[
+    'This week you completed {count} tasks, {diff} more than before',
+  ],
+  recapSame: <String>[
+    'This week you completed {count} tasks, same as last week',
+  ],
+  recapLess: <String>[
+    'This week you completed {count} tasks, {diff} fewer. That’s fine',
+  ],
   recapFirst: <String>['This week you completed {count} tasks. A good start'],
   reminderTitles: <String>['Reminder: due {when}'],
   reminderBody: '{title} · due {time}',
@@ -646,17 +672,16 @@ const CopyPack _enCoach = CopyPack(
   morning: <String>['Up{n}. Plan time', 'Start with what matters{n}'],
   afternoon: <String>['Midday{n}. Don’t slow down', 'What’s done so far{n}?'],
   evening: <String>['Evening{n}. Close what’s left', 'Clear the backlog{n}'],
-  night: <String>[
-    'Sleep is discipline{n}',
-    'Enough for today{n}',
-  ],
-  comeback: <String>[
-    'Back in rhythm{n}',
-    'Start now{n}',
-  ],
+  night: <String>['Sleep is discipline{n}', 'Enough for today{n}'],
+  comeback: <String>['Back in rhythm{n}', 'Start now{n}'],
   monday: <String>['Set the pace{n}'],
   friday: <String>['Close the week strong{n}'],
-  cheers: <String>['Done. Next.', 'That’s how it’s done.', 'Next one.', 'Result delivered.'],
+  cheers: <String>[
+    'Done. Next.',
+    'That’s how it’s done.',
+    'Next one.',
+    'Result delivered.',
+  ],
   finalCheers: <String>[
     'Today’s plan is complete{n}. Keep going',
     'Everything closed. That’s discipline.',
@@ -684,11 +709,223 @@ const CopyPack _enCoach = CopyPack(
     30: '{count} days. Iron discipline',
   },
   recapMore: <String>['{count} closed this week, {diff} more. You’re growing'],
-  recapSame: <String>['{count} closed this week, same as before. Raise the bar'],
+  recapSame: <String>[
+    '{count} closed this week, same as before. Raise the bar',
+  ],
   recapLess: <String>['{count} closed this week, {diff} fewer. Step it up'],
   recapFirst: <String>['{count} closed this week. Only up from here'],
   reminderTitles: <String>['Due {when}. Get started'],
   reminderBody: '{title} · due {time}',
   alarmTitles: <String>['Time’s up. What’s done?'],
   focusDone: 'Session closed. Result counted',
+);
+
+const CopyPack _kkFriendly = CopyPack(
+  lang: 'kk',
+  morning: <String>[
+    'Қайырлы таң{n} ☀️',
+    'Таң сәріден{n}, кеттік',
+    'Тұр{n}, істер күтпейді',
+  ],
+  afternoon: <String>[
+    'Күн қалай{n}, жақсы ма?',
+    'Сәлем{n}, көңіл-күй қалай?',
+    'Қарқынды сақтаймыз{n}',
+  ],
+  evening: <String>[
+    'Қайырлы кеш{n} 🌙',
+    'Кеш болды{n}, қалғанын жабамыз',
+    'Күн қалай өтті{n}?',
+  ],
+  night: <String>[
+    'Неге ұйықтамайсың{n}? 🌙',
+    'Түнгі режим{n} 🌙',
+    'Түн болды{n}',
+  ],
+  comeback: <String>[
+    'Ақыры келдің{n}, сағындым 👀',
+    '{N}қайта оралдың! 🔥',
+    'Қош келдің{n}!',
+  ],
+  monday: <String>['Дүйсенбі{n}, кеттік 🚀', 'Жаңа апта{n} 🚀'],
+  friday: <String>['Жұма{n}! Аяқтап тастаймыз 🎉', 'Жұма{n}, соңғы серпін'],
+  cheers: <String>[
+    'Жарайсың 🔥',
+    'Тағы біреуі қорда ✅',
+    'Ой, сен керемет екенсің!',
+    'Таза жұмыс 👌',
+    'Осылай жалғастыр{n}!',
+    'Бірі азайды, сен ағындасың',
+  ],
+  finalCheers: <String>[
+    'Бүгінгінің бәрін жаптың{n} — сен отсың! 🔥',
+    'Қалғаны жоқ! Енді демалуға болады 😎',
+    'Міне, күн{n}! Бәрі орындалды 🎉',
+  ],
+  empty: <String>[
+    'Демалыс режимі қосулы 😎',
+    'Ертеңгі арманды жазуға таптырмас сәт',
+    'Бірде-бір дедлайн жоқ — тамаша',
+    'Желдей еркінсің{n}',
+  ],
+  overdueTitle: 'Шұғыл 🔥',
+  overdueNudge: 'Бұл тапсырмалар сені күтіп қалды',
+  rescueBanner: 'Мерзімі өткені жиналды: {count}. Уайымдама, болады.',
+  rescueAction: 'Бәрін ертеңге ауыстыру',
+  emptyTitle: 'Мұнда әзірге бос',
+  emptyBody: 'Алғашқы тапсырмаңды қос',
+  todayNothing: 'Бүгінге тыныштық — демал 😎',
+  todayAllDone: 'Бәрін жаптың — сен отсың! 🔥',
+  streakLost: 'Серия үзілді — болады. Қайта бастаймыз, мен сенімен 💪',
+  leftLines: <String>[
+    'Тағы {tasks} — сосын бостансың',
+    'Кезекте {tasks}',
+    'Алда {tasks}',
+    'Аяқтаймыз: {tasks}',
+  ],
+  streakChips: <String>[
+    '{days} қатарынан',
+    'Серия: {days}',
+    '{days} отта',
+    '{days} жіберіссіз',
+  ],
+  streakNotes: <int, String>{
+    1: 'Бірінші күн — кеттік',
+    3: '{count} күн қатарынан — қарқын алып келеміз 🚀',
+    7: 'Отты апта — бұзба 🔥',
+    14: 'Екі апта! Бұл енді әдет',
+    30: '{count} күн — сен машинасың',
+  },
+  recapMore: <String>[
+    'Апта ішінде {count} тапсырма жаптың — өткен аптадан {diff} артық 🔥',
+  ],
+  recapSame: <String>[
+    'Апта ішінде {count} тапсырма жаптың — өткен аптадағыдай, тұрақты',
+  ],
+  recapLess: <String>[
+    'Апта ішінде {count} тапсырма жаптың — {diff} кем, бірақ алда жаңа апта',
+  ],
+  recapFirst: <String>[
+    'Апта ішінде {count} тапсырма жаптың. Бастамаға жарады!',
+  ],
+  reminderTitles: <String>[
+    'Ей{n}, дедлайн {when} ⏰',
+    'Достық ескерту: дедлайн {when}',
+    'Ұмытпадың ба? Дедлайн {when}',
+  ],
+  reminderBody: '«{title}» · {time} дейін',
+  alarmTitles: <String>[
+    'Уақыт бітті, кеттік! ⏰',
+    'Дедлайн келді!',
+    'Тық-тық — уақыт келді',
+  ],
+  focusDone: 'Жарайсың, сессия аяқталды!',
+);
+
+const CopyPack _kkCalm = CopyPack(
+  lang: 'kk',
+  morning: <String>['Қайырлы таң{n}', 'Асықпай бастайық{n}'],
+  afternoon: <String>['Қайырлы күн{n}', 'Тыныш күн тілеймін{n}'],
+  evening: <String>['Қайырлы кеш{n}', 'Күнді қорытындылайтын уақыт{n}'],
+  night: <String>['Кеш болды{n}', 'Демалатын уақыт{n}'],
+  comeback: <String>['Көргенімізге қуаныштымыз{n}', 'Қош келдіңіз{n}'],
+  monday: <String>['Дүйсенбі{n}. Қадам-қадаммен'],
+  friday: <String>['Аптаны аяқтайық{n}'],
+  cheers: <String>['Дайын', 'Тамаша', 'Жақсы жұмыс', 'Қадам жасалды'],
+  finalCheers: <String>[
+    'Бүгінгі барлық іс орындалды. Жақсы жұмыс{n}',
+    'Бүгінге осы. Демалуға болады',
+  ],
+  empty: <String>[
+    'Бүгін шұғыл іс жоқ',
+    'Тыныш күн — ертеңді жоспарлауға болады',
+  ],
+  overdueTitle: 'Мерзімі өтті',
+  overdueNudge: 'Бұл тапсырмалар назар аударуды күтуде',
+  rescueBanner:
+      'Мерзімі өткен тапсырмалар: {count}. Оларды сабырмен ауыстыруға болады.',
+  rescueAction: 'Ертеңге ауыстыру',
+  emptyTitle: 'Әзірге тапсырма жоқ',
+  emptyBody: 'Біріншісін қосыңыз',
+  todayNothing: 'Бүгінге ештеңе жоспарланбаған',
+  todayAllDone: 'Бәрі орындалды. Жақсы жұмыс!',
+  streakLost: 'Серия үзілді. Бұл қалыпты — қайта бастаңыз',
+  leftLines: <String>['Қалған істер: {tasks}', 'Бүгінге: {tasks}'],
+  streakChips: <String>['{days} қатарынан', 'Серия: {days}'],
+  streakNotes: <int, String>{
+    1: 'Бірінші күн',
+    3: '{count} күн қатарынан',
+    7: 'Бір апта қатарынан',
+    14: 'Екі апта қатарынан',
+    30: '{count} күн қатарынан',
+  },
+  recapMore: <String>[
+    'Апта ішінде орындалған тапсырма: {count}. Бұл бұрыннан {diff} артық',
+  ],
+  recapSame: <String>[
+    'Апта ішінде орындалған тапсырма: {count}, өткен аптадағыдай',
+  ],
+  recapLess: <String>[
+    'Апта ішінде орындалған тапсырма: {count}, {diff} кем. Бұл қалыпты',
+  ],
+  recapFirst: <String>[
+    'Апта ішінде орындалған тапсырма: {count}. Жақсы бастама',
+  ],
+  reminderTitles: <String>['Еске салу: мерзімі {when}'],
+  reminderBody: '{title} · {time} дейін',
+  alarmTitles: <String>['Мерзім келді'],
+  focusDone: 'Сессия аяқталды',
+);
+
+const CopyPack _kkCoach = CopyPack(
+  lang: 'kk',
+  morning: <String>['Тұр{n}!', 'Ең маңыздысынан баста{n}'],
+  afternoon: <String>['Қарқынды баяулатпа{n}', 'Не істелді{n}?'],
+  evening: <String>['Қалғандарын жап{n}', 'Қорытынды шығар{n}'],
+  night: <String>['Ұйықтайтын уақыт{n}', 'Бүгінге жеткілікті{n}'],
+  comeback: <String>['Ырғаққа орал{n}', 'Қазір бастаймыз{n}'],
+  monday: <String>['Қарқын орнат{n}'],
+  friday: <String>['Аптаны мықты аяқта{n}'],
+  cheers: <String>[
+    'Орындалды. Әрі қарай.',
+    'Дәл солай.',
+    'Келесі.',
+    'Нәтиже бар.',
+  ],
+  finalCheers: <String>[
+    'Күндік жоспар орындалды{n}. Осылай жалғастыр',
+    'Бәрі жабылды. Бұл тәртіптің нәтижесі',
+  ],
+  empty: <String>[
+    'Тапсырма жоқ — ертеңді алдын ала жоспарла',
+    'Бос уақыт — оны ақылмен пайдалан',
+  ],
+  overdueTitle: 'Мерзімі өтті — шеш',
+  overdueNudge: 'Мұны кейінге қалдырмай, істеу керек',
+  rescueBanner: 'Мерзімі өтті: {count}. Тәртіпке келтіретін уақыт.',
+  rescueAction: 'Ертеңге ауыстырып, аяқта',
+  emptyTitle: 'Жоспар бос',
+  emptyBody: 'Алғашқы тапсырманы қос',
+  todayNothing: 'Бүгінгі жоспар бос — түзет',
+  todayAllDone: 'Жоспар орындалды. Тамаша тәртіп',
+  streakLost: 'Серия үзілді. Орал — ақталусыз',
+  leftLines: <String>['Алда {tasks}. Жұмысқа кірис', 'Орындауға: {tasks}'],
+  streakChips: <String>['Серия: {days}', '{days} жіберіссіз'],
+  streakNotes: <int, String>{
+    1: 'Бірінші күн. Бастама жасалды',
+    3: '{count} күн қатарынан. Ырғақты сақта',
+    7: 'Тәртіп аптасы',
+    14: 'Екі апта. Бұл жүйе',
+    30: '{count} күн. Темірдей тәртіп',
+  },
+  recapMore: <String>[
+    'Апта ішінде {count} жабылды, {diff} артық. Өсіп келесің',
+  ],
+  recapSame: <String>['Апта ішінде {count} жабылды, сонша. Талапты көтер'],
+  recapLess: <String>['Апта ішінде {count} жабылды, {diff} кем. Қайрат қыл'],
+  recapFirst: <String>['Апта ішінде {count} жабылды. Енді тек жақсы болады'],
+  reminderTitles: <String>['Мерзімі {when}. Кіріс'],
+  reminderBody: '{title} · {time} дейін',
+  alarmTitles: <String>['Уақыт бітті. Не істелді?'],
+  focusDone: 'Сессия жабылды. Нәтиже есептелді',
 );

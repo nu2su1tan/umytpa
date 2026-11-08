@@ -6,7 +6,7 @@ import 'package:home_widget/home_widget.dart';
 
 /// Pushes the Tracker summary to the Android home-screen widget.
 abstract final class TaskWidgetSync {
-  static const String androidName = 'com.example.umytpa.TaskWidgetProvider';
+  static const String androidName = 'com.nursultan.umytpa.TaskWidgetProvider';
 
   static bool get isSupported => !kIsWeb && Platform.isAndroid;
 

@@ -22,21 +22,15 @@ abstract interface class WidgetSync {
 }
 
 class HomeWidgetSync implements WidgetSync {
-  static const appGroupId = 'group.com.example.weekCounter';
   static const iOSName = 'WeekCounterWidget';
   static const androidName =
       'com.example.week_counter.WeekCounterWidgetProvider';
   static const _system = MethodChannel('week_counter/system');
 
-  static bool get isSupported =>
-      !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+  /// iOS has no widget extension yet, so only Android is supported.
+  static bool get isSupported => !kIsWeb && Platform.isAndroid;
 
-  /// Must run before the first [push] so iOS writes to the shared App Group.
-  static Future<void> init() async {
-    if (!kIsWeb && Platform.isIOS) {
-      await HomeWidget.setAppGroupId(appGroupId);
-    }
-  }
+  static Future<void> init() async {}
 
   Future<void> _pending = Future.value();
 
@@ -61,7 +55,6 @@ class HomeWidgetSync implements WidgetSync {
         );
       }
     } on PlatformException catch (e) {
-      // Before the iOS App Group is set up the widget simply has no data.
       debugPrint('Widget update failed: $e');
     }
   }

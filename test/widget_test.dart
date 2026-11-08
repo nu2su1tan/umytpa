@@ -7,6 +7,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:umytpa/core/copy/copy_pack.dart';
 import 'package:umytpa/core/theme/app_theme.dart';
+import 'package:umytpa/core/ui/language_sheet.dart';
+import 'package:umytpa/core/ui/profile_sheet.dart';
 import 'package:umytpa/features/tasks/domain/entities/focus_session.dart';
 import 'package:umytpa/features/tasks/domain/entities/task.dart';
 import 'package:umytpa/features/tasks/domain/entities/task_category.dart';
@@ -81,14 +83,16 @@ void main() {
     );
   }
 
-  testWidgets('empty state shows No tasks yet', (tester) async {
+  testWidgets('no tasks shows the usual page with an empty list', (tester) async {
     await pumpTasksView(tester);
     controller.add(const <Task>[]);
     await tester.pumpAndSettle();
 
     expect(find.text('Nothing here yet'), findsOneWidget);
     expect(find.text('Throw in your first task'), findsOneWidget);
-    expect(find.text('Add task'), findsOneWidget);
+    expect(find.byType(LanguageButton), findsOneWidget);
+    expect(find.byType(ProfileButton), findsOneWidget);
+    expect(find.byTooltip('Add task'), findsOneWidget);
   });
 
   testWidgets('list shows greeting, chips and reminder label', (tester) async {

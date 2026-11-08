@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.umytpa"
+    namespace = "com.nursultan.umytpa"
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.umytpa"
+        applicationId = "com.nursultan.umytpa"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

@@ -985,6 +985,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get languageRussian => 'Русский';
 
   @override
+  String get languageKazakh => 'Қазақша';
+
+  @override
   String get languageButton => 'Сменить язык';
 
   @override

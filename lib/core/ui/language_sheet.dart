@@ -14,12 +14,13 @@ String languageName(BuildContext context, Locale? locale) {
   final l10n = context.l10n;
   return switch (locale?.languageCode) {
     'ru' => l10n.languageRussian,
+    'kk' => l10n.languageKazakh,
     'en' => l10n.languageEnglish,
     _ => l10n.languageSystem,
   };
 }
 
-/// Opens the language picker: system, English, Russian.
+/// Opens the language picker: system, English, Russian, Kazakh.
 Future<void> showLanguageSheet(BuildContext context) {
   return showAppSheet<void>(
     context,
@@ -85,6 +86,12 @@ class _LanguageOptions extends StatelessWidget {
               title: l10n.languageRussian,
               selected: current == 'ru',
               onTap: () => choose(const Locale('ru')),
+            ),
+            GroupRow(
+              icon: Icons.language_rounded,
+              title: l10n.languageKazakh,
+              selected: current == 'kk',
+              onTap: () => choose(const Locale('kk')),
             ),
           ],
         );

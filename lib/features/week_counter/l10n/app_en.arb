@@ -589,6 +589,7 @@
   "languageSystem": "System",
   "languageEnglish": "English",
   "languageRussian": "Русский",
+  "languageKazakh": "Қазақша",
   "languageButton": "Change language",
   "repeatLabel": "Repeat",
   "repeatNone": "Never",
