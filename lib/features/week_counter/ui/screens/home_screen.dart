@@ -187,11 +187,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // There is no iOS widget yet, so the tip is Android-only.
   bool get _showWidgetTip =>
       !_controller.prefs.widgetTipDone &&
       !kIsWeb &&
-      (defaultTargetPlatform == TargetPlatform.iOS ||
-          defaultTargetPlatform == TargetPlatform.android);
+      defaultTargetPlatform == TargetPlatform.android;
 
   /// The one notice worth showing under the timer, most urgent first.
   Widget? _hint(

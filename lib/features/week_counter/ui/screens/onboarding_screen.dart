@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../l10n/labels.dart';
+import '../../services/widget_sync.dart';
 import '../../state/app_controller.dart';
 import '../kit/app_page.dart';
 import '../kit/buttons.dart';
@@ -17,6 +18,10 @@ import '../theme/tokens.dart';
 import '../widgets/schedule_controls.dart';
 import '../widgets/widget_sheet.dart';
 import 'country_picker_screen.dart';
+
+/// The widget step only exists where there is a home-screen widget (Android).
+final bool _hasWidgetStep = HomeWidgetSync.isSupported;
+int get _totalSteps => _hasWidgetStep ? 3 : 2;
 
 /// First launch: a welcome screen, then the work week in three steps.
 /// Changes apply right away; skipping keeps the defaults.
@@ -199,7 +204,7 @@ class _Step extends StatelessWidget {
                     ExcludeSemantics(
                       child: Row(
                         children: [
-                          for (var i = 1; i <= 3; i++) ...[
+                          for (var i = 1; i <= _totalSteps; i++) ...[
                             if (i > 1) const SizedBox(width: 4),
                             Expanded(child: _ProgressBar(filled: i <= step)),
                           ],
@@ -207,7 +212,7 @@ class _Step extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text(l10n.onbStep(step, 3), style: _stepStyle(t)),
+                    Text(l10n.onbStep(step, _totalSteps), style: _stepStyle(t)),
                     const SizedBox(height: 8),
                     FractionallySizedBox(
                       widthFactor: 0.92,
@@ -454,10 +459,12 @@ class _TimeStep extends StatelessWidget {
           title: l10n.onbTimeTitle,
           actions: [
             AppButton(
-              label: l10n.onbNext,
+              label: _hasWidgetStep ? l10n.onbNext : l10n.done,
               onTap: schedule.workdays.isEmpty
                   ? null
-                  : () => _push(context, _WidgetStep(controller: controller)),
+                  : _hasWidgetStep
+                  ? () => _push(context, _WidgetStep(controller: controller))
+                  : controller.completeOnboarding,
             ),
           ],
           children: [

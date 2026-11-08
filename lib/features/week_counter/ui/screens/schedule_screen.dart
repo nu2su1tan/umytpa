@@ -293,11 +293,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 title: l10n.addWidget,
                 onTap: _controller.widgetSync.pinWidget,
               ),
-            GroupRow(
-              icon: Icons.widgets_rounded,
-              title: l10n.widgetsTitle,
-              onTap: () => showWidgetSheet(context, _controller),
-            ),
+            if (android)
+              GroupRow(
+                icon: Icons.widgets_rounded,
+                title: l10n.widgetsTitle,
+                onTap: () => showWidgetSheet(context, _controller),
+              ),
           ],
         );
       },
