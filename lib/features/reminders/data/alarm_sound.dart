@@ -31,10 +31,6 @@ class AlarmSound {
     'aac',
   ];
 
-  /// iOS plays notification sounds only from these formats, so the rest are
-  /// converted to CAF (see `AppDelegate.convertToCaf`).
-  static const Set<String> _iosNative = <String>{'wav', 'aiff', 'aif', 'caf'};
-
   static const MethodChannel _audio = MethodChannel('umytpa/audio');
 
   /// Name of the copied file; `null` for the built-in sound.
@@ -85,7 +81,9 @@ class AlarmSound {
       return null;
     }
     String extension = source.split('.').last.toLowerCase();
-    final bool convert = Platform.isIOS && !_iosNative.contains(extension);
+    // iOS plays notification sounds only from PCM files of at most 30 seconds,
+    // so every pick is converted to CAF and cut (see `AppDelegate.convertToCaf`).
+    final bool convert = Platform.isIOS;
     if (convert) {
       extension = 'caf';
     }
@@ -94,10 +92,19 @@ class AlarmSound {
         'alarm_${DateTime.now().millisecondsSinceEpoch}.$extension';
     final String target = await _pathFor(stored);
     if (convert) {
-      await _audio.invokeMethod<bool>(
-        'toCaf',
-        <String, String>{'source': source, 'target': target},
-      );
+      try {
+        await _audio.invokeMethod<bool>(
+          'toCaf',
+          <String, String>{'source': source, 'target': target},
+        );
+      } on Object {
+        // Do not leave a half-written file behind.
+        final File partial = File(target);
+        if (partial.existsSync()) {
+          await partial.delete();
+        }
+        rethrow;
+      }
     } else {
       await File(source).copy(target);
     }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -74,11 +75,13 @@ class _ProfileFormState extends State<_ProfileForm> {
         return;
       }
       setState(() => _sound = picked);
-      // Alarms already planned still carry the old sound.
-      await getIt<RescheduleAllReminders>()();
     } on Object {
       messenger.showSnackBar(SnackBar(content: Text(failed)));
+      return;
     }
+    // Alarms already planned still carry the old sound. This runs after the
+    // pick is saved and its failure is not a failed pick.
+    unawaited(getIt<RescheduleAllReminders>()());
   }
 
   Future<void> _resetSound() async {

@@ -113,6 +113,7 @@ class NotificationDetailsFactory {
     String snoozeLabel = '+10 min',
     AlarmSound sound = AlarmSound.builtIn,
     String? customPath,
+    bool iosActions = true,
   }) {
     return NotificationDetails(
       android: AndroidNotificationDetails(
@@ -135,7 +136,9 @@ class NotificationDetailsFactory {
         presentSound: true,
         sound: sound.fileName ?? iosSoundFile,
         interruptionLevel: InterruptionLevel.timeSensitive,
-        categoryIdentifier: ReminderActions.iosCategory,
+        // Without the buttons when a real alarm will ring at the deadline: a
+        // button tapped in the background could not cancel that alarm.
+        categoryIdentifier: iosActions ? ReminderActions.iosCategory : null,
       ),
     );
   }

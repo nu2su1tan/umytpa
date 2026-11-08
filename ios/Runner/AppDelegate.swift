@@ -2,6 +2,11 @@ import AVFoundation
 import Flutter
 import UIKit
 import UserNotifications
+#if canImport(AlarmKit)
+import ActivityKit
+import AlarmKit
+import SwiftUI
+#endif
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
@@ -25,6 +30,13 @@ import UserNotifications
       name: "umytpa/audio",
       binaryMessenger: engineBridge.applicationRegistrar.messenger()
     )
+    let alarmChannel = FlutterMethodChannel(
+      name: "umytpa/alarmkit",
+      binaryMessenger: engineBridge.applicationRegistrar.messenger()
+    )
+    alarmChannel.setMethodCallHandler { call, result in
+      AlarmKitBridge.handle(call, result: result)
+    }
     channel.setMethodCallHandler { call, result in
       guard call.method == "toCaf",
             let args = call.arguments as? [String: String],
@@ -70,13 +82,142 @@ import UserNotifications
       throw NSError(domain: "umytpa", code: 1)
     }
     var written: AVAudioFramePosition = 0
-    while written < maxFrames {
-      try input.read(into: buffer)
+    let total = min(maxFrames, input.length)
+    while written < total {
+      let want = AVAudioFrameCount(
+        min(AVAudioFramePosition(buffer.frameCapacity), total - written))
+      do {
+        try input.read(into: buffer, frameCount: want)
+      } catch {
+        // Some compressed files report a length slightly longer than they
+        // hold; hitting the end after real audio is not a failure.
+        if written > 0 { break }
+        throw error
+      }
       if buffer.frameLength == 0 { break }
-      let left = AVAudioFrameCount(maxFrames - written)
-      if buffer.frameLength > left { buffer.frameLength = left }
       try output.write(from: buffer)
       written += AVAudioFramePosition(buffer.frameLength)
     }
+    if written == 0 { throw NSError(domain: "umytpa", code: 2) }
   }
 }
+
+/// Real alarms (iOS 26+): they ring until stopped, through silent mode and
+/// Focus, like the Clock app. On older systems every call reports that it is
+/// unsupported and the app keeps using notifications.
+enum AlarmKitBridge {
+  static func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    #if canImport(AlarmKit)
+    if #available(iOS 26.0, *) {
+      AlarmKitImpl.handle(call, result: result)
+      return
+    }
+    #endif
+    switch call.method {
+    case "status": result("unsupported")
+    case "count": result(0)
+    default: result(false)
+    }
+  }
+}
+
+#if canImport(AlarmKit)
+@available(iOS 26.0, *)
+struct UmytpaAlarmMetadata: AlarmMetadata {}
+
+@available(iOS 26.0, *)
+enum AlarmKitImpl {
+  static func name(_ state: AlarmManager.AuthorizationState) -> String {
+    switch state {
+    case .notDetermined: return "notDetermined"
+    case .denied: return "denied"
+    case .authorized: return "authorized"
+    @unknown default: return "denied"
+    }
+  }
+
+  static func fail(_ result: @escaping FlutterResult, _ code: String, _ error: Error) {
+    DispatchQueue.main.async {
+      result(FlutterError(code: code, message: "\(error)", details: nil))
+    }
+  }
+
+  static func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    let manager = AlarmManager.shared
+    let args = call.arguments as? [String: Any] ?? [:]
+    switch call.method {
+    case "status":
+      result(name(manager.authorizationState))
+
+    case "request":
+      Task {
+        do {
+          let state = try await manager.requestAuthorization()
+          DispatchQueue.main.async { result(name(state)) }
+        } catch {
+          fail(result, "request", error)
+        }
+      }
+
+    case "schedule":
+      guard let idString = args["id"] as? String,
+            let id = UUID(uuidString: idString),
+            let millis = (args["at"] as? NSNumber)?.doubleValue,
+            let title = args["title"] as? String,
+            let stop = args["stop"] as? String else {
+        result(FlutterError(code: "args", message: "bad arguments", details: nil))
+        return
+      }
+      let soundName = args["sound"] as? String
+      Task {
+        do {
+          guard manager.authorizationState == .authorized else {
+            throw NSError(domain: "umytpa", code: 10)
+          }
+          // A task has one deadline alarm: replace the old one, if any.
+          try? manager.cancel(id: id)
+          let alert = AlarmPresentation.Alert(
+            title: LocalizedStringResource(String.LocalizationValue(title)),
+            stopButton: AlarmButton(
+              text: LocalizedStringResource(String.LocalizationValue(stop)),
+              textColor: .white,
+              systemImageName: "stop.circle"
+            )
+          )
+          let attributes = AlarmAttributes<UmytpaAlarmMetadata>(
+            presentation: AlarmPresentation(alert: alert),
+            metadata: nil,
+            tintColor: Color(red: 0.47, green: 0.31, blue: 0.91)
+          )
+          let sound: ActivityKit.AlertConfiguration.AlertSound =
+            soundName.map { .named($0) } ?? .default
+          let configuration = AlarmManager.AlarmConfiguration<UmytpaAlarmMetadata>.alarm(
+            schedule: .fixed(Date(timeIntervalSince1970: millis / 1000)),
+            attributes: attributes,
+            sound: sound
+          )
+          _ = try await manager.schedule(id: id, configuration: configuration)
+          DispatchQueue.main.async { result(true) }
+        } catch {
+          fail(result, "schedule", error)
+        }
+      }
+
+    case "cancel":
+      guard let idString = args["id"] as? String, let id = UUID(uuidString: idString) else {
+        result(false)
+        return
+      }
+      // Cancelling an alarm that is not there is fine.
+      try? manager.cancel(id: id)
+      result(true)
+
+    case "count":
+      result((try? manager.alarms.count) ?? 0)
+
+    default:
+      result(FlutterMethodNotImplemented)
+    }
+  }
+}
+#endif

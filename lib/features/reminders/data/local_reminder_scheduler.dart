@@ -17,6 +17,7 @@ import '../../tasks/domain/entities/task.dart';
 import '../../tasks/domain/usecases/should_schedule_reminder.dart';
 import '../domain/reminder_permission_status.dart';
 import '../domain/reminder_scheduler.dart';
+import 'alarm_kit.dart';
 import 'alarm_sound.dart';
 import 'notification_details_factory.dart';
 import 'reminder_actions.dart';
@@ -29,7 +30,9 @@ class LocalReminderScheduler implements ReminderScheduler {
     this.languageCode,
     this.profile,
     FlutterLocalNotificationsPlugin? plugin,
-  }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
+    AlarmKitService? alarmKit,
+  })  : _plugin = plugin ?? FlutterLocalNotificationsPlugin(),
+        _alarmKit = alarmKit ?? AlarmKitService();
 
   final NotificationDetailsFactory detailsFactory;
 
@@ -38,6 +41,7 @@ class LocalReminderScheduler implements ReminderScheduler {
   /// Supplies the user's name and tone for the notification wording.
   final ProfileController? profile;
   final FlutterLocalNotificationsPlugin _plugin;
+  final AlarmKitService _alarmKit;
   bool _initialized = false;
   bool _fullScreenRequested = false;
 
@@ -122,6 +126,12 @@ class LocalReminderScheduler implements ReminderScheduler {
 
       final String lang = _lang;
 
+      // On iOS 26+ the deadline rings as a real alarm. If the system does
+      // not take it (older iOS, permission refused, limit reached), the
+      // alarm falls back to notifications below.
+      final bool realAlarm =
+          wantsAlarm && await _scheduleRealAlarm(task, lang);
+
       if (wantsReminder) {
         final (:String title, :String body) = _reminderText(task, lang);
         await _ring(
@@ -133,10 +143,11 @@ class LocalReminderScheduler implements ReminderScheduler {
           taskId: task.id,
           kind: kindReminder,
           lang: lang,
+          iosActions: !realAlarm,
         );
       }
 
-      if (wantsAlarm) {
+      if (wantsAlarm && !realAlarm) {
         final (:String title, :String body) = _alarmText(task, lang);
         await _ring(
           id: _alarmId(task.id),
@@ -249,6 +260,22 @@ class LocalReminderScheduler implements ReminderScheduler {
     }
   }
 
+  /// Puts the deadline alarm of [task] into the system alarms (iOS 26+).
+  /// Returns whether it was accepted.
+  Future<bool> _scheduleRealAlarm(Task task, String lang) async {
+    if (!await _alarmKit.isReady) {
+      return false;
+    }
+    final AlarmSound sound = await AlarmSound.load();
+    return _alarmKit.schedule(
+      taskId: task.id,
+      at: task.dueAt,
+      title: task.title,
+      stopLabel: ReminderNotificationText.stopLabel(languageCode: lang),
+      sound: sound.fileName ?? NotificationDetailsFactory.iosSoundFile,
+    );
+  }
+
   /// Posts one alarm-style notification at [at]: the chosen sound, and on
   /// Android a looping sound that lasts until the notification is dismissed.
   Future<void> _ring({
@@ -260,6 +287,7 @@ class LocalReminderScheduler implements ReminderScheduler {
     required int taskId,
     required String kind,
     required String lang,
+    bool iosActions = true,
   }) async {
     final AlarmSound sound = await AlarmSound.load();
     final String? customPath = await sound.path();
@@ -276,6 +304,7 @@ class LocalReminderScheduler implements ReminderScheduler {
       snoozeLabel: ReminderNotificationText.snoozeLabel(languageCode: lang),
       sound: sound,
       customPath: customPath,
+      iosActions: iosActions,
     );
     final String payload = ReminderActions.encodePayload(
       taskId: taskId,
@@ -373,6 +402,7 @@ class LocalReminderScheduler implements ReminderScheduler {
       await _plugin.cancel(id: taskId);
       await _plugin.cancel(id: _alarmId(taskId));
       await cancelRepeats(taskId);
+      await _alarmKit.cancel(taskId);
       return const Success<void>(null);
     } on Object catch (error, stackTrace) {
       return _err(error, stackTrace);
@@ -474,6 +504,11 @@ class LocalReminderScheduler implements ReminderScheduler {
         alert: true,
         sound: true,
       );
+      if (granted == true) {
+        // Real alarms (iOS 26+) have their own permission; asked once, right
+        // after notifications. A refusal is fine: notifications still work.
+        await _alarmKit.request();
+      }
       return granted == true
           ? ReminderPermissionStatus.granted
           : ReminderPermissionStatus.notificationsDenied;

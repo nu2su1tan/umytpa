@@ -46,6 +46,13 @@ abstract final class ReminderNotificationText {
         _ => 'Done',
       };
 
+  /// Caption of the button that silences a ringing alarm.
+  static String stopLabel({String? languageCode}) => switch (languageCode) {
+        'ru' => 'Стоп',
+        'kk' => 'Тоқтату',
+        _ => 'Stop',
+      };
+
   static String snoozeLabel({String? languageCode}) =>
       switch (languageCode) {
         'ru' || 'kk' => '+10 мин',
