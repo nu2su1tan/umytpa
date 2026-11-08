@@ -1,4 +1,4 @@
-package com.nu2su1tan.umytpa
+package kz.nu2su1tan.umytpa
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
