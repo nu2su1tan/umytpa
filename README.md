@@ -1,17 +1,45 @@
-# umytpa
+# Umytpa
 
-A new Flutter project.
+Task tracker and weekend timer for iOS and Android. Tasks, reminders, alarms and a live countdown to your days off. Offline-first: all data stays on your device, no account needed.
 
-## Getting Started
+<p align="center">
+  <img src="docs/screenshots/01.png" width="30%" alt="Weekend countdown">
+  <img src="docs/screenshots/02.png" width="30%" alt="Tasks">
+  <img src="docs/screenshots/03.png" width="30%" alt="Daily progress and streak">
+</p>
+<p align="center">
+  <img src="docs/screenshots/04.png" width="30%" alt="Focus timer">
+  <img src="docs/screenshots/05.png" width="30%" alt="Statistics">
+  <img src="docs/screenshots/06.png" width="30%" alt="Personalization">
+</p>
 
-This project is a starting point for a Flutter application.
+## Features
 
-A few resources to get you started if this is your first Flutter project:
+- **Weekend countdown** with a live timer to your next day off, a week strip and country holidays.
+- **Tasks** with categories, due dates, repeats and reminders ("45 min before", "1h before").
+- **Real alarms** on iOS 26 (AlarmKit) and a custom alarm sound (MP3, M4A, WAV, AIFF, CAF).
+- **Focus timer** for deep work sessions.
+- **Streaks, statistics and badges.**
+- **Personal tone**: friendly, calm or strict coach.
+- **Localization**: English and Russian.
+- Home screen widget.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Tech stack
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Flutter, `flutter_bloc`, `go_router`, `get_it`, Drift (SQLite), `flutter_local_notifications`, `home_widget`.
+
+## Getting started
+
+```bash
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+flutter gen-l10n
+flutter run
+```
+
+Requires Dart SDK ^3.12.2. Run tests with `flutter test`.
+
+## Links
+
+- [Support](https://nu2su1tan.github.io/umytpa/)
+- [Privacy Policy](https://nu2su1tan.github.io/umytpa/privacy.html)
