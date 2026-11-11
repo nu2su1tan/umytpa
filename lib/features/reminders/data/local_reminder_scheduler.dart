@@ -144,6 +144,9 @@ class LocalReminderScheduler implements ReminderScheduler {
           kind: kindReminder,
           lang: lang,
           iosActions: !realAlarm,
+          // The reminder is shown exactly once; only the fallback alarm
+          // (no system alarm available) repeats to stay audible.
+          repeat: false,
         );
       }
 
@@ -263,17 +266,32 @@ class LocalReminderScheduler implements ReminderScheduler {
   /// Puts the deadline alarm of [task] into the system alarms (iOS 26+).
   /// Returns whether it was accepted.
   Future<bool> _scheduleRealAlarm(Task task, String lang) async {
-    if (!await _alarmKit.isReady) {
+    // Ask now if the user was never asked (e.g. notifications were allowed
+    // before alarms existed); otherwise the alarm silently never rang.
+    final AlarmKitStatus status = await _alarmKit.request();
+    if (status != AlarmKitStatus.authorized) {
       return false;
     }
     final AlarmSound sound = await AlarmSound.load();
-    return _alarmKit.schedule(
+    bool ok = await _alarmKit.schedule(
       taskId: task.id,
       at: task.dueAt,
       title: task.title,
       stopLabel: ReminderNotificationText.stopLabel(languageCode: lang),
       sound: sound.fileName ?? NotificationDetailsFactory.iosSoundFile,
     );
+    if (ok) {
+      return true;
+    }
+    // A custom sound the system cannot find must not cost the alarm: retry
+    // with the default sound before falling back to notifications.
+    ok = await _alarmKit.schedule(
+      taskId: task.id,
+      at: task.dueAt,
+      title: task.title,
+      stopLabel: ReminderNotificationText.stopLabel(languageCode: lang),
+    );
+    return ok;
   }
 
   /// Posts one alarm-style notification at [at]: the chosen sound, and on
@@ -288,6 +306,7 @@ class LocalReminderScheduler implements ReminderScheduler {
     required String kind,
     required String lang,
     bool iosActions = true,
+    bool repeat = true,
   }) async {
     final AlarmSound sound = await AlarmSound.load();
     final String? customPath = await sound.path();
@@ -321,7 +340,7 @@ class LocalReminderScheduler implements ReminderScheduler {
       androidScheduleMode: mode,
       payload: payload,
     );
-    if (!Platform.isIOS) {
+    if (!Platform.isIOS || !repeat) {
       return;
     }
     final int pending = (await _plugin.pendingNotificationRequests()).length;
