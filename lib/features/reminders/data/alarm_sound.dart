@@ -19,17 +19,25 @@ class AlarmSound {
   static const String _fileKey = 'alarm_sound_file';
   static const String _labelKey = 'alarm_sound_label';
 
-  static const List<String> allowedExtensions = <String>[
-    'mp3',
-    'm4a',
-    'opus',
-    'wav',
-    'aiff',
-    'aif',
-    'caf',
-    'ogg',
-    'aac',
+  /// iOS: everything the system audio decoder reads (it is converted to
+  /// CAF afterwards, see [pick]). Ogg/Opus/WMA are not readable there.
+  static const List<String> _iosExtensions = <String>[
+    'mp3', 'mp2', 'm4a', 'm4b', 'm4r', 'aac', 'adts', 'ac3', 'ec3', 'eac3',
+    'wav', 'wave', 'bwf', 'aiff', 'aif', 'aifc', 'caf', 'flac', 'au', 'snd',
+    'sd2', 'amr', 'mp4', 'm4v', 'mov', '3gp', '3g2', '3gpp',
   ];
+
+  /// Android: everything the platform media decoder plays.
+  static const List<String> _androidExtensions = <String>[
+    'mp3', 'm4a', 'm4b', 'm4r', 'aac', 'adts', 'wav', 'wave', 'flac', 'ogg',
+    'oga', 'opus', 'amr', 'awb', 'mid', 'midi', 'xmf', 'mxmf', 'rtttl', 'rtx',
+    'ota', 'imy', 'mp4', '3gp', '3ga', '3gpp', 'mka', 'webm', 'caf', 'aiff',
+    'aif',
+  ];
+
+  /// Formats the file picker offers on this platform.
+  static List<String> get allowedExtensions =>
+      Platform.isIOS ? _iosExtensions : _androidExtensions;
 
   static const MethodChannel _audio = MethodChannel('umytpa/audio');
 

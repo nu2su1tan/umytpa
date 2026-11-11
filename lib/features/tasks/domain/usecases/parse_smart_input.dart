@@ -12,6 +12,7 @@ class SmartInput extends Equatable {
     this.minute,
     this.category,
     this.repeat,
+    this.remindBefore,
   });
 
   /// The title with the recognised words removed.
@@ -24,14 +25,21 @@ class SmartInput extends Equatable {
   final TaskCategory? category;
   final RepeatRule? repeat;
 
+  /// "remind 15 min before" / "за 15 минут".
+  final Duration? remindBefore;
+
   bool get hasTime => hour != null;
 
   bool get found =>
-      date != null || hasTime || category != null || repeat != null;
+      date != null ||
+      hasTime ||
+      category != null ||
+      repeat != null ||
+      remindBefore != null;
 
   @override
   List<Object?> get props =>
-      <Object?>[title, date, hour, minute, category, repeat];
+      <Object?>[title, date, hour, minute, category, repeat, remindBefore];
 }
 
 /// Understands dates, times, `#categories` and repeats in Russian and English.
@@ -91,6 +99,30 @@ abstract final class SmartInputParser {
     (_re(r'(?:в\s+)?(?:воскресенье|вс|sunday|sun)'), DateTime.sunday),
   ];
 
+  // "за 15 минут", "за час", "за полчаса", "15 min before".
+  static final RegExp _remindBeforeRu = _re(
+    r'за\s+(?:(\d{1,3})\s*(мин\p{L}*|м|час\p{L}*|ч|дн\p{L}*|день)|(полчаса|час))',
+  );
+  static final RegExp _remindBeforeEn = _re(
+    r'(?:remind\s+me\s+)?(\d{1,3})\s*(min\p{L}*|hours?|hrs?|days?)\s+before',
+  );
+
+  // "через 20 минут", "через час", "in 2 hours", "in an hour".
+  static final RegExp _inMinutesRu = _re(
+    r'через\s+(?:(\d{1,3})\s*(мин\p{L}*|м|час\p{L}*|ч)|(полчаса|час|неделю))',
+  );
+  static final RegExp _inMinutesEn = _re(
+    r'in\s+(?:(\d{1,3})\s*(min\p{L}*|hours?|hrs?|h)|(an\s+hour|half\s+an\s+hour|a\s+week))',
+  );
+
+  // Parts of the day, used only when no clock time was written.
+  static final List<(RegExp, int)> _dayParts = <(RegExp, int)>[
+    (_re(r'утром|in\s+the\s+morning|this\s+morning'), 9),
+    (_re(r'днём|днем|in\s+the\s+afternoon'), 14),
+    (_re(r'вечером|in\s+the\s+evening|this\s+evening'), 19),
+    (_re(r'ночью|tonight'), 22),
+  ];
+
   // "18:00", "at 6:15pm" and, only after a preposition, "в 18.30". A bare
   // "2.50" is a price or a version, not a time.
   static final RegExp _clock = RegExp(
@@ -140,9 +172,60 @@ abstract final class SmartInputParser {
       }
     }
 
+    Duration? remindBefore;
+    for (final RegExp re in <RegExp>[_remindBeforeRu, _remindBeforeEn]) {
+      final RegExpMatch? rm = re.firstMatch(text);
+      if (rm == null) {
+        continue;
+      }
+      final Duration? d = re == _remindBeforeRu
+          ? _ruBefore(rm)
+          : _unit(int.parse(rm.group(1)!), rm.group(2)!);
+      if (d != null) {
+        remindBefore = d;
+        text = strip(rm);
+        break;
+      }
+    }
+
     final DateTime today = DateTime(now.year, now.month, now.day);
     DateTime plus(int days) =>
         DateTime(today.year, today.month, today.day + days);
+
+    // "in 20 minutes" fixes the exact moment, so no other date or time is
+    // looked for.
+    for (final RegExp re in <RegExp>[_inMinutesRu, _inMinutesEn]) {
+      final RegExpMatch? rel = re.firstMatch(text);
+      if (rel == null) {
+        continue;
+      }
+      final String? word = rel.group(3)?.toLowerCase().replaceAll(
+            RegExp(r'\s+'),
+            ' ',
+          );
+      final Duration? d = word != null
+          ? switch (word) {
+              'полчаса' || 'half an hour' => const Duration(minutes: 30),
+              'час' || 'an hour' => const Duration(hours: 1),
+              _ => const Duration(days: 7),
+            }
+          : _unit(int.parse(rel.group(1)!), rel.group(2)!);
+      if (d == null) {
+        continue;
+      }
+      final DateTime at = now.add(d);
+      final bool days = d.inDays >= 1;
+      text = strip(rel);
+      return SmartInput(
+        title: _clean(text),
+        date: DateTime(at.year, at.month, at.day),
+        hour: days ? null : at.hour,
+        minute: days ? null : at.minute,
+        category: category,
+        repeat: repeat,
+        remindBefore: remindBefore,
+      );
+    }
 
     RegExpMatch? m = _afterTomorrow.firstMatch(text);
     if (m != null) {
@@ -199,6 +282,18 @@ abstract final class SmartInputParser {
       }
     }
 
+    if (hour == null) {
+      for (final (RegExp re, int h) in _dayParts) {
+        final RegExpMatch? dp = re.firstMatch(text);
+        if (dp != null) {
+          hour = h;
+          minute = 0;
+          text = strip(dp);
+          break;
+        }
+      }
+    }
+
     // A time with no day means the next time it happens.
     if (date == null && hour != null) {
       final DateTime candidate =
@@ -206,26 +301,53 @@ abstract final class SmartInputParser {
       date = candidate.isAfter(now) ? today : plus(1);
     }
 
-    final String title = text
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .replaceAll(
-          RegExp(
-            r'(?:^|\s)(?:в|во|на|к|до|at|on|by|to)\s*$',
-            caseSensitive: false,
-            unicode: true,
-          ),
-          '',
-        )
-        .trim();
-
     return SmartInput(
-      title: title,
+      title: _clean(text),
       date: date,
       hour: hour,
       minute: minute,
       category: category,
       repeat: repeat,
+      remindBefore: remindBefore,
     );
+  }
+
+  static String _clean(String text) => text
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .replaceAll(
+        RegExp(
+          r'(?:^|\s)(?:в|во|на|к|до|at|on|by|to)\s*$',
+          caseSensitive: false,
+          unicode: true,
+        ),
+        '',
+      )
+      .trim();
+
+  static Duration? _ruBefore(RegExpMatch m) {
+    final String? word = m.group(3)?.toLowerCase();
+    if (word != null) {
+      return word == 'час' ? const Duration(hours: 1) : const Duration(minutes: 30);
+    }
+    return _unit(int.parse(m.group(1)!), m.group(2)!);
+  }
+
+  static Duration? _unit(int n, String unit) {
+    final String u = unit.toLowerCase();
+    if (n <= 0) {
+      return null;
+    }
+    if (u.startsWith('мин') || u == 'м' || u.startsWith('min')) {
+      return Duration(minutes: n);
+    }
+    if (u.startsWith('час') || u == 'ч' || u.startsWith('hour') ||
+        u.startsWith('hr') || u == 'h') {
+      return Duration(hours: n);
+    }
+    if (u.startsWith('дн') || u == 'день' || u.startsWith('day')) {
+      return Duration(days: n);
+    }
+    return null;
   }
 
   static int? _to24(int h, String? ampm) {

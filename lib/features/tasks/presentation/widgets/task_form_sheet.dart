@@ -13,12 +13,14 @@ import '../../../reminders/domain/reminder_permission_status.dart';
 import '../../../week_counter/ui/kit/pressable.dart';
 import '../../../week_counter/ui/theme/tokens.dart';
 import '../../../reminders/domain/reminder_scheduler.dart';
+import '../../data/task_defaults.dart';
 import '../../domain/entities/reminder_preset.dart';
 import '../../domain/entities/repeat_rule.dart';
 import '../../domain/entities/subtask.dart';
 import '../../domain/entities/task.dart';
 import '../../domain/entities/task_category.dart';
 import '../../domain/usecases/parse_smart_input.dart';
+import '../../domain/usecases/quick_times.dart';
 import '../../domain/usecases/create_task.dart';
 import '../../domain/usecases/delete_task.dart';
 import '../../domain/usecases/update_task.dart';
@@ -34,7 +36,15 @@ abstract final class TaskFormSheet {
     BuildContext context, {
     Task? task,
     ReminderPreset defaultReminder = ReminderPreset.defaultPreset,
-  }) {
+    String? initialTitle,
+  }) async {
+    // A new task starts with what was picked last time.
+    final TaskDefaults defaults =
+        task == null ? await TaskDefaults.load() : const TaskDefaults();
+    if (!context.mounted) {
+      return null;
+    }
+    final bool remembered = task == null;
     return showModalBottomSheet<TaskFormResult>(
       context: context,
       isScrollControlled: true,
@@ -50,8 +60,11 @@ abstract final class TaskFormSheet {
             deleteTask: getIt<DeleteTask>(),
             reminderScheduler: getIt<ReminderScheduler>(),
             initialTask: task,
-            defaultReminder: defaultReminder,
-          ),
+            defaultReminder:
+                remembered ? defaults.reminder : defaultReminder,
+            defaultCustomBefore: defaults.customBefore,
+            defaultCategory: defaults.category,
+          )..prefill(initialTitle),
           child: const _TaskFormSheetBody(),
         );
       },
@@ -404,6 +417,32 @@ class _TaskFormSheetBodyState extends State<_TaskFormSheetBody> {
                                         .categoryChanged,
                                   ),
                                   const SizedBox(height: 16),
+                                  if (!state.isEdit) ...<Widget>[
+                                    Wrap(
+                                      spacing: 8,
+                                      runSpacing: 8,
+                                      children: <Widget>[
+                                        for (final QuickTimeKind kind
+                                            in QuickTimes.available(
+                                          DateTime.now(),
+                                        ))
+                                          _SelectableChip(
+                                            label:
+                                                context.l10n.quickTimeLabel(kind),
+                                            selected: false,
+                                            onTap: () => context
+                                                .read<TaskFormCubit>()
+                                                .quickDueAt(
+                                                  QuickTimes.resolve(
+                                                    kind,
+                                                    now: DateTime.now(),
+                                                  ),
+                                                ),
+                                          ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 12),
+                                  ],
                                   _DateTimeRow(
                                     dueAt: state.dueAt,
                                     onPickDate: () => _pickDate(context, state),

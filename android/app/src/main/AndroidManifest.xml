@@ -3,6 +3,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <!-- Dictating a task -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <!--
       SCHEDULE_EXACT_ALARM (not USE_EXACT_ALARM):
       Reminders are a feature of a task tracker, not the app's sole purpose as an
@@ -43,6 +45,12 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- "Share" from any app creates a task from the text -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
         </activity>
         <meta-data
             android:name="flutterEmbedding"
@@ -70,6 +78,9 @@
         </receiver>
     </application>
     <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService"/>
+        </intent>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>

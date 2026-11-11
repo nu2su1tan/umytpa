@@ -40,4 +40,14 @@
         android:layout_height="wrap_content"
         android:textColor="#9A9AA0"
         android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/widget_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:text="+"
+        android:textColor="#D7FF3D"
+        android:textSize="28sp"
+        android:textStyle="bold" />
 </LinearLayout>

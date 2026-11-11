@@ -3,12 +3,18 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/error/result.dart';
+import '../../../../core/utils/date_time_utils.dart';
+import '../../data/task_defaults.dart';
+import '../../domain/entities/repeat_rule.dart';
+import '../../domain/entities/subtask.dart';
 import '../../domain/entities/task.dart';
 import '../../domain/entities/task_category.dart';
 import '../../domain/entities/task_section.dart';
 import '../../domain/usecases/create_task.dart';
 import '../../domain/usecases/delete_task.dart';
 import '../../domain/usecases/group_tasks_by_date.dart';
+import '../../domain/usecases/parse_smart_input.dart';
+import '../../domain/usecases/quick_times.dart';
 import '../../domain/usecases/toggle_task_done.dart';
 import '../../domain/usecases/update_task.dart';
 import '../../domain/usecases/watch_tasks.dart';
@@ -140,6 +146,83 @@ class TasksCubit extends Cubit<TasksState> {
         return;
       }
     }
+  }
+
+  /// Creates tasks from the quick-add line. Every non-empty line is a task,
+  /// so a pasted list becomes several. What the text does not say comes from
+  /// the chosen [time] chip, then from the last-used defaults.
+  /// Returns how many tasks were created and the first error, if any.
+  Future<({int created, String? error})> quickAdd(
+    String text, {
+    QuickTimeKind? time,
+    TaskDefaults? defaults,
+  }) async {
+    final DateTime now = _now();
+    final TaskDefaults d = defaults ?? await TaskDefaults.load();
+    int created = 0;
+    String? error;
+    for (final String line in text.split(RegExp(r'[\r\n]+'))) {
+      final String raw = line.replaceFirst(RegExp(r'^\s*(?:[-*•]|\d+[.)])\s+'), '').trim();
+      if (raw.isEmpty) {
+        continue;
+      }
+      final SmartInput smart = SmartInputParser.parse(raw, now: now);
+      final String title = smart.title.isEmpty ? raw : smart.title;
+      final Result<Task> result = await createTask(
+        NewTask(
+          title: title,
+          dueAt: _quickDueAt(smart, time, now),
+          category: smart.category ?? d.category,
+          remindBefore: smart.remindBefore ?? d.remindBefore,
+          repeat: smart.repeat ?? RepeatRule.none,
+        ),
+        now: now,
+      );
+      switch (result) {
+        case Success<Task>():
+          created++;
+        case Err<Task>(:final failure):
+          error ??= failure.message;
+      }
+    }
+    return (created: created, error: error);
+  }
+
+  DateTime _quickDueAt(SmartInput smart, QuickTimeKind? chip, DateTime now) {
+    if (smart.hasTime) {
+      final DateTime day = smart.date ?? DateTime(now.year, now.month, now.day);
+      return DateTime(day.year, day.month, day.day, smart.hour!, smart.minute ?? 0);
+    }
+    if (chip != null && smart.date == null) {
+      return QuickTimes.resolve(chip, now: now);
+    }
+    final DateTime? day = smart.date;
+    if (day == null || DateTimeUtils.isSameCalendarDay(day, now)) {
+      return DateTimeUtils.nextRoundedHour(now);
+    }
+    // A day with no time: morning.
+    return DateTime(day.year, day.month, day.day, 9);
+  }
+
+  /// A fresh copy of [task] for tomorrow, same time of day, nothing ticked.
+  Future<bool> duplicate(Task task) async {
+    final DateTime now = _now();
+    final DateTime base = task.dueAt.isAfter(now) ? task.dueAt : now;
+    final DateTime day = DateTime(base.year, base.month, base.day + 1);
+    final Result<Task> result = await createTask(
+      NewTask(
+        title: task.title,
+        dueAt: DateTime(day.year, day.month, day.day, task.dueAt.hour, task.dueAt.minute),
+        category: task.category,
+        remindBefore: task.remindBefore,
+        repeat: task.repeat,
+        subtasks: <Subtask>[
+          for (final Subtask s in task.subtasks) s.copyWith(isDone: false),
+        ],
+      ),
+      now: now,
+    );
+    return result is Success<Task>;
   }
 
   Future<void> undoDelete(Task task) async {

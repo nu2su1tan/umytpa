@@ -18,12 +18,15 @@ import '../../domain/entities/task_section.dart';
 import '../../domain/usecases/create_task.dart';
 import '../../domain/usecases/delete_task.dart';
 import '../../domain/usecases/group_tasks_by_date.dart';
+import '../../domain/usecases/quick_times.dart';
 import '../../domain/usecases/toggle_task_done.dart';
 import '../../domain/usecases/update_task.dart';
 import '../../domain/usecases/watch_tasks.dart';
 import '../../../reminders/data/local_reminder_scheduler.dart';
 import '../../../reminders/domain/usecases/reschedule_all_reminders.dart';
+import '../../data/external_entry.dart';
 import '../../data/task_widget_sync.dart';
+import '../widgets/quick_add_bar.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../domain/usecases/task_stats.dart';
 import '../../domain/usecases/today_progress.dart';
@@ -66,8 +69,16 @@ class _TasksPageState extends State<TasksPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    ExternalEntries.pending.addListener(_onExternalEntry);
     // Meet the user once: ask what to call them and how to talk.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      unawaited(
+        ExternalEntries.start(newTaskLabel: context.l10n.addTask)
+            .then((_) => _onExternalEntry()),
+      );
       final ProfileController profile = getIt<ProfileController>();
       if (mounted && !profile.asked) {
         unawaited(profile.markAsked());
@@ -78,10 +89,34 @@ class _TasksPageState extends State<TasksPage> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    ExternalEntries.pending.removeListener(_onExternalEntry);
     WidgetsBinding.instance.removeObserver(this);
     unawaited(_cubit.close());
     unawaited(_stats.close());
     super.dispose();
+  }
+
+  /// A shortcut, the share sheet, Siri or the widget asked to add a task.
+  Future<void> _onExternalEntry() async {
+    if (!mounted || ExternalEntries.pending.value == null) {
+      return;
+    }
+    final ExternalEntry entry = ExternalEntries.consume()!;
+    switch (entry.kind) {
+      case EntryKind.newTask:
+        await TaskFormSheet.show(context);
+      case EntryKind.share:
+        await TaskFormSheet.show(context, initialTitle: entry.text);
+      case EntryKind.add:
+        final ({int created, String? error}) r =
+            await _cubit.quickAdd(entry.text!);
+        if (!mounted || r.created == 0) {
+          return;
+        }
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(SnackBar(content: Text(entry.text!)));
+    }
   }
 
   /// Back in the app: the repeating iOS alarm has done its job.
@@ -96,6 +131,7 @@ class _TasksPageState extends State<TasksPage> with WidgetsBindingObserver {
     // A notification button ("Done") may have changed tasks from a background
     // isolate, which this database connection can't see on its own.
     if (state == AppLifecycleState.resumed) {
+      unawaited(ExternalEntries.pull());
       unawaited(_stopRinging());
       _cubit.start();
       _stats.refresh();
@@ -318,6 +354,16 @@ class _LoadedBody extends StatelessWidget {
           ),
           child: TasksHeader(now: now),
         ),
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppTheme.screenPadding,
+          ),
+          child: QuickAddBar(
+            onSubmit: (String text, QuickTimeKind? time) =>
+                context.read<TasksCubit>().quickAdd(text, time: time),
+          ),
+        ),
         const SizedBox(height: 16),
         Padding(
           padding: const EdgeInsets.symmetric(
@@ -427,6 +473,7 @@ class _LoadedBody extends StatelessWidget {
                     onDeleteTask: (Task task) => _onDelete(context, task),
                     onFocusTask: (Task task) =>
                         FocusScreen.open(context, task: task),
+                    onDuplicateTask: (Task task) => _onDuplicate(context, task),
                   ),
               ],
             ),
@@ -453,6 +500,16 @@ class _LoadedBody extends StatelessWidget {
           duration: const Duration(milliseconds: 1600),
         ),
       );
+  }
+
+  Future<void> _onDuplicate(BuildContext context, Task task) async {
+    final bool ok = await context.read<TasksCubit>().duplicate(task);
+    if (!ok || !context.mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(context.l10n.taskDuplicated)));
   }
 
   Future<void> _onDelete(BuildContext context, Task task) async {

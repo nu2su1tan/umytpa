@@ -19,6 +19,7 @@ class TaskSectionView extends StatelessWidget {
     required this.onTapTask,
     required this.onDeleteTask,
     this.onFocusTask,
+    this.onDuplicateTask,
     super.key,
   });
 
@@ -30,6 +31,9 @@ class TaskSectionView extends StatelessWidget {
   final ValueChanged<Task> onTapTask;
   final ValueChanged<Task> onDeleteTask;
   final ValueChanged<Task>? onFocusTask;
+
+  /// Swipe right: make a copy of the task.
+  final ValueChanged<Task>? onDuplicateTask;
 
   @override
   Widget build(BuildContext context) {
@@ -91,8 +95,22 @@ class TaskSectionView extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 8),
               child: Dismissible(
                 key: ValueKey<int>(task.id),
-                direction: DismissDirection.endToStart,
-                background: const _DeleteBackground(),
+                direction: onDuplicateTask == null
+                    ? DismissDirection.endToStart
+                    : DismissDirection.horizontal,
+                background: onDuplicateTask == null
+                    ? const _DeleteBackground()
+                    : const _DuplicateBackground(),
+                secondaryBackground: onDuplicateTask == null
+                    ? null
+                    : const _DeleteBackground(),
+                confirmDismiss: (DismissDirection direction) async {
+                  if (direction == DismissDirection.startToEnd) {
+                    onDuplicateTask?.call(task);
+                    return false;
+                  }
+                  return true;
+                },
                 onDismissed: (_) => onDeleteTask(task),
                 child: TaskTile(
                   task: task,
@@ -106,6 +124,24 @@ class TaskSectionView extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+class _DuplicateBackground extends StatelessWidget {
+  const _DuplicateBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    final Tokens t = context.tokens;
+    return Container(
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      decoration: BoxDecoration(
+        color: t.violetSoft,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Icon(Icons.copy_rounded, color: t.violetInk),
     );
   }
 }

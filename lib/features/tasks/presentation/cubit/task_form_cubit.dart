@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/error/result.dart';
 import '../../../../core/utils/date_time_utils.dart';
 import '../../../reminders/domain/reminder_permission_status.dart';
 import '../../../reminders/domain/reminder_scheduler.dart';
+import '../../data/task_defaults.dart';
 import '../../domain/entities/reminder_preset.dart';
 import '../../domain/entities/repeat_rule.dart';
 import '../../domain/entities/subtask.dart';
@@ -24,6 +27,8 @@ class TaskFormCubit extends Cubit<TaskFormState> {
     required this.reminderScheduler,
     this.initialTask,
     this.defaultReminder = ReminderPreset.defaultPreset,
+    this.defaultCustomBefore,
+    this.defaultCategory = TaskCategory.study,
     DateTime Function()? now,
   })  : _now = now ?? DateTime.now,
         super(const TaskFormLoading()) {
@@ -36,6 +41,8 @@ class TaskFormCubit extends Cubit<TaskFormState> {
   final ReminderScheduler reminderScheduler;
   final Task? initialTask;
   final ReminderPreset defaultReminder;
+  final Duration? defaultCustomBefore;
+  final TaskCategory defaultCategory;
   final DateTime Function() _now;
 
   late String _baselineTitle;
@@ -89,18 +96,21 @@ class TaskFormCubit extends Cubit<TaskFormState> {
     final DateTime dueAt = DateTimeUtils.nextRoundedHour(now);
     _baselineTitle = '';
     _baselineDueAt = dueAt;
-    _baselineCategory = TaskCategory.study;
+    _baselineCategory = defaultCategory;
     _baselineReminder = defaultReminder;
+    _baselineCustom = defaultCustomBefore;
     emit(
       TaskFormReady(
         title: '',
         dueAt: dueAt,
-        category: TaskCategory.study,
+        category: defaultCategory,
         reminder: defaultReminder,
+        customBefore: defaultCustomBefore,
         validation: _validate(
           title: '',
           dueAt: dueAt,
           reminder: defaultReminder,
+          customOverride: defaultCustomBefore,
         ),
         isEdit: false,
         isDirty: false,
@@ -108,6 +118,15 @@ class TaskFormCubit extends Cubit<TaskFormState> {
         showPermissionHelp: false,
       ),
     );
+  }
+
+  /// Starts a new task with [title] already typed (text shared from another
+  /// app). The recognised date and time are offered right away.
+  void prefill(String? title) {
+    if (title == null || title.trim().isEmpty || isEdit) {
+      return;
+    }
+    titleChanged(title.trim());
   }
 
   void titleChanged(String title) {
@@ -182,6 +201,21 @@ class TaskFormCubit extends Cubit<TaskFormState> {
         submitError: () => null,
       ),
     );
+    final Duration? before = smart.remindBefore;
+    if (before != null) {
+      unawaited(
+        reminderChanged(ReminderPreset.fromDuration(before), custom: before),
+      );
+    }
+  }
+
+  /// A quick-time chip: sets the deadline to [dueAt] in one tap.
+  void quickDueAt(DateTime dueAt) {
+    final TaskFormReady? current = _ready;
+    if (current == null) {
+      return;
+    }
+    _emitDueAt(current, dueAt);
   }
 
   void categoryChanged(TaskCategory category) {
@@ -391,6 +425,14 @@ class TaskFormCubit extends Cubit<TaskFormState> {
   void _handleSaveResult(TaskFormReady current, Result<Task> result) {
     switch (result) {
       case Success<Task>():
+        if (!current.isEdit) {
+          unawaited(
+            TaskDefaults.save(
+              category: current.category,
+              remindBefore: current.remindBefore,
+            ),
+          );
+        }
         emit(const TaskFormSaveSuccess());
       case Err<Task>(:final failure):
         emit(

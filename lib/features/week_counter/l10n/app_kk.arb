@@ -352,7 +352,23 @@
   "alarmSoundBuiltIn": "Стандартты",
   "alarmSoundPick": "Құрылғыдан дыбыс таңдау",
   "alarmSoundReset": "Стандартты дыбысты қайтару",
-  "alarmSoundHintIos": "MP3, M4A, WAV, AIFF немесе CAF. Алғашқы 30 секунд ойнайды. Қолданбаны ашқанша немесе «Дайын» түймесін баспайынша дыбыс қайталанады.",
-  "alarmSoundHintAndroid": "MP3, M4A, OPUS, OGG немесе WAV. Хабарландыруды баспайынша немесе сырғытып тастамайынша дыбыс шығады.",
-  "alarmSoundFailed": "Бұл файлды алу мүмкін болмады"
+  "alarmSoundHintIos": "Кез келген кең таралған аудио пішім: MP3, M4A, AAC, WAV, AIFF, CAF, FLAC, AMR, MP4, 3GP және басқалар. Алғашқы 30 секунд ойнайды. Қолданбаны ашқанша немесе «Дайын» түймесін баспайынша дыбыс қайталанады.",
+  "alarmSoundHintAndroid": "Кез келген кең таралған аудио пішім: MP3, M4A, AAC, WAV, FLAC, OGG, OPUS, AMR, MIDI, 3GP, MKA, WEBM және басқалар. Хабарландыруды баспайынша немесе сырғытып тастамайынша дыбыс шығады.",
+  "alarmSoundFailed": "Бұл файлды алу мүмкін болмады",
+  "quickAddHint": "Жылдам: «Анаға 20 минуттан кейін қоңырау шал»",
+  "quickInHour": "1 сағаттан кейін",
+  "quickTonight": "Кешке",
+  "quickTomorrowMorning": "Ертең таңертең",
+  "quickVoice": "Дауыспен енгізу",
+  "quickVoiceUnavailable": "Дауыспен енгізу қолжетімсіз. Микрофон мен сөйлеуді тану рұқсатын тексеріңіз.",
+  "quickAddedCount": "Қосылған тапсырма: {count}",
+  "taskDuplicate": "Көшірме жасау",
+  "taskDuplicated": "Көшірме жасалды",
+  "@quickAddedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

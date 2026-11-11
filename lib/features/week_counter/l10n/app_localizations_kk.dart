@@ -1282,12 +1282,42 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get alarmSoundHintIos =>
-      'MP3, M4A, WAV, AIFF немесе CAF. Алғашқы 30 секунд ойнайды. Қолданбаны ашқанша немесе «Дайын» түймесін баспайынша дыбыс қайталанады.';
+      'Кез келген кең таралған аудио пішім: MP3, M4A, AAC, WAV, AIFF, CAF, FLAC, AMR, MP4, 3GP және басқалар. Алғашқы 30 секунд ойнайды. Қолданбаны ашқанша немесе «Дайын» түймесін баспайынша дыбыс қайталанады.';
 
   @override
   String get alarmSoundHintAndroid =>
-      'MP3, M4A, OPUS, OGG немесе WAV. Хабарландыруды баспайынша немесе сырғытып тастамайынша дыбыс шығады.';
+      'Кез келген кең таралған аудио пішім: MP3, M4A, AAC, WAV, FLAC, OGG, OPUS, AMR, MIDI, 3GP, MKA, WEBM және басқалар. Хабарландыруды баспайынша немесе сырғытып тастамайынша дыбыс шығады.';
 
   @override
   String get alarmSoundFailed => 'Бұл файлды алу мүмкін болмады';
+
+  @override
+  String get quickAddHint => 'Жылдам: «Анаға 20 минуттан кейін қоңырау шал»';
+
+  @override
+  String get quickInHour => '1 сағаттан кейін';
+
+  @override
+  String get quickTonight => 'Кешке';
+
+  @override
+  String get quickTomorrowMorning => 'Ертең таңертең';
+
+  @override
+  String get quickVoice => 'Дауыспен енгізу';
+
+  @override
+  String get quickVoiceUnavailable =>
+      'Дауыспен енгізу қолжетімсіз. Микрофон мен сөйлеуді тану рұқсатын тексеріңіз.';
+
+  @override
+  String quickAddedCount(int count) {
+    return 'Қосылған тапсырма: $count';
+  }
+
+  @override
+  String get taskDuplicate => 'Көшірме жасау';
+
+  @override
+  String get taskDuplicated => 'Көшірме жасалды';
 }

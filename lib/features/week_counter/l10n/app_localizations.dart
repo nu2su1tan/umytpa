@@ -2215,13 +2215,13 @@ abstract class AppLocalizations {
   /// No description provided for @alarmSoundHintIos.
   ///
   /// In en, this message translates to:
-  /// **'MP3, M4A, WAV, AIFF or CAF. Only the first 30 seconds play. It repeats until you open the app or tap Done.'**
+  /// **'Any common audio format: MP3, M4A, AAC, WAV, AIFF, CAF, FLAC, AMR, MP4, 3GP and more. Only the first 30 seconds play. It repeats until you open the app or tap Done.'**
   String get alarmSoundHintIos;
 
   /// No description provided for @alarmSoundHintAndroid.
   ///
   /// In en, this message translates to:
-  /// **'MP3, M4A, OPUS, OGG or WAV. It rings until you tap or dismiss the notification.'**
+  /// **'Any common audio format: MP3, M4A, AAC, WAV, FLAC, OGG, OPUS, AMR, MIDI, 3GP, MKA, WEBM and more. It rings until you tap or dismiss the notification.'**
   String get alarmSoundHintAndroid;
 
   /// No description provided for @alarmSoundFailed.
@@ -2229,6 +2229,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t use this file'**
   String get alarmSoundFailed;
+
+  /// No description provided for @quickAddHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick add: “Call mom in 20 min”'**
+  String get quickAddHint;
+
+  /// No description provided for @quickInHour.
+  ///
+  /// In en, this message translates to:
+  /// **'In 1 hour'**
+  String get quickInHour;
+
+  /// No description provided for @quickTonight.
+  ///
+  /// In en, this message translates to:
+  /// **'This evening'**
+  String get quickTonight;
+
+  /// No description provided for @quickTomorrowMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow morning'**
+  String get quickTomorrowMorning;
+
+  /// No description provided for @quickVoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Dictate'**
+  String get quickVoice;
+
+  /// No description provided for @quickVoiceUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice input is unavailable. Check microphone and speech permissions.'**
+  String get quickVoiceUnavailable;
+
+  /// No description provided for @quickAddedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} tasks added'**
+  String quickAddedCount(int count);
+
+  /// No description provided for @taskDuplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get taskDuplicate;
+
+  /// No description provided for @taskDuplicated.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy created'**
+  String get taskDuplicated;
 }
 
 class _AppLocalizationsDelegate

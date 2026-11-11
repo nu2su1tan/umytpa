@@ -6,6 +6,8 @@ import '../../domain/entities/reminder_preset.dart';
 import '../../domain/entities/repeat_rule.dart';
 import '../../domain/entities/task_category.dart';
 import '../../domain/entities/task_section.dart';
+import '../../domain/usecases/parse_smart_input.dart';
+import '../../domain/usecases/quick_times.dart';
 import '../../domain/validation/task_input_validator.dart';
 
 /// Translations of the tracker's domain values. The domain keeps its English
@@ -22,6 +24,49 @@ DateFormat _dayMonth(String locale) =>
     _dayMonthCache.putIfAbsent(locale, () => DateFormat('d MMM', locale));
 
 extension TaskL10n on AppLocalizations {
+  /// "tomorrow · 18:00 · Study · 15 min before": what the text was understood as.
+  String smartSummary(SmartInput smart, {required DateTime now}) {
+    final List<String> parts = <String>[];
+    final DateTime? d = smart.date;
+    if (d != null) {
+      if (DateTimeUtils.isSameCalendarDay(d, now)) {
+        parts.add(dateToday);
+      } else if (DateTimeUtils.isSameCalendarDay(
+        d,
+        DateTimeUtils.startOfTomorrow(now),
+      )) {
+        parts.add(dateTomorrow);
+      } else {
+        parts.add(DateFormat('EEE, d MMM', localeName).format(d));
+      }
+    }
+    if (smart.hasTime) {
+      final String h = smart.hour.toString().padLeft(2, '0');
+      final String m = (smart.minute ?? 0).toString().padLeft(2, '0');
+      parts.add('$h:$m');
+    }
+    if (smart.category != null) {
+      parts.add(categoryLabel(smart.category!));
+    }
+    if (smart.repeat != null) {
+      parts.add(repeatName(smart.repeat!));
+    }
+    final Duration? before = smart.remindBefore;
+    if (before != null) {
+      final ReminderPreset preset = ReminderPreset.fromDuration(before);
+      parts.add(
+        '🔔 ${preset == ReminderPreset.custom ? (reminderBefore(before) ?? reminderCustom) : presetLabel(preset)}',
+      );
+    }
+    return parts.join(' · ');
+  }
+
+  String quickTimeLabel(QuickTimeKind kind) => switch (kind) {
+        QuickTimeKind.inOneHour => quickInHour,
+        QuickTimeKind.tonight => quickTonight,
+        QuickTimeKind.tomorrowMorning => quickTomorrowMorning,
+      };
+
   String categoryLabel(TaskCategory category) => switch (category) {
         TaskCategory.study => categoryStudy,
         TaskCategory.work => categoryWork,

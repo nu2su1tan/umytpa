@@ -1314,12 +1314,42 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get alarmSoundHintIos =>
-      'MP3, M4A, WAV, AIFF или CAF. Играют первые 30 секунд. Звук повторяется, пока ты не откроешь приложение или не нажмёшь «Готово».';
+      'Любой распространённый аудиоформат: MP3, M4A, AAC, WAV, AIFF, CAF, FLAC, AMR, MP4, 3GP и другие. Играют первые 30 секунд. Звук повторяется, пока ты не откроешь приложение или не нажмёшь «Готово».';
 
   @override
   String get alarmSoundHintAndroid =>
-      'MP3, M4A, OPUS, OGG или WAV. Звучит, пока ты не нажмёшь на уведомление или не смахнёшь его.';
+      'Любой распространённый аудиоформат: MP3, M4A, AAC, WAV, FLAC, OGG, OPUS, AMR, MIDI, 3GP, MKA, WEBM и другие. Звучит, пока ты не нажмёшь на уведомление или не смахнёшь его.';
 
   @override
   String get alarmSoundFailed => 'Не получилось взять этот файл';
+
+  @override
+  String get quickAddHint => 'Быстро: «Позвонить маме через 20 минут»';
+
+  @override
+  String get quickInHour => 'Через час';
+
+  @override
+  String get quickTonight => 'Вечером';
+
+  @override
+  String get quickTomorrowMorning => 'Завтра утром';
+
+  @override
+  String get quickVoice => 'Голосовой ввод';
+
+  @override
+  String get quickVoiceUnavailable =>
+      'Голосовой ввод недоступен. Проверьте доступ к микрофону и распознаванию речи.';
+
+  @override
+  String quickAddedCount(int count) {
+    return 'Добавлено задач: $count';
+  }
+
+  @override
+  String get taskDuplicate => 'Дублировать';
+
+  @override
+  String get taskDuplicated => 'Копия создана';
 }

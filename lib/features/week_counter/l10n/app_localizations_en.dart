@@ -1291,12 +1291,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get alarmSoundHintIos =>
-      'MP3, M4A, WAV, AIFF or CAF. Only the first 30 seconds play. It repeats until you open the app or tap Done.';
+      'Any common audio format: MP3, M4A, AAC, WAV, AIFF, CAF, FLAC, AMR, MP4, 3GP and more. Only the first 30 seconds play. It repeats until you open the app or tap Done.';
 
   @override
   String get alarmSoundHintAndroid =>
-      'MP3, M4A, OPUS, OGG or WAV. It rings until you tap or dismiss the notification.';
+      'Any common audio format: MP3, M4A, AAC, WAV, FLAC, OGG, OPUS, AMR, MIDI, 3GP, MKA, WEBM and more. It rings until you tap or dismiss the notification.';
 
   @override
   String get alarmSoundFailed => 'Couldn\'t use this file';
+
+  @override
+  String get quickAddHint => 'Quick add: “Call mom in 20 min”';
+
+  @override
+  String get quickInHour => 'In 1 hour';
+
+  @override
+  String get quickTonight => 'This evening';
+
+  @override
+  String get quickTomorrowMorning => 'Tomorrow morning';
+
+  @override
+  String get quickVoice => 'Dictate';
+
+  @override
+  String get quickVoiceUnavailable =>
+      'Voice input is unavailable. Check microphone and speech permissions.';
+
+  @override
+  String quickAddedCount(int count) {
+    return '$count tasks added';
+  }
+
+  @override
+  String get taskDuplicate => 'Duplicate';
+
+  @override
+  String get taskDuplicated => 'Copy created';
 }

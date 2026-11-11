@@ -4,12 +4,14 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:umytpa/core/error/result.dart';
+import 'package:umytpa/features/tasks/data/task_defaults.dart';
 import 'package:umytpa/features/tasks/domain/entities/task.dart';
 import 'package:umytpa/features/tasks/domain/entities/task_category.dart';
 import 'package:umytpa/features/tasks/domain/entities/task_section.dart';
 import 'package:umytpa/features/tasks/domain/usecases/create_task.dart';
 import 'package:umytpa/features/tasks/domain/usecases/delete_task.dart';
 import 'package:umytpa/features/tasks/domain/usecases/group_tasks_by_date.dart';
+import 'package:umytpa/features/tasks/domain/usecases/quick_times.dart';
 import 'package:umytpa/features/tasks/domain/usecases/toggle_task_done.dart';
 import 'package:umytpa/features/tasks/domain/usecases/watch_tasks.dart';
 import 'package:umytpa/features/tasks/presentation/cubit/tasks_cubit.dart';
@@ -235,5 +237,59 @@ void main() {
         verify(() => deleteTask(1)).called(1);
       },
     );
+
+    group('quickAdd', () {
+      List<NewTask> captured() => verify(
+            () => createTask(captureAny(), now: any(named: 'now')),
+          ).captured.cast<NewTask>();
+
+      setUp(() {
+        when(() => createTask(any(), now: any(named: 'now'))).thenAnswer(
+          (_) async => Success<Task>(buildTask()),
+        );
+      });
+
+      test('reads date, time, category and reminder from the text', () async {
+        final TasksCubit cubit = buildCubit();
+        final ({int created, String? error}) r = await cubit.quickAdd(
+          'Lab report tomorrow 18:00 #work 15 min before',
+          defaults: const TaskDefaults(),
+        );
+        expect(r.created, 1);
+        final NewTask task = captured().single;
+        expect(task.title, 'Lab report');
+        expect(task.dueAt, DateTime(2026, 10, 31, 18));
+        expect(task.category, TaskCategory.work);
+        expect(task.remindBefore, const Duration(minutes: 15));
+        await cubit.close();
+      });
+
+      test('every line is its own task, bullets removed', () async {
+        final TasksCubit cubit = buildCubit();
+        final ({int created, String? error}) r = await cubit.quickAdd(
+          '- Milk\n2) Bread today 20:00\n\n',
+          defaults: const TaskDefaults(),
+        );
+        expect(r.created, 2);
+        final List<NewTask> tasks = captured();
+        expect(tasks.map((NewTask t) => t.title), <String>['Milk', 'Bread']);
+        await cubit.close();
+      });
+
+      test('uses the chip and the remembered defaults when text is silent',
+          () async {
+        final TasksCubit cubit = buildCubit();
+        await cubit.quickAdd(
+          'Stretch',
+          time: QuickTimeKind.tomorrowMorning,
+          defaults: const TaskDefaults(category: TaskCategory.personal),
+        );
+        final NewTask task = captured().single;
+        expect(task.dueAt, DateTime(2026, 10, 31, 9));
+        expect(task.category, TaskCategory.personal);
+        expect(task.remindBefore, const Duration(hours: 1));
+        await cubit.close();
+      });
+    });
   });
 }

@@ -352,7 +352,23 @@
   "alarmSoundBuiltIn": "Стандартный",
   "alarmSoundPick": "Выбрать звук с устройства",
   "alarmSoundReset": "Вернуть стандартный звук",
-  "alarmSoundHintIos": "MP3, M4A, WAV, AIFF или CAF. Играют первые 30 секунд. Звук повторяется, пока ты не откроешь приложение или не нажмёшь «Готово».",
-  "alarmSoundHintAndroid": "MP3, M4A, OPUS, OGG или WAV. Звучит, пока ты не нажмёшь на уведомление или не смахнёшь его.",
-  "alarmSoundFailed": "Не получилось взять этот файл"
+  "alarmSoundHintIos": "Любой распространённый аудиоформат: MP3, M4A, AAC, WAV, AIFF, CAF, FLAC, AMR, MP4, 3GP и другие. Играют первые 30 секунд. Звук повторяется, пока ты не откроешь приложение или не нажмёшь «Готово».",
+  "alarmSoundHintAndroid": "Любой распространённый аудиоформат: MP3, M4A, AAC, WAV, FLAC, OGG, OPUS, AMR, MIDI, 3GP, MKA, WEBM и другие. Звучит, пока ты не нажмёшь на уведомление или не смахнёшь его.",
+  "alarmSoundFailed": "Не получилось взять этот файл",
+  "quickAddHint": "Быстро: «Позвонить маме через 20 минут»",
+  "quickInHour": "Через час",
+  "quickTonight": "Вечером",
+  "quickTomorrowMorning": "Завтра утром",
+  "quickVoice": "Голосовой ввод",
+  "quickVoiceUnavailable": "Голосовой ввод недоступен. Проверьте доступ к микрофону и распознаванию речи.",
+  "quickAddedCount": "Добавлено задач: {count}",
+  "taskDuplicate": "Дублировать",
+  "taskDuplicated": "Копия создана",
+  "@quickAddedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

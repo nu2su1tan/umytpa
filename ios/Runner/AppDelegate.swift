@@ -34,6 +34,17 @@ import SwiftUI
       name: "umytpa/alarmkit",
       binaryMessenger: engineBridge.applicationRegistrar.messenger()
     )
+    let entryChannel = FlutterMethodChannel(
+      name: "umytpa/entry",
+      binaryMessenger: engineBridge.applicationRegistrar.messenger()
+    )
+    entryChannel.setMethodCallHandler { call, result in
+      if call.method == "take" {
+        result(PendingEntry.take())
+      } else {
+        result(FlutterMethodNotImplemented)
+      }
+    }
     alarmChannel.setMethodCallHandler { call, result in
       AlarmKitBridge.handle(call, result: result)
     }

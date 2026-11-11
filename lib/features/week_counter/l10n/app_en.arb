@@ -771,7 +771,23 @@
   "alarmSoundBuiltIn": "Built-in",
   "alarmSoundPick": "Choose a sound from your device",
   "alarmSoundReset": "Use the built-in sound",
-  "alarmSoundHintIos": "MP3, M4A, WAV, AIFF or CAF. Only the first 30 seconds play. It repeats until you open the app or tap Done.",
-  "alarmSoundHintAndroid": "MP3, M4A, OPUS, OGG or WAV. It rings until you tap or dismiss the notification.",
-  "alarmSoundFailed": "Couldn't use this file"
+  "alarmSoundHintIos": "Any common audio format: MP3, M4A, AAC, WAV, AIFF, CAF, FLAC, AMR, MP4, 3GP and more. Only the first 30 seconds play. It repeats until you open the app or tap Done.",
+  "alarmSoundHintAndroid": "Any common audio format: MP3, M4A, AAC, WAV, FLAC, OGG, OPUS, AMR, MIDI, 3GP, MKA, WEBM and more. It rings until you tap or dismiss the notification.",
+  "alarmSoundFailed": "Couldn't use this file",
+  "quickAddHint": "Quick add: “Call mom in 20 min”",
+  "quickInHour": "In 1 hour",
+  "quickTonight": "This evening",
+  "quickTomorrowMorning": "Tomorrow morning",
+  "quickVoice": "Dictate",
+  "quickVoiceUnavailable": "Voice input is unavailable. Check microphone and speech permissions.",
+  "quickAddedCount": "{count} tasks added",
+  "taskDuplicate": "Duplicate",
+  "taskDuplicated": "Copy created",
+  "@quickAddedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }
