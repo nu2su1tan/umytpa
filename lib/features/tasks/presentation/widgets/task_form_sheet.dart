@@ -22,7 +22,6 @@ import '../../domain/entities/subtask.dart';
 import '../../domain/entities/task.dart';
 import '../../domain/entities/task_category.dart';
 import '../../domain/usecases/parse_smart_input.dart';
-import '../../domain/usecases/quick_times.dart';
 import '../../domain/usecases/create_task.dart';
 import '../../domain/usecases/delete_task.dart';
 import '../../domain/usecases/update_task.dart';
@@ -305,261 +304,280 @@ class _TaskFormSheetBodyState extends State<_TaskFormSheetBody> {
                                   Navigator.of(context).pop();
                                 }
                               },
-                          child: SingleChildScrollView(
-                            padding: const EdgeInsets.fromLTRB(
-                              AppTheme.screenPadding,
-                              8,
-                              AppTheme.screenPadding,
-                              24,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: <Widget>[
-                                // Title field on solid light fill
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: t.sheetCard,
-                                    borderRadius: BorderRadius.circular(20),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Flexible(
+                                child: SingleChildScrollView(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    AppTheme.screenPadding,
+                                    8,
+                                    AppTheme.screenPadding,
+                                    8,
                                   ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 4,
-                                  ),
-                                  child: TextField(
-                                    controller: _titleController,
-                                    focusNode: _titleFocus,
-                                    autofocus: !state.isEdit,
-                                    maxLength: 120,
-                                    style: t.sectionTitle,
-                                    decoration: InputDecoration(
-                                      hintText: state.isEdit
-                                          ? context.l10n.taskHint
-                                          : context.l10n.smartHint,
-                                      counterText: '',
-                                      border: InputBorder.none,
-                                      enabledBorder: InputBorder.none,
-                                      focusedBorder: InputBorder.none,
-                                      errorText:
-                                          state.validation.titleError == null ||
-                                              !state.isDirty
-                                          ? null
-                                          : context.l10n.domainMessage(
-                                              state.validation.titleError!,
-                                            ),
-                                    ),
-                                    textInputAction: TextInputAction.done,
-                                    onChanged: context
-                                        .read<TaskFormCubit>()
-                                        .titleChanged,
-                                  ),
-                                ),
-                                if (state.smart != null) ...<Widget>[
-                                  const SizedBox(height: 8),
-                                  _SmartSuggestion(
-                                    smart: state.smart!,
-                                    onApply: () {
-                                      final TaskFormCubit cubit =
-                                          context.read<TaskFormCubit>()
-                                            ..applySmartInput();
-                                      final TaskFormState next = cubit.state;
-                                      if (next is TaskFormReady) {
-                                        _titleController
-                                            .value = TextEditingValue(
-                                          text: next.title,
-                                          selection: TextSelection.collapsed(
-                                            offset: next.title.length,
-                                          ),
-                                        );
-                                      }
-                                    },
-                                  ),
-                                ],
-                                if (state.validation.dueAtError !=
-                                    null) ...<Widget>[
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    context.l10n.domainMessage(
-                                      state.validation.dueAtError!,
-                                    ),
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.error,
-                                    ),
-                                  ),
-                                ],
-                                if (state.validation.reminderWarning !=
-                                    null) ...<Widget>[
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    context.l10n.domainMessage(
-                                      state.validation.reminderWarning!,
-                                    ),
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: t.danger,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                                if (state.showPermissionHelp) ...<Widget>[
-                                  const SizedBox(height: 12),
-                                  _PermissionHelpBanner(
-                                    onOpenSettings: () {
-                                      context
-                                          .read<TaskFormCubit>()
-                                          .openSystemSettings();
-                                    },
-                                  ),
-                                ],
-                                if (state.submitError != null) ...<Widget>[
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    context.l10n.domainMessage(
-                                      state.submitError!,
-                                    ),
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.error,
-                                    ),
-                                  ),
-                                ],
-                                const SizedBox(height: 20),
-                                _CategoryChips(
-                                  selected: state.category,
-                                  onSelected: context
-                                      .read<TaskFormCubit>()
-                                      .categoryChanged,
-                                ),
-                                const SizedBox(height: 16),
-                                if (!state.isEdit) ...<Widget>[
-                                  Wrap(
-                                    spacing: 8,
-                                    runSpacing: 8,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
                                     children: <Widget>[
-                                      for (final QuickTimeKind kind
-                                          in QuickTimes.available(
-                                            DateTime.now(),
-                                          ))
-                                        _SelectableChip(
-                                          label: context.l10n.quickTimeLabel(
-                                            kind,
+                                      // Title field on solid light fill
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: t.sheetCard,
+                                          borderRadius: BorderRadius.circular(
+                                            20,
                                           ),
-                                          selected: false,
-                                          onTap: () => context
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 4,
+                                        ),
+                                        child: TextField(
+                                          controller: _titleController,
+                                          focusNode: _titleFocus,
+
+                                          maxLength: 120,
+                                          style: t.sectionTitle,
+                                          decoration: InputDecoration(
+                                            hintText: state.isEdit
+                                                ? context.l10n.taskHint
+                                                : context.l10n.smartHint,
+                                            counterText: '',
+                                            border: InputBorder.none,
+                                            enabledBorder: InputBorder.none,
+                                            focusedBorder: InputBorder.none,
+                                            errorText:
+                                                state.validation.titleError ==
+                                                        null ||
+                                                    !state.isDirty
+                                                ? null
+                                                : context.l10n.domainMessage(
+                                                    state
+                                                        .validation
+                                                        .titleError!,
+                                                  ),
+                                          ),
+                                          textInputAction: TextInputAction.done,
+                                          onChanged: context
                                               .read<TaskFormCubit>()
-                                              .quickDueAt(
-                                                QuickTimes.resolve(
-                                                  kind,
-                                                  now: DateTime.now(),
-                                                ),
+                                              .titleChanged,
+                                        ),
+                                      ),
+                                      if (state.smart != null) ...<Widget>[
+                                        const SizedBox(height: 8),
+                                        _SmartSuggestion(
+                                          smart: state.smart!,
+                                          onApply: () {
+                                            final TaskFormCubit cubit =
+                                                context.read<TaskFormCubit>()
+                                                  ..applySmartInput();
+                                            final TaskFormState next =
+                                                cubit.state;
+                                            if (next is TaskFormReady) {
+                                              _titleController
+                                                  .value = TextEditingValue(
+                                                text: next.title,
+                                                selection:
+                                                    TextSelection.collapsed(
+                                                      offset: next.title.length,
+                                                    ),
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                      if (state.validation.dueAtError !=
+                                          null) ...<Widget>[
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          context.l10n.domainMessage(
+                                            state.validation.dueAtError!,
+                                          ),
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: theme.colorScheme.error,
                                               ),
                                         ),
+                                      ],
+                                      if (state.validation.reminderWarning !=
+                                          null) ...<Widget>[
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          context.l10n.domainMessage(
+                                            state.validation.reminderWarning!,
+                                          ),
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: t.danger,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                        ),
+                                      ],
+                                      if (state.showPermissionHelp) ...<Widget>[
+                                        const SizedBox(height: 12),
+                                        _PermissionHelpBanner(
+                                          onOpenSettings: () {
+                                            context
+                                                .read<TaskFormCubit>()
+                                                .openSystemSettings();
+                                          },
+                                        ),
+                                      ],
+                                      if (state.submitError !=
+                                          null) ...<Widget>[
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          context.l10n.domainMessage(
+                                            state.submitError!,
+                                          ),
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: theme.colorScheme.error,
+                                              ),
+                                        ),
+                                      ],
+                                      const SizedBox(height: 20),
+                                      _CategoryChips(
+                                        selected: state.category,
+                                        onSelected: context
+                                            .read<TaskFormCubit>()
+                                            .categoryChanged,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      _DateTimeRow(
+                                        dueAt: state.dueAt,
+                                        onPickDate: () =>
+                                            _pickDate(context, state),
+                                        onPickTime: () =>
+                                            _pickTime(context, state),
+                                      ),
+                                      const SizedBox(height: 20),
+                                      Row(
+                                        children: <Widget>[
+                                          Icon(
+                                            Icons.notifications_none_rounded,
+                                            size: 18,
+                                            color: t.ink2,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            context.l10n.remindMe,
+                                            style: t.footnote.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+                                      _ReminderChips(
+                                        selected: state.reminder,
+                                        customBefore: state.customBefore,
+                                        onSelected: (ReminderPreset preset) {
+                                          context
+                                              .read<TaskFormCubit>()
+                                              .reminderChanged(preset);
+                                        },
+                                        onCustom: () async {
+                                          final TaskFormCubit cubit = context
+                                              .read<TaskFormCubit>();
+                                          final Duration? picked =
+                                              await showCustomReminderDialog(
+                                                context,
+                                                state.customBefore,
+                                              );
+                                          if (picked != null) {
+                                            unawaited(
+                                              cubit.reminderChanged(
+                                                ReminderPreset.custom,
+                                                custom: picked,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
+                                      const SizedBox(height: 12),
+                                      const SizedBox(height: 16),
+                                      _SectionLabel(
+                                        icon: Icons.repeat_rounded,
+                                        text: context.l10n.repeatLabel,
+                                      ),
+                                      const SizedBox(height: 10),
+                                      SizedBox(
+                                        height: 44,
+                                        child: ListView(
+                                          scrollDirection: Axis.horizontal,
+                                          children: <Widget>[
+                                            for (final RepeatRule rule
+                                                in RepeatRule
+                                                    .values) ...<Widget>[
+                                              _SelectableChip(
+                                                label: context.l10n.repeatName(
+                                                  rule,
+                                                ),
+                                                selected: state.repeat == rule,
+                                                onTap: () => context
+                                                    .read<TaskFormCubit>()
+                                                    .repeatChanged(rule),
+                                              ),
+                                              const SizedBox(width: 8),
+                                            ],
+                                          ],
+                                        ),
+                                      ),
+                                      if (state.isEdit) ...<Widget>[
+                                        const SizedBox(height: 16),
+                                        _SectionLabel(
+                                          icon: Icons.checklist_rounded,
+                                          text: context.l10n.subtasksLabel,
+                                        ),
+                                        const SizedBox(height: 10),
+                                        _SubtasksEditor(items: state.subtasks),
+                                      ],
                                     ],
                                   ),
-                                  const SizedBox(height: 12),
-                                ],
-                                _DateTimeRow(
-                                  dueAt: state.dueAt,
-                                  onPickDate: () => _pickDate(context, state),
-                                  onPickTime: () => _pickTime(context, state),
                                 ),
-                                const SizedBox(height: 20),
-                                Row(
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  AppTheme.screenPadding,
+                                  4,
+                                  AppTheme.screenPadding,
+                                  16,
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
                                   children: <Widget>[
-                                    Icon(
-                                      Icons.notifications_none_rounded,
-                                      size: 18,
-                                      color: t.ink2,
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      context.l10n.remindMe,
-                                      style: t.footnote.copyWith(
-                                        fontWeight: FontWeight.w600,
+                                    FilledButton(
+                                      onPressed: state.canSave
+                                          ? () => context
+                                                .read<TaskFormCubit>()
+                                                .save()
+                                          : null,
+                                      child: Text(
+                                        state.isEdit
+                                            ? context.l10n.saveChanges
+                                            : context.l10n.save,
                                       ),
                                     ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                _ReminderChips(
-                                  selected: state.reminder,
-                                  customBefore: state.customBefore,
-                                  onSelected: (ReminderPreset preset) {
-                                    context
-                                        .read<TaskFormCubit>()
-                                        .reminderChanged(preset);
-                                  },
-                                  onCustom: () async {
-                                    final TaskFormCubit cubit = context
-                                        .read<TaskFormCubit>();
-                                    final Duration? picked =
-                                        await showCustomReminderDialog(
-                                          context,
-                                          state.customBefore,
-                                        );
-                                    if (picked != null) {
-                                      unawaited(
-                                        cubit.reminderChanged(
-                                          ReminderPreset.custom,
-                                          custom: picked,
+                                    if (state.isEdit) ...<Widget>[
+                                      const SizedBox(height: 8),
+                                      TextButton(
+                                        onPressed: state.isSubmitting
+                                            ? null
+                                            : () => context
+                                                  .read<TaskFormCubit>()
+                                                  .delete(),
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: t.danger,
                                         ),
-                                      );
-                                    }
-                                  },
-                                ),
-                                const SizedBox(height: 20),
-                                _SectionLabel(
-                                  icon: Icons.repeat_rounded,
-                                  text: context.l10n.repeatLabel,
-                                ),
-                                const SizedBox(height: 10),
-                                Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
-                                  children: <Widget>[
-                                    for (final RepeatRule rule
-                                        in RepeatRule.values)
-                                      _SelectableChip(
-                                        label: context.l10n.repeatName(rule),
-                                        selected: state.repeat == rule,
-                                        onTap: () => context
-                                            .read<TaskFormCubit>()
-                                            .repeatChanged(rule),
+                                        child: Text(context.l10n.delete),
                                       ),
+                                    ],
                                   ],
                                 ),
-                                const SizedBox(height: 20),
-                                _SectionLabel(
-                                  icon: Icons.checklist_rounded,
-                                  text: context.l10n.subtasksLabel,
-                                ),
-                                const SizedBox(height: 10),
-                                _SubtasksEditor(items: state.subtasks),
-                                const SizedBox(height: 24),
-                                FilledButton(
-                                  onPressed: state.canSave
-                                      ? () =>
-                                            context.read<TaskFormCubit>().save()
-                                      : null,
-                                  child: Text(
-                                    state.isEdit
-                                        ? context.l10n.saveChanges
-                                        : context.l10n.save,
-                                  ),
-                                ),
-                                if (state.isEdit) ...<Widget>[
-                                  const SizedBox(height: 8),
-                                  TextButton(
-                                    onPressed: state.isSubmitting
-                                        ? null
-                                        : () => context
-                                              .read<TaskFormCubit>()
-                                              .delete(),
-                                    style: TextButton.styleFrom(
-                                      foregroundColor: t.danger,
-                                    ),
-                                    child: Text(context.l10n.delete),
-                                  ),
-                                ],
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       },
@@ -738,6 +756,12 @@ class _ReminderChips extends StatelessWidget {
   final ValueChanged<ReminderPreset> onSelected;
   final VoidCallback onCustom;
 
+  static const Set<ReminderPreset> _shown = <ReminderPreset>{
+    ReminderPreset.fiveMinutes,
+    ReminderPreset.thirtyMinutes,
+    ReminderPreset.oneHour,
+  };
+
   @override
   Widget build(BuildContext context) {
     return Wrap(
@@ -745,11 +769,14 @@ class _ReminderChips extends StatelessWidget {
       runSpacing: 8,
       children: <Widget>[
         for (final ReminderPreset preset in ReminderPreset.values)
-          if (preset != ReminderPreset.custom)
+          if (preset != ReminderPreset.custom &&
+              (_shown.contains(preset) || preset == selected))
             _SelectableChip(
               label: context.l10n.presetLabel(preset),
               selected: selected == preset,
-              onTap: () => onSelected(preset),
+              // Tapping the chosen one again turns the reminder off.
+              onTap: () =>
+                  onSelected(selected == preset ? ReminderPreset.none : preset),
             ),
         _SelectableChip(
           label: selected == ReminderPreset.custom && customBefore != null
