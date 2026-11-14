@@ -1102,6 +1102,42 @@ abstract class AppLocalizations {
   /// **'Step {n} of {m}'**
   String onbStep(int n, int m);
 
+  /// No description provided for @onbWelcomeTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Plus a task tracker with reminders and real alarms.'**
+  String get onbWelcomeTasks;
+
+  /// No description provided for @onbTasksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks that actually ring'**
+  String get onbTasksTitle;
+
+  /// No description provided for @onbTasksSmart.
+  ///
+  /// In en, this message translates to:
+  /// **'Type it naturally: “Lab report tomorrow 18:00 #study”.'**
+  String get onbTasksSmart;
+
+  /// No description provided for @onbTasksVoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Or just say it out loud with voice input.'**
+  String get onbTasksVoice;
+
+  /// No description provided for @onbTasksAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders come as a real alarm, even when the app is closed.'**
+  String get onbTasksAlarm;
+
+  /// No description provided for @onbEnableReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable reminders'**
+  String get onbEnableReminders;
+
   /// No description provided for @onbWelcomePrefix.
   ///
   /// In en, this message translates to:

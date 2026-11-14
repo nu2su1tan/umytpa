@@ -660,6 +660,27 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get onbWelcomeTasks =>
+      'А ещё трекер задач с напоминаниями и настоящими будильниками.';
+
+  @override
+  String get onbTasksTitle => 'Задачи, которые звонят';
+
+  @override
+  String get onbTasksSmart =>
+      'Пишите как удобно: «Сдать лабу завтра 18:00 #учёба».';
+
+  @override
+  String get onbTasksVoice => 'Или просто продиктуйте голосом.';
+
+  @override
+  String get onbTasksAlarm =>
+      'Напоминания приходят настоящим будильником, даже если приложение закрыто.';
+
+  @override
+  String get onbEnableReminders => 'Включить напоминания';
+
+  @override
   String get onbWelcomePrefix => 'Считаем до';
 
   @override

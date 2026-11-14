@@ -372,6 +372,12 @@
       }
     }
   },
+  "onbWelcomeTasks": "Plus a task tracker with reminders and real alarms.",
+  "onbTasksTitle": "Tasks that actually ring",
+  "onbTasksSmart": "Type it naturally: “Lab report tomorrow 18:00 #study”.",
+  "onbTasksVoice": "Or just say it out loud with voice input.",
+  "onbTasksAlarm": "Reminders come as a real alarm, even when the app is closed.",
+  "onbEnableReminders": "Enable reminders",
   "onbWelcomePrefix": "Counting down to",
   "onbWelcomeStrike": "Friday",
   "onbWelcomeSuffix": "freedom",

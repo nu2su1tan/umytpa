@@ -3,8 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/di/injection.dart';
+import '../../../reminders/domain/reminder_scheduler.dart';
 import '../../l10n/app_localizations.dart';
-import '../../l10n/labels.dart';
 import '../../services/widget_sync.dart';
 import '../../state/app_controller.dart';
 import '../kit/app_page.dart';
@@ -17,11 +18,10 @@ import '../kit/strike.dart';
 import '../theme/tokens.dart';
 import '../widgets/schedule_controls.dart';
 import '../widgets/widget_sheet.dart';
-import 'country_picker_screen.dart';
 
 /// The widget step only exists where there is a home-screen widget (Android).
 final bool _hasWidgetStep = HomeWidgetSync.isSupported;
-int get _totalSteps => _hasWidgetStep ? 3 : 2;
+int get _totalSteps => _hasWidgetStep ? 4 : 3;
 
 /// First launch: a welcome screen, then the work week in three steps.
 /// Changes apply right away; skipping keeps the defaults.
@@ -124,6 +124,11 @@ class _Welcome extends StatelessWidget {
                         l10n.onbWelcomeBody,
                         style: t.body.copyWith(color: t.ink2, height: 23 / 17),
                       ),
+                      const SizedBox(height: 12),
+                      Text(
+                        l10n.onbWelcomeTasks,
+                        style: t.body.copyWith(color: t.ink2, height: 23 / 17),
+                      ),
                     ],
                   ),
                 ),
@@ -211,9 +216,7 @@ class _Step extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    Text(l10n.onbStep(step, _totalSteps), style: _stepStyle(t)),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 20),
                     FractionallySizedBox(
                       widthFactor: 0.92,
                       child: Semantics(
@@ -453,18 +456,15 @@ class _TimeStep extends StatelessWidget {
       listenable: controller,
       builder: (context, _) {
         final schedule = controller.settings.schedule;
-        final code = controller.settings.countryCode;
         return _Step(
           step: 2,
           title: l10n.onbTimeTitle,
           actions: [
             AppButton(
-              label: _hasWidgetStep ? l10n.onbNext : l10n.done,
+              label: l10n.onbNext,
               onTap: schedule.workdays.isEmpty
                   ? null
-                  : _hasWidgetStep
-                  ? () => _push(context, _WidgetStep(controller: controller))
-                  : controller.completeOnboarding,
+                  : () => _push(context, _TasksStep(controller: controller)),
             ),
           ],
           children: [
@@ -487,22 +487,82 @@ class _TimeStep extends StatelessWidget {
               child: Text(l10n.workdaysHint, style: t.footnote),
             ),
             Group(children: weekTimeRows(context, controller)),
-            const SizedBox(height: 16),
-            Group(
-              children: [
-                GroupRow(
-                  title: l10n.holidaysShort,
-                  subtitle: l10n.holidaysShortHint,
-                  value: code == null
-                      ? l10n.noCountry
-                      : l10n.countryLabel(code, controller.countryName(code)),
-                  onTap: () => CountryPickerScreen.open(context, controller),
-                ),
-              ],
-            ),
           ],
         );
       },
+    );
+  }
+}
+
+class _TasksStep extends StatelessWidget {
+  const _TasksStep({required this.controller});
+
+  final AppController controller;
+
+  Future<void> _next(BuildContext context) async {
+    if (_hasWidgetStep) {
+      _push(context, _WidgetStep(controller: controller));
+    } else {
+      await controller.completeOnboarding();
+    }
+  }
+
+  Future<void> _enable(BuildContext context) async {
+    final scheduler = getIt<ReminderScheduler>();
+    await scheduler.requestNotificationsPermission();
+    await scheduler.requestExactAlarmsPermission();
+    if (context.mounted) {
+      await _next(context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final t = context.tokens;
+    Widget tip(IconData icon, String text) => Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: t.surface,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: t.ink),
+            const SizedBox(width: 14),
+            Expanded(child: Text(text, style: t.body)),
+          ],
+        ),
+      ),
+    );
+    return _Step(
+      step: 3,
+      title: l10n.onbTasksTitle,
+      actions: [
+        AppButton(
+          label: l10n.onbEnableReminders,
+          onTap: () => _enable(context),
+        ),
+        AppButton(
+          label: l10n.onbNotNow,
+          kind: ButtonKind.ghost,
+          onTap: () => _next(context),
+        ),
+      ],
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
+          child: Column(
+            children: [
+              tip(Icons.edit_note_rounded, l10n.onbTasksSmart),
+              tip(Icons.mic_none_rounded, l10n.onbTasksVoice),
+              tip(Icons.alarm_rounded, l10n.onbTasksAlarm),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -517,7 +577,7 @@ class _WidgetStep extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final t = context.tokens;
     return _Step(
-      step: 3,
+      step: 4,
       title: l10n.widgetTipTitle,
       actions: [
         AppButton(

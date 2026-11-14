@@ -638,6 +638,27 @@ class AppLocalizationsKk extends AppLocalizations {
   }
 
   @override
+  String get onbWelcomeTasks =>
+      'Және еске салғыштары мен нақты оятқыштары бар тапсырмалар трекері.';
+
+  @override
+  String get onbTasksTitle => 'Қоңырау соғатын тапсырмалар';
+
+  @override
+  String get onbTasksSmart =>
+      'Еркін жазыңыз: «Зертханалық жұмыс ертең 18:00 #оқу».';
+
+  @override
+  String get onbTasksVoice => 'Немесе дауыспен айтып жіберіңіз.';
+
+  @override
+  String get onbTasksAlarm =>
+      'Еске салғыштар қолданба жабық болса да нақты оятқыш болып келеді.';
+
+  @override
+  String get onbEnableReminders => 'Еске салғыштарды қосу';
+
+  @override
   String get onbWelcomePrefix => 'Санаймыз';
 
   @override

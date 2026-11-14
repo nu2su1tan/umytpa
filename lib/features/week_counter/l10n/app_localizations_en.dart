@@ -646,6 +646,27 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get onbWelcomeTasks =>
+      'Plus a task tracker with reminders and real alarms.';
+
+  @override
+  String get onbTasksTitle => 'Tasks that actually ring';
+
+  @override
+  String get onbTasksSmart =>
+      'Type it naturally: “Lab report tomorrow 18:00 #study”.';
+
+  @override
+  String get onbTasksVoice => 'Or just say it out loud with voice input.';
+
+  @override
+  String get onbTasksAlarm =>
+      'Reminders come as a real alarm, even when the app is closed.';
+
+  @override
+  String get onbEnableReminders => 'Enable reminders';
+
+  @override
   String get onbWelcomePrefix => 'Counting down to';
 
   @override
