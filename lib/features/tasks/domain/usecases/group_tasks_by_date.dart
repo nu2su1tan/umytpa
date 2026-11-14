@@ -46,7 +46,10 @@ class GroupTasksByDate {
 
     return <TaskSection>[
       if (overdue.isNotEmpty)
-        TaskSection(kind: TaskSectionKind.overdue, tasks: _sortSection(overdue)),
+        TaskSection(
+          kind: TaskSectionKind.overdue,
+          tasks: _sortSection(overdue),
+        ),
       if (today.isNotEmpty)
         TaskSection(kind: TaskSectionKind.today, tasks: _sortSection(today)),
       if (tomorrow.isNotEmpty)
@@ -66,12 +69,10 @@ class GroupTasksByDate {
 
   /// Incomplete first (by dueAt), then completed (by dueAt).
   static List<Task> _sortSection(List<Task> tasks) {
-    final List<Task> incomplete =
-        tasks.where((Task t) => !t.isDone).toList()
-          ..sort((Task a, Task b) => a.dueAt.compareTo(b.dueAt));
-    final List<Task> completed =
-        tasks.where((Task t) => t.isDone).toList()
-          ..sort((Task a, Task b) => a.dueAt.compareTo(b.dueAt));
+    final List<Task> incomplete = tasks.where((Task t) => !t.isDone).toList()
+      ..sort((Task a, Task b) => a.dueAt.compareTo(b.dueAt));
+    final List<Task> completed = tasks.where((Task t) => t.isDone).toList()
+      ..sort((Task a, Task b) => a.dueAt.compareTo(b.dueAt));
     return <Task>[...incomplete, ...completed];
   }
 

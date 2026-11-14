@@ -32,8 +32,13 @@ abstract final class TaskInputValidator {
     String? dueAtError;
     // Minute precision: the picker has no seconds, so the current minute
     // (e.g. 21:47 at 21:47:30) is still a valid deadline.
-    final DateTime currentMinute =
-        DateTime(now.year, now.month, now.day, now.hour, now.minute);
+    final DateTime currentMinute = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      now.hour,
+      now.minute,
+    );
     if (isNew && dueAt.isBefore(currentMinute)) {
       dueAtError = deadlinePastMessage;
     }
@@ -70,6 +75,5 @@ final class TaskInputValidation extends Equatable {
   bool get hasReminderWarning => reminderWarning != null;
 
   @override
-  List<Object?> get props =>
-      <Object?>[titleError, dueAtError, reminderWarning];
+  List<Object?> get props => <Object?>[titleError, dueAtError, reminderWarning];
 }

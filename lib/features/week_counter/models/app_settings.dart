@@ -42,8 +42,8 @@ class AppSettings {
     countryCode: json['countryCode'] as String?,
     schedule: WorkSchedule.fromJson(json['schedule'] as Map<String, dynamic>),
     overrides: {
-      for (final e in (json['overrides'] as Map<String, dynamic>? ?? {})
-          .entries)
+      for (final e
+          in (json['overrides'] as Map<String, dynamic>? ?? {}).entries)
         CalendarDate.parse(e.key): DayOverride.fromJson(
           e.value as Map<String, dynamic>,
         ),

@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
 
+import '../../../../core/utils/time_format.dart';
+
 import '../../../../core/utils/date_time_utils.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/reminder_preset.dart';
@@ -18,7 +20,7 @@ final Map<String, DateFormat> _hmCache = <String, DateFormat>{};
 final Map<String, DateFormat> _dayMonthCache = <String, DateFormat>{};
 
 DateFormat _hm(String locale) =>
-    _hmCache.putIfAbsent(locale, () => DateFormat.Hm(locale));
+    _hmCache.putIfAbsent(locale, () => timeFormatFor(locale));
 
 DateFormat _dayMonth(String locale) =>
     _dayMonthCache.putIfAbsent(locale, () => DateFormat('d MMM', locale));
@@ -41,9 +43,11 @@ extension TaskL10n on AppLocalizations {
       }
     }
     if (smart.hasTime) {
-      final String h = smart.hour.toString().padLeft(2, '0');
-      final String m = (smart.minute ?? 0).toString().padLeft(2, '0');
-      parts.add('$h:$m');
+      parts.add(
+        _hm(
+          localeName,
+        ).format(DateTime(2000, 1, 1, smart.hour ?? 0, smart.minute ?? 0)),
+      );
     }
     if (smart.category != null) {
       parts.add(categoryLabel(smart.category!));
@@ -62,41 +66,41 @@ extension TaskL10n on AppLocalizations {
   }
 
   String quickTimeLabel(QuickTimeKind kind) => switch (kind) {
-        QuickTimeKind.inOneHour => quickInHour,
-        QuickTimeKind.tonight => quickTonight,
-        QuickTimeKind.tomorrowMorning => quickTomorrowMorning,
-      };
+    QuickTimeKind.inOneHour => quickInHour,
+    QuickTimeKind.tonight => quickTonight,
+    QuickTimeKind.tomorrowMorning => quickTomorrowMorning,
+  };
 
   String categoryLabel(TaskCategory category) => switch (category) {
-        TaskCategory.study => categoryStudy,
-        TaskCategory.work => categoryWork,
-        TaskCategory.personal => categoryPersonal,
-        TaskCategory.other => categoryOther,
-      };
+    TaskCategory.study => categoryStudy,
+    TaskCategory.work => categoryWork,
+    TaskCategory.personal => categoryPersonal,
+    TaskCategory.other => categoryOther,
+  };
 
   String sectionTitle(TaskSectionKind kind) => switch (kind) {
-        TaskSectionKind.overdue => sectionOverdue,
-        TaskSectionKind.today => sectionToday,
-        TaskSectionKind.tomorrow => sectionTomorrow,
-        TaskSectionKind.later => sectionLater,
-        TaskSectionKind.completed => sectionCompleted,
-      };
+    TaskSectionKind.overdue => sectionOverdue,
+    TaskSectionKind.today => sectionToday,
+    TaskSectionKind.tomorrow => sectionTomorrow,
+    TaskSectionKind.later => sectionLater,
+    TaskSectionKind.completed => sectionCompleted,
+  };
 
   String presetLabel(ReminderPreset preset) => switch (preset) {
-        ReminderPreset.none => reminderPresetNone,
-        ReminderPreset.fiveMinutes => reminderPreset5m,
-        ReminderPreset.thirtyMinutes => reminderPreset30m,
-        ReminderPreset.oneHour => reminderPreset1h,
-        ReminderPreset.oneDay => reminderPreset1d,
-        ReminderPreset.custom => reminderCustom,
-      };
+    ReminderPreset.none => reminderPresetNone,
+    ReminderPreset.fiveMinutes => reminderPreset5m,
+    ReminderPreset.thirtyMinutes => reminderPreset30m,
+    ReminderPreset.oneHour => reminderPreset1h,
+    ReminderPreset.oneDay => reminderPreset1d,
+    ReminderPreset.custom => reminderCustom,
+  };
 
   String repeatName(RepeatRule rule) => switch (rule) {
-        RepeatRule.none => repeatNone,
-        RepeatRule.daily => repeatDaily,
-        RepeatRule.weekdays => repeatWeekdays,
-        RepeatRule.weekly => repeatWeekly,
-      };
+    RepeatRule.none => repeatNone,
+    RepeatRule.daily => repeatDaily,
+    RepeatRule.weekdays => repeatWeekdays,
+    RepeatRule.weekly => repeatWeekly,
+  };
 
   String greeting(DateTime now) {
     if (now.hour < 12) {
@@ -130,8 +134,9 @@ extension TaskL10n on AppLocalizations {
     if (DateTimeUtils.isSameCalendarDay(local, now)) {
       return time;
     }
-    final DateTime yesterday =
-        DateTimeUtils.startOfDay(now).subtract(const Duration(days: 1));
+    final DateTime yesterday = DateTimeUtils.startOfDay(
+      now,
+    ).subtract(const Duration(days: 1));
     if (DateTimeUtils.isSameCalendarDay(local, yesterday)) {
       return dueYesterday(time);
     }

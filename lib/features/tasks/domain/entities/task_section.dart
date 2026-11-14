@@ -10,12 +10,12 @@ enum TaskSectionKind {
   completed;
 
   String get title => switch (this) {
-        TaskSectionKind.overdue => 'Overdue',
-        TaskSectionKind.today => 'Today',
-        TaskSectionKind.tomorrow => 'Tomorrow',
-        TaskSectionKind.later => 'Later',
-        TaskSectionKind.completed => 'Completed',
-      };
+    TaskSectionKind.overdue => 'Overdue',
+    TaskSectionKind.today => 'Today',
+    TaskSectionKind.tomorrow => 'Tomorrow',
+    TaskSectionKind.later => 'Later',
+    TaskSectionKind.completed => 'Completed',
+  };
 
   bool get initiallyCollapsed => this == TaskSectionKind.completed;
 
@@ -23,10 +23,7 @@ enum TaskSectionKind {
 }
 
 final class TaskSection extends Equatable {
-  const TaskSection({
-    required this.kind,
-    required this.tasks,
-  });
+  const TaskSection({required this.kind, required this.tasks});
 
   final TaskSectionKind kind;
   final List<Task> tasks;

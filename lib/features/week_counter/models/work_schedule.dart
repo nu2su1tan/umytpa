@@ -74,8 +74,8 @@ class WorkSchedule {
     workdays: {for (final d in json['workdays'] as List) d as int},
     defaultShift: Shift.fromJson(json['defaultShift'] as Map<String, dynamic>),
     customShifts: {
-      for (final e in (json['customShifts'] as Map<String, dynamic>? ?? {})
-          .entries)
+      for (final e
+          in (json['customShifts'] as Map<String, dynamic>? ?? {}).entries)
         int.parse(e.key): Shift.fromJson(e.value as Map<String, dynamic>),
     },
   );

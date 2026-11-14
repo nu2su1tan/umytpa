@@ -54,8 +54,9 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
       settingsRepository: SettingsRepository(store),
       holidayRepository: HolidayRepository(store, NagerDateApi()),
       prefsRepository: PrefsRepository(store),
-      widgetSync:
-          HomeWidgetSync.isSupported ? HomeWidgetSync() : NoopWidgetSync(),
+      widgetSync: HomeWidgetSync.isSupported
+          ? HomeWidgetSync()
+          : NoopWidgetSync(),
     );
     await controller.init();
     if (!mounted) {

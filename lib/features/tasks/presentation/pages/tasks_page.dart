@@ -62,8 +62,9 @@ class _TasksPageState extends State<TasksPage> with WidgetsBindingObserver {
     groupTasksByDate: getIt<GroupTasksByDate>(),
     updateTask: getIt<UpdateTask>(),
   )..start();
-  late final StatsCubit _stats =
-      StatsCubit(repository: getIt<TaskRepository>());
+  late final StatsCubit _stats = StatsCubit(
+    repository: getIt<TaskRepository>(),
+  );
 
   @override
   void initState() {
@@ -76,8 +77,9 @@ class _TasksPageState extends State<TasksPage> with WidgetsBindingObserver {
         return;
       }
       unawaited(
-        ExternalEntries.start(newTaskLabel: context.l10n.addTask)
-            .then((_) => _onExternalEntry()),
+        ExternalEntries.start(
+          newTaskLabel: context.l10n.addTask,
+        ).then((_) => _onExternalEntry()),
       );
       final ProfileController profile = getIt<ProfileController>();
       if (mounted && !profile.asked) {
@@ -108,8 +110,9 @@ class _TasksPageState extends State<TasksPage> with WidgetsBindingObserver {
       case EntryKind.share:
         await TaskFormSheet.show(context, initialTitle: entry.text);
       case EntryKind.add:
-        final ({int created, String? error}) r =
-            await _cubit.quickAdd(entry.text!);
+        final ({int created, String? error}) r = await _cubit.quickAdd(
+          entry.text!,
+        );
         if (!mounted || r.created == 0) {
           return;
         }
@@ -201,7 +204,8 @@ class _TasksPageBody extends StatelessWidget {
       TaskWidgetSync.push(
         title: l10n.widgetToday,
         count: '${p.done}/${p.total}',
-        next: p.next?.title ??
+        next:
+            p.next?.title ??
             (p.allDone ? l10n.widgetAllDone : l10n.widgetNothingNext),
         nextTime: p.next == null ? '' : l10n.dueLabel(p.next!.dueAt, now: now),
       ),
@@ -227,12 +231,7 @@ class _TasksPageBody extends StatelessWidget {
 }
 
 class TasksView extends StatelessWidget {
-  const TasksView({
-    this.onAddTask,
-    this.onEditTask,
-    this.now,
-    super.key,
-  });
+  const TasksView({this.onAddTask, this.onEditTask, this.now, super.key});
 
   final VoidCallback? onAddTask;
   final ValueChanged<Task>? onEditTask;
@@ -251,20 +250,20 @@ class TasksView extends StatelessWidget {
               builder: (BuildContext context, TasksState state) {
                 return switch (state) {
                   TasksInitial() || TasksLoading() => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    child: CircularProgressIndicator(),
+                  ),
                   TasksFailure(:final message) => SafeArea(
-                      child: TasksErrorView(
-                        message: message,
-                        onRetry: () => context.read<TasksCubit>().retry(),
-                      ),
+                    child: TasksErrorView(
+                      message: message,
+                      onRetry: () => context.read<TasksCubit>().retry(),
                     ),
+                  ),
                   TasksLoaded() => _LoadedBody(
-                      state: state,
-                      now: current,
-                      onAddTask: onAddTask,
-                      onEditTask: onEditTask,
-                    ),
+                    state: state,
+                    now: current,
+                    onAddTask: onAddTask,
+                    onEditTask: onEditTask,
+                  ),
                 };
               },
             ),
@@ -485,7 +484,8 @@ class _LoadedBody extends StatelessWidget {
   /// A short pat on the back; a bigger one for the last task of the day.
   void _cheer(BuildContext context, Task done) {
     final TodayProgress p = TodayProgress.of(state.allTasks, now: now);
-    final bool counted = DateTimeUtils.isSameCalendarDay(done.dueAt, now) ||
+    final bool counted =
+        DateTimeUtils.isSameCalendarDay(done.dueAt, now) ||
         done.dueAt.isBefore(now);
     final bool last = counted && p.left == 1;
     final String text = context.copy.cheer(

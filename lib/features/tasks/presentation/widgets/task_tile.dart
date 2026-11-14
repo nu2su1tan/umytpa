@@ -40,8 +40,9 @@ class TaskTile extends StatelessWidget {
     final String? reminder = context.l10n.reminderBefore(task.remindBefore);
     final Color secondary = task.isDone ? t.ink3 : t.ink2;
     final Color dueColor = overdue && !task.isDone ? t.danger : secondary;
-    final TextDecoration? strike =
-        task.isDone ? TextDecoration.lineThrough : null;
+    final TextDecoration? strike = task.isDone
+        ? TextDecoration.lineThrough
+        : null;
 
     return Pressable(
       onTap: onTap,
@@ -58,7 +59,9 @@ class TaskTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Semantics(
-              label: task.isDone ? context.l10n.markNotDone : context.l10n.markDone,
+              label: task.isDone
+                  ? context.l10n.markNotDone
+                  : context.l10n.markDone,
               button: true,
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
@@ -149,11 +152,7 @@ class TaskTile extends StatelessWidget {
                   child: SizedBox(
                     width: 48,
                     height: 64,
-                    child: Icon(
-                      Icons.timer_outlined,
-                      size: 20,
-                      color: t.ink3,
-                    ),
+                    child: Icon(Icons.timer_outlined, size: 20, color: t.ink3),
                   ),
                 ),
               ),
@@ -276,13 +275,14 @@ class _CheckCircleState extends State<_CheckCircle>
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: done ? Tokens.lime : Colors.transparent,
-          border: Border.all(
-            color: done ? Tokens.lime : t.ink3,
-            width: 1.5,
-          ),
+          border: Border.all(color: done ? Tokens.lime : t.ink3, width: 1.5),
         ),
         child: done
-            ? const Icon(Icons.check_rounded, size: 18, color: Color(0xFF111111))
+            ? const Icon(
+                Icons.check_rounded,
+                size: 18,
+                color: Color(0xFF111111),
+              )
             : null,
       ),
     );

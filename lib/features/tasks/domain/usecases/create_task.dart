@@ -7,10 +7,7 @@ import '../validation/task_input_validator.dart';
 import 'should_schedule_reminder.dart';
 
 class CreateTask {
-  const CreateTask({
-    required this.repository,
-    required this.reminderScheduler,
-  });
+  const CreateTask({required this.repository, required this.reminderScheduler});
 
   final TaskRepository repository;
   final ReminderScheduler reminderScheduler;

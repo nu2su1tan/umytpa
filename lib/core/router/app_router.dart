@@ -16,4 +16,3 @@ final GoRouter appRouter = GoRouter(
     ),
   ],
 );
-

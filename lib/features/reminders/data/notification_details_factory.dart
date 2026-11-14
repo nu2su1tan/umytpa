@@ -94,18 +94,17 @@ class NotificationDetailsFactory {
 
   static AndroidNotificationSound _androidSound(String? customPath) =>
       customPath == null
-          ? const RawResourceAndroidNotificationSound(androidSoundResource)
-          : UriAndroidNotificationSound(Uri.file(customPath).toString());
+      ? const RawResourceAndroidNotificationSound(androidSoundResource)
+      : UriAndroidNotificationSound(Uri.file(customPath).toString());
 
   /// Localised captions for the notification buttons.
   static List<AndroidNotificationAction> _androidActions(
     String doneLabel,
     String snoozeLabel,
-  ) =>
-      <AndroidNotificationAction>[
-        AndroidNotificationAction(ReminderActions.doneId, doneLabel),
-        AndroidNotificationAction(ReminderActions.snoozeId, snoozeLabel),
-      ];
+  ) => <AndroidNotificationAction>[
+    AndroidNotificationAction(ReminderActions.doneId, doneLabel),
+    AndroidNotificationAction(ReminderActions.snoozeId, snoozeLabel),
+  ];
 
   /// Builds [NotificationDetails] for scheduling high-priority alarm reminders.
   NotificationDetails createNotificationDetails({

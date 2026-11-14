@@ -13,7 +13,8 @@ import 'notification_details_factory.dart';
 abstract final class ReminderActions {
   static const String doneId = 'task_done';
   static const String snoozeId = 'task_snooze';
-  static const String iosDismissId = 'com.apple.UNNotificationDismissActionIdentifier';
+  static const String iosDismissId =
+      'com.apple.UNNotificationDismissActionIdentifier';
   static const String iosCategory = 'task_actions';
   static const Duration snoozeFor = Duration(minutes: 10);
 
@@ -23,15 +24,16 @@ abstract final class ReminderActions {
     required String title,
     required String body,
     String? kind,
-  }) =>
-      jsonEncode(<String, Object>{
-        'id': taskId,
-        't': title,
-        'b': body,
-        if (kind != null) 'k': kind,
-      });
+  }) => jsonEncode(<String, Object>{
+    'id': taskId,
+    't': title,
+    'b': body,
+    if (kind != null) 'k': kind,
+  });
 
-  static ({int id, String title, String body, String? kind})? decodePayload(String? raw) {
+  static ({int id, String title, String body, String? kind})? decodePayload(
+    String? raw,
+  ) {
     if (raw == null) {
       return null;
     }

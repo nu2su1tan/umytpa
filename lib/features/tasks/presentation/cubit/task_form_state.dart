@@ -49,6 +49,7 @@ final class TaskFormReady extends TaskFormState {
   final bool isDirty;
   final bool isSubmitting;
   final bool showPermissionHelp;
+
   /// The offset when [reminder] is [ReminderPreset.custom].
   final Duration? customBefore;
   final RepeatRule repeat;
@@ -92,8 +93,7 @@ final class TaskFormReady extends TaskFormState {
       isDirty: isDirty ?? this.isDirty,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       showPermissionHelp: showPermissionHelp ?? this.showPermissionHelp,
-      customBefore:
-          customBefore != null ? customBefore() : this.customBefore,
+      customBefore: customBefore != null ? customBefore() : this.customBefore,
       repeat: repeat ?? this.repeat,
       subtasks: subtasks ?? this.subtasks,
       smart: smart != null ? smart() : this.smart,
@@ -107,23 +107,23 @@ final class TaskFormReady extends TaskFormState {
 
   @override
   List<Object?> get props => <Object?>[
-        title,
-        dueAt,
-        category,
-        reminder,
-        customBefore,
-        validation,
-        isEdit,
-        isDirty,
-        isSubmitting,
-        showPermissionHelp,
-        repeat,
-        subtasks,
-        smart,
-        existingTask,
-        submitError,
-        pendingRationale,
-      ];
+    title,
+    dueAt,
+    category,
+    reminder,
+    customBefore,
+    validation,
+    isEdit,
+    isDirty,
+    isSubmitting,
+    showPermissionHelp,
+    repeat,
+    subtasks,
+    smart,
+    existingTask,
+    submitError,
+    pendingRationale,
+  ];
 }
 
 final class TaskFormLoadFailure extends TaskFormState {

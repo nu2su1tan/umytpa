@@ -15,15 +15,15 @@ class TasksHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Tokens t = context.tokens;
-    final String dateLabel = DateFormat('EEEE, d MMMM', context.l10n.localeName).format(now);
+    final String dateLabel = DateFormat(
+      'EEEE, d MMMM',
+      context.l10n.localeName,
+    ).format(now);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          dateLabel,
-          style: t.callout.copyWith(fontWeight: FontWeight.w600),
-        ),
+        Text(dateLabel, style: t.callout.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 4),
         Semantics(
           header: true,

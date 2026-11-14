@@ -32,7 +32,4 @@ final class ReminderFullScreenMissing extends ReminderPermissionStatus {
 
 /// Identifies which special permission needs an explanatory rationale dialog
 /// in the presentation layer before navigating the user to system settings.
-enum ReminderPermissionRationale {
-  exactAlarms,
-  fullScreenIntent,
-}
+enum ReminderPermissionRationale { exactAlarms, fullScreenIntent }

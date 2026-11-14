@@ -11,22 +11,26 @@ import '../../domain/usecases/task_stats.dart';
 /// Streaks, badges, charts and focus history, recomputed as data changes.
 class StatsCubit extends Cubit<TaskStats> {
   StatsCubit({required this.repository, DateTime Function()? now})
-      : _now = now ?? DateTime.now,
-        super(
-          TaskStats.compute(
-            const <Task>[],
-            const <FocusSession>[],
-            now: (now ?? DateTime.now)(),
-          ),
-        ) {
-    _subs.add(repository.watchAll().listen((List<Task> t) {
-      _tasks = t;
-      _recompute();
-    }));
-    _subs.add(repository.watchFocusSessions().listen((List<FocusSession> s) {
-      _sessions = s;
-      _recompute();
-    }));
+    : _now = now ?? DateTime.now,
+      super(
+        TaskStats.compute(
+          const <Task>[],
+          const <FocusSession>[],
+          now: (now ?? DateTime.now)(),
+        ),
+      ) {
+    _subs.add(
+      repository.watchAll().listen((List<Task> t) {
+        _tasks = t;
+        _recompute();
+      }),
+    );
+    _subs.add(
+      repository.watchFocusSessions().listen((List<FocusSession> s) {
+        _sessions = s;
+        _recompute();
+      }),
+    );
   }
 
   final TaskRepository repository;
@@ -43,14 +47,18 @@ class StatsCubit extends Cubit<TaskStats> {
     }
     _subs
       ..clear()
-      ..add(repository.watchAll().listen((List<Task> t) {
-        _tasks = t;
-        _recompute();
-      }))
-      ..add(repository.watchFocusSessions().listen((List<FocusSession> s) {
-        _sessions = s;
-        _recompute();
-      }));
+      ..add(
+        repository.watchAll().listen((List<Task> t) {
+          _tasks = t;
+          _recompute();
+        }),
+      )
+      ..add(
+        repository.watchFocusSessions().listen((List<FocusSession> s) {
+          _sessions = s;
+          _recompute();
+        }),
+      );
   }
 
   void _recompute() {

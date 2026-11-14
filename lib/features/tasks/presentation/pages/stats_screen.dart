@@ -105,7 +105,8 @@ class StatsScreen extends StatelessWidget {
               ],
               const SizedBox(height: 16),
               _Section(
-                title: '${l10n.statsLast7Focus} · ${_duration(l10n, s.focusThisWeek)}',
+                title:
+                    '${l10n.statsLast7Focus} · ${_duration(l10n, s.focusThisWeek)}',
                 child: _Bars(
                   values: s.focusLast7,
                   locale: l10n.localeName,
@@ -125,10 +126,7 @@ class StatsScreen extends StatelessWidget {
                 child: Column(
                   children: <Widget>[
                     for (final Achievement a in Achievement.values)
-                      _Badge(
-                        achievement: a,
-                        unlocked: s.unlocked.contains(a),
-                      ),
+                      _Badge(achievement: a, unlocked: s.unlocked.contains(a)),
                   ],
                 ),
               ),
@@ -198,10 +196,7 @@ class _Tile extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 4),
-          Text(
-            label,
-            style: t.footnote.copyWith(color: t.ink2, fontSize: 12),
-          ),
+          Text(label, style: t.footnote.copyWith(color: t.ink2, fontSize: 12)),
         ],
       ),
     );
@@ -369,45 +364,51 @@ class _Badge extends StatelessWidget {
     final Tokens t = context.tokens;
     final AppLocalizations l10n = context.l10n;
     final (String name, String desc, IconData icon) = switch (achievement) {
-      Achievement.firstDone =>
-        (l10n.badgeFirstDone, l10n.badgeFirstDoneDesc, Icons.flag_rounded),
-      Achievement.tenDone =>
-        (l10n.badgeTenDone, l10n.badgeTenDoneDesc, Icons.bolt_rounded),
+      Achievement.firstDone => (
+        l10n.badgeFirstDone,
+        l10n.badgeFirstDoneDesc,
+        Icons.flag_rounded,
+      ),
+      Achievement.tenDone => (
+        l10n.badgeTenDone,
+        l10n.badgeTenDoneDesc,
+        Icons.bolt_rounded,
+      ),
       Achievement.fiftyDone => (
-          l10n.badgeFiftyDone,
-          l10n.badgeFiftyDoneDesc,
-          Icons.local_fire_department_rounded,
-        ),
+        l10n.badgeFiftyDone,
+        l10n.badgeFiftyDoneDesc,
+        Icons.local_fire_department_rounded,
+      ),
       Achievement.hundredDone => (
-          l10n.badgeHundredDone,
-          l10n.badgeHundredDoneDesc,
-          Icons.emoji_events_rounded,
-        ),
+        l10n.badgeHundredDone,
+        l10n.badgeHundredDoneDesc,
+        Icons.emoji_events_rounded,
+      ),
       Achievement.streak3 => (
-          l10n.badgeStreak3,
-          l10n.badgeStreak3Desc,
-          Icons.looks_3_rounded,
-        ),
+        l10n.badgeStreak3,
+        l10n.badgeStreak3Desc,
+        Icons.looks_3_rounded,
+      ),
       Achievement.streak7 => (
-          l10n.badgeStreak7,
-          l10n.badgeStreak7Desc,
-          Icons.calendar_view_week_rounded,
-        ),
+        l10n.badgeStreak7,
+        l10n.badgeStreak7Desc,
+        Icons.calendar_view_week_rounded,
+      ),
       Achievement.streak30 => (
-          l10n.badgeStreak30,
-          l10n.badgeStreak30Desc,
-          Icons.workspace_premium_rounded,
-        ),
+        l10n.badgeStreak30,
+        l10n.badgeStreak30Desc,
+        Icons.workspace_premium_rounded,
+      ),
       Achievement.focusHour => (
-          l10n.badgeFocusHour,
-          l10n.badgeFocusHourDesc,
-          Icons.timer_rounded,
-        ),
+        l10n.badgeFocusHour,
+        l10n.badgeFocusHourDesc,
+        Icons.timer_rounded,
+      ),
       Achievement.focusTenHours => (
-          l10n.badgeFocusTen,
-          l10n.badgeFocusTenDesc,
-          Icons.self_improvement_rounded,
-        ),
+        l10n.badgeFocusTen,
+        l10n.badgeFocusTenDesc,
+        Icons.self_improvement_rounded,
+      ),
     };
     return Opacity(
       opacity: unlocked ? 1 : 0.4,

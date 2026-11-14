@@ -20,24 +20,24 @@ class TaskRepositoryImpl implements TaskRepository {
   @override
   Stream<List<Task>> watchAll() {
     return _dao.watchAll().map(
-          (List<TaskRecord> rows) =>
-              rows.map(TaskMapper.toDomain).toList(growable: false),
-        );
+      (List<TaskRecord> rows) =>
+          rows.map(TaskMapper.toDomain).toList(growable: false),
+    );
   }
 
   @override
   Stream<List<FocusSession>> watchFocusSessions() {
     return _dao.watchFocusSessions().map(
-          (List<FocusSessionRecord> rows) => rows
-              .map(
-                (FocusSessionRecord r) => FocusSession(
-                  startedAt: r.startedAt.toLocal(),
-                  minutes: r.minutes,
-                  taskId: r.taskId,
-                ),
-              )
-              .toList(growable: false),
-        );
+      (List<FocusSessionRecord> rows) => rows
+          .map(
+            (FocusSessionRecord r) => FocusSession(
+              startedAt: r.startedAt.toLocal(),
+              minutes: r.minutes,
+              taskId: r.taskId,
+            ),
+          )
+          .toList(growable: false),
+    );
   }
 
   @override

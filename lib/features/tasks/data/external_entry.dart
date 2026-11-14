@@ -69,18 +69,22 @@ abstract final class ExternalEntries {
   /// Asks the platform whether something is waiting (share, widget, Siri).
   static Future<void> pull() async {
     try {
-      final Map<Object?, Object?>? raw =
-          await _channel.invokeMapMethod<Object?, Object?>('take');
+      final Map<Object?, Object?>? raw = await _channel
+          .invokeMapMethod<Object?, Object?>('take');
       if (raw == null) {
         return;
       }
       final String? text = (raw['text'] as String?)?.trim();
       final ExternalEntry? entry = switch (raw['kind']) {
         'new' => const ExternalEntry(EntryKind.newTask),
-        'share' when text != null && text.isNotEmpty =>
-          ExternalEntry(EntryKind.share, text),
-        'add' when text != null && text.isNotEmpty =>
-          ExternalEntry(EntryKind.add, text),
+        'share' when text != null && text.isNotEmpty => ExternalEntry(
+          EntryKind.share,
+          text,
+        ),
+        'add' when text != null && text.isNotEmpty => ExternalEntry(
+          EntryKind.add,
+          text,
+        ),
         _ => null,
       };
       if (entry != null) {

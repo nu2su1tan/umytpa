@@ -24,12 +24,7 @@ abstract final class DateTimeUtils {
   /// - 14:00:01 → 15:00:00
   /// - 14:30:00 → 15:00:00
   static DateTime nextRoundedHour(DateTime now) {
-    final DateTime floored = DateTime(
-      now.year,
-      now.month,
-      now.day,
-      now.hour,
-    );
+    final DateTime floored = DateTime(now.year, now.month, now.day, now.hour);
     return floored.add(const Duration(hours: 1));
   }
 }

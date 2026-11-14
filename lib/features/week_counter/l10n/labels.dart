@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 
+import '../../../core/utils/time_format.dart';
 import '../core/calendar_date.dart';
 import '../domain/countdown_engine.dart';
 import '../models/holiday.dart';
@@ -80,7 +81,7 @@ extension Labels on AppLocalizations {
       first == last ? date(first) : '${date(first)} – ${date(last)}';
 
   /// "18:00".
-  String time(DateTime time) => DateFormat.Hm(localeName).format(time);
+  String time(DateTime time) => timeFormatFor(localeName).format(time);
 
   /// "Fri, Oct 23, 18:00".
   String dateTime(DateTime time) =>

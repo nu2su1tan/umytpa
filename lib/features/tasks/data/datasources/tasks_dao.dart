@@ -17,8 +17,9 @@ class TasksDao extends DatabaseAccessor<AppDatabase> with _$TasksDaoMixin {
   }
 
   Future<TaskRecord?> getById(int id) {
-    return (select(tasks)..where((Tasks t) => t.id.equals(id)))
-        .getSingleOrNull();
+    return (select(
+      tasks,
+    )..where((Tasks t) => t.id.equals(id))).getSingleOrNull();
   }
 
   Future<int> insertTask(TasksCompanion companion) {

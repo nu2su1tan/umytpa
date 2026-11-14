@@ -82,9 +82,7 @@ class _FilterChip extends StatelessWidget {
             color: background,
             shape: StadiumBorder(
               side: BorderSide(
-                color: selected
-                    ? t.violetInk.withValues(alpha: 0.35)
-                    : t.line,
+                color: selected ? t.violetInk.withValues(alpha: 0.35) : t.line,
                 width: 0.5,
               ),
             ),

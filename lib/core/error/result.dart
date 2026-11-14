@@ -8,14 +8,14 @@ sealed class Result<T> {
   bool get isErr => this is Err<T>;
 
   T? get valueOrNull => switch (this) {
-        Success(:final value) => value,
-        Err() => null,
-      };
+    Success(:final value) => value,
+    Err() => null,
+  };
 
   Failure? get failureOrNull => switch (this) {
-        Success() => null,
-        Err(:final failure) => failure,
-      };
+    Success() => null,
+    Err(:final failure) => failure,
+  };
 
   Result<R> map<R>(R Function(T value) transform) {
     return switch (this) {

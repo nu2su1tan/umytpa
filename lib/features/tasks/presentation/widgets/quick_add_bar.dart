@@ -17,17 +17,14 @@ import '../utils/task_l10n.dart';
 /// send. Several lines make several tasks. Shows how the text was read while
 /// you type, and offers one-tap times.
 class QuickAddBar extends StatefulWidget {
-  const QuickAddBar({
-    required this.onSubmit,
-    this.initialText,
-    super.key,
-  });
+  const QuickAddBar({required this.onSubmit, this.initialText, super.key});
 
   /// Creates the tasks; returns how many were made and the first error.
   final Future<({int created, String? error})> Function(
     String text,
     QuickTimeKind? time,
-  ) onSubmit;
+  )
+  onSubmit;
   final String? initialText;
 
   @override
@@ -70,8 +67,10 @@ class _QuickAddBarState extends State<QuickAddBar> {
       await _voice.stop();
     }
     await _askNotificationsOnce();
-    final ({int created, String? error}) result =
-        await widget.onSubmit(text, _time);
+    final ({int created, String? error}) result = await widget.onSubmit(
+      text,
+      _time,
+    );
     if (!mounted) {
       return;
     }
@@ -128,8 +127,9 @@ class _QuickAddBarState extends State<QuickAddBar> {
         if (!mounted) {
           return;
         }
-        final String joined =
-            _textBeforeVoice.isEmpty ? words : '$_textBeforeVoice $words';
+        final String joined = _textBeforeVoice.isEmpty
+            ? words
+            : '$_textBeforeVoice $words';
         _controller.value = TextEditingValue(
           text: joined,
           selection: TextSelection.collapsed(offset: joined.length),
@@ -206,7 +206,9 @@ class _QuickAddBarState extends State<QuickAddBar> {
                 tooltip: l10n.quickVoice,
                 onPressed: _busy ? null : () => unawaited(_toggleVoice()),
                 icon: Icon(
-                  _listening ? Icons.stop_circle_rounded : Icons.mic_none_rounded,
+                  _listening
+                      ? Icons.stop_circle_rounded
+                      : Icons.mic_none_rounded,
                   color: _listening ? t.danger : t.ink2,
                 ),
               ),
@@ -224,7 +226,11 @@ class _QuickAddBarState extends State<QuickAddBar> {
               padding: const EdgeInsets.only(bottom: 8, right: 8),
               child: Row(
                 children: <Widget>[
-                  Icon(Icons.auto_awesome_rounded, size: 14, color: t.violetInk),
+                  Icon(
+                    Icons.auto_awesome_rounded,
+                    size: 14,
+                    color: t.violetInk,
+                  ),
                   const SizedBox(width: 6),
                   Flexible(
                     child: Text(

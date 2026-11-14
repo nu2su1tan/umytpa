@@ -38,8 +38,15 @@ class SmartInput extends Equatable {
       remindBefore != null;
 
   @override
-  List<Object?> get props =>
-      <Object?>[title, date, hour, minute, category, repeat, remindBefore];
+  List<Object?> get props => <Object?>[
+    title,
+    date,
+    hour,
+    minute,
+    category,
+    repeat,
+    remindBefore,
+  ];
 }
 
 /// Understands dates, times, `#categories` and repeats in Russian and English.
@@ -47,11 +54,8 @@ abstract final class SmartInputParser {
   static const String _l = r'(?<![\p{L}\p{N}])';
   static const String _r = r'(?![\p{L}\p{N}])';
 
-  static RegExp _re(String body) => RegExp(
-        '$_l(?:$body)$_r',
-        caseSensitive: false,
-        unicode: true,
-      );
+  static RegExp _re(String body) =>
+      RegExp('$_l(?:$body)$_r', caseSensitive: false, unicode: true);
 
   static final Map<TaskCategory, RegExp> _categories = <TaskCategory, RegExp>{
     TaskCategory.study: RegExp(
@@ -76,18 +80,24 @@ abstract final class SmartInputParser {
     ),
   };
 
-  static final RegExp _weekdaysRepeat =
-      _re(r'по\s+будням|каждый\s+будний\s+день|every\s+weekday|weekdays');
-  static final RegExp _dailyRepeat =
-      _re(r'каждый\s+день|ежедневно|every\s*day|daily');
-  static final RegExp _weeklyRepeat =
-      _re(r'каждую\s+неделю|еженедельно|every\s+week|weekly');
+  static final RegExp _weekdaysRepeat = _re(
+    r'по\s+будням|каждый\s+будний\s+день|every\s+weekday|weekdays',
+  );
+  static final RegExp _dailyRepeat = _re(
+    r'каждый\s+день|ежедневно|every\s*day|daily',
+  );
+  static final RegExp _weeklyRepeat = _re(
+    r'каждую\s+неделю|еженедельно|every\s+week|weekly',
+  );
 
-  static final RegExp _afterTomorrow =
-      _re(r'послезавтра|day\s+after\s+tomorrow');
+  static final RegExp _afterTomorrow = _re(
+    r'послезавтра|day\s+after\s+tomorrow',
+  );
   static final RegExp _tomorrow = _re('завтра|tomorrow');
   static final RegExp _today = _re('сегодня|today');
-  static final RegExp _inDays = _re(r'через\s+(\d{1,2})\s+(?:дн\p{L}*|день)|in\s+(\d{1,2})\s+days?');
+  static final RegExp _inDays = _re(
+    r'через\s+(\d{1,2})\s+(?:дн\p{L}*|день)|in\s+(\d{1,2})\s+days?',
+  );
 
   static final List<(RegExp, int)> _weekdays = <(RegExp, int)>[
     (_re(r'(?:в\s+|on\s+)?(?:понедельник|пн|monday|mon)'), DateTime.monday),
@@ -199,10 +209,10 @@ abstract final class SmartInputParser {
       if (rel == null) {
         continue;
       }
-      final String? word = rel.group(3)?.toLowerCase().replaceAll(
-            RegExp(r'\s+'),
-            ' ',
-          );
+      final String? word = rel
+          .group(3)
+          ?.toLowerCase()
+          .replaceAll(RegExp(r'\s+'), ' ');
       final Duration? d = word != null
           ? switch (word) {
               'полчаса' || 'half an hour' => const Duration(minutes: 30),
@@ -296,8 +306,13 @@ abstract final class SmartInputParser {
 
     // A time with no day means the next time it happens.
     if (date == null && hour != null) {
-      final DateTime candidate =
-          DateTime(today.year, today.month, today.day, hour, minute ?? 0);
+      final DateTime candidate = DateTime(
+        today.year,
+        today.month,
+        today.day,
+        hour,
+        minute ?? 0,
+      );
       date = candidate.isAfter(now) ? today : plus(1);
     }
 
@@ -327,7 +342,9 @@ abstract final class SmartInputParser {
   static Duration? _ruBefore(RegExpMatch m) {
     final String? word = m.group(3)?.toLowerCase();
     if (word != null) {
-      return word == 'час' ? const Duration(hours: 1) : const Duration(minutes: 30);
+      return word == 'час'
+          ? const Duration(hours: 1)
+          : const Duration(minutes: 30);
     }
     return _unit(int.parse(m.group(1)!), m.group(2)!);
   }
@@ -340,8 +357,11 @@ abstract final class SmartInputParser {
     if (u.startsWith('мин') || u == 'м' || u.startsWith('min')) {
       return Duration(minutes: n);
     }
-    if (u.startsWith('час') || u == 'ч' || u.startsWith('hour') ||
-        u.startsWith('hr') || u == 'h') {
+    if (u.startsWith('час') ||
+        u == 'ч' ||
+        u.startsWith('hour') ||
+        u.startsWith('hr') ||
+        u == 'h') {
       return Duration(hours: n);
     }
     if (u.startsWith('дн') || u == 'день' || u.startsWith('day')) {

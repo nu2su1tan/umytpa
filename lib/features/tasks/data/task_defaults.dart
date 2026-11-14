@@ -35,8 +35,7 @@ class TaskDefaults {
         return TaskDefaults(category: category);
       }
       final int minutes = prefs.getInt(_reminderKey) ?? -1;
-      final Duration? before =
-          minutes < 0 ? null : Duration(minutes: minutes);
+      final Duration? before = minutes < 0 ? null : Duration(minutes: minutes);
       final ReminderPreset preset = ReminderPreset.fromDuration(before);
       return TaskDefaults(
         category: category,

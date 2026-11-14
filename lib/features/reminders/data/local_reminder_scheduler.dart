@@ -7,7 +7,8 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
-import 'package:intl/intl.dart';
+
+import '../../../core/utils/time_format.dart';
 
 import '../../../core/copy/copy_pack.dart';
 import '../../../core/copy/profile_controller.dart';
@@ -31,13 +32,14 @@ class LocalReminderScheduler implements ReminderScheduler {
     this.profile,
     FlutterLocalNotificationsPlugin? plugin,
     AlarmKitService? alarmKit,
-  })  : _plugin = plugin ?? FlutterLocalNotificationsPlugin(),
-        _alarmKit = alarmKit ?? AlarmKitService();
+  }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin(),
+       _alarmKit = alarmKit ?? AlarmKitService();
 
   final NotificationDetailsFactory detailsFactory;
 
   /// Language for notification text; `null` means the system language.
   final String? Function()? languageCode;
+
   /// Supplies the user's name and tone for the notification wording.
   final ProfileController? profile;
   final FlutterLocalNotificationsPlugin _plugin;
@@ -59,28 +61,28 @@ class LocalReminderScheduler implements ReminderScheduler {
     final String lang = _lang;
     final DarwinInitializationSettings darwinSettings =
         DarwinInitializationSettings(
-      requestAlertPermission: false,
-      requestBadgePermission: false,
-      requestSoundPermission: false,
-      notificationCategories: <DarwinNotificationCategory>[
-        DarwinNotificationCategory(
-          ReminderActions.iosCategory,
-          options: <DarwinNotificationCategoryOption>{
-            DarwinNotificationCategoryOption.customDismissAction,
-          },
-          actions: <DarwinNotificationAction>[
-            DarwinNotificationAction.plain(
-              ReminderActions.doneId,
-              ReminderNotificationText.doneLabel(languageCode: lang),
-            ),
-            DarwinNotificationAction.plain(
-              ReminderActions.snoozeId,
-              ReminderNotificationText.snoozeLabel(languageCode: lang),
+          requestAlertPermission: false,
+          requestBadgePermission: false,
+          requestSoundPermission: false,
+          notificationCategories: <DarwinNotificationCategory>[
+            DarwinNotificationCategory(
+              ReminderActions.iosCategory,
+              options: <DarwinNotificationCategoryOption>{
+                DarwinNotificationCategoryOption.customDismissAction,
+              },
+              actions: <DarwinNotificationAction>[
+                DarwinNotificationAction.plain(
+                  ReminderActions.doneId,
+                  ReminderNotificationText.doneLabel(languageCode: lang),
+                ),
+                DarwinNotificationAction.plain(
+                  ReminderActions.snoozeId,
+                  ReminderNotificationText.snoozeLabel(languageCode: lang),
+                ),
+              ],
             ),
           ],
-        ),
-      ],
-    );
+        );
 
     await _plugin.initialize(
       settings: InitializationSettings(
@@ -91,9 +93,10 @@ class LocalReminderScheduler implements ReminderScheduler {
       onDidReceiveBackgroundNotificationResponse: reminderBackgroundHandler,
     );
 
-    final AndroidFlutterLocalNotificationsPlugin? android =
-        _plugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+    final AndroidFlutterLocalNotificationsPlugin? android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     await android?.createNotificationChannel(
       detailsFactory.createAndroidChannel(),
     );
@@ -129,8 +132,7 @@ class LocalReminderScheduler implements ReminderScheduler {
       // On iOS 26+ the deadline rings as a real alarm. If the system does
       // not take it (older iOS, permission refused, limit reached), the
       // alarm falls back to notifications below.
-      final bool realAlarm =
-          wantsAlarm && await _scheduleRealAlarm(task, lang);
+      final bool realAlarm = wantsAlarm && await _scheduleRealAlarm(task, lang);
 
       if (wantsReminder) {
         final (:String title, :String body) = _reminderText(task, lang);
@@ -188,14 +190,17 @@ class LocalReminderScheduler implements ReminderScheduler {
     if (Platform.isAndroid) {
       final bool? canExact = await _plugin
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.canScheduleExactNotifications();
       if (canExact == false) {
         mode = AndroidScheduleMode.inexactAllowWhileIdle;
       }
     }
-    final ({bool granted, AndroidScheduleMode mode}) env =
-        (granted: granted, mode: mode);
+    final ({bool granted, AndroidScheduleMode mode}) env = (
+      granted: granted,
+      mode: mode,
+    );
     _envCache = env;
     _envAt = now;
     return env;
@@ -208,7 +213,7 @@ class LocalReminderScheduler implements ReminderScheduler {
     }
     return CopyPack.of(lang, p.tone).reminder(
       taskTitle: task.title,
-      time: DateFormat.Hm().format(task.dueAt.toLocal()),
+      time: timeFormatFor(lang).format(task.dueAt.toLocal()),
       before: task.remindBefore ?? Duration.zero,
       seed: task.id,
       name: p.name,
@@ -220,16 +225,14 @@ class LocalReminderScheduler implements ReminderScheduler {
     if (p == null) {
       return ReminderNotificationText.forDeadline(task, languageCode: lang);
     }
-    return CopyPack.of(lang, p.tone).alarm(
-      taskTitle: task.title,
-      seed: task.id,
-      name: p.name,
-    );
+    return CopyPack.of(
+      lang,
+      p.tone,
+    ).alarm(taskTitle: task.title, seed: task.id, name: p.name);
   }
 
   String get _lang =>
       languageCode?.call() ?? PlatformDispatcher.instance.locale.languageCode;
-
 
   /// iOS plays a notification sound once and for at most 30 seconds, so the
   /// alarm is repeated every [_repeatEvery] until the user reacts.
@@ -313,18 +316,20 @@ class LocalReminderScheduler implements ReminderScheduler {
     if (sound.isCustom && Platform.isAndroid) {
       await _plugin
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.createNotificationChannel(
             detailsFactory.createAndroidChannel(sound, customPath),
           );
     }
-    final NotificationDetails details = detailsFactory.createNotificationDetails(
-      doneLabel: ReminderNotificationText.doneLabel(languageCode: lang),
-      snoozeLabel: ReminderNotificationText.snoozeLabel(languageCode: lang),
-      sound: sound,
-      customPath: customPath,
-      iosActions: iosActions,
-    );
+    final NotificationDetails details = detailsFactory
+        .createNotificationDetails(
+          doneLabel: ReminderNotificationText.doneLabel(languageCode: lang),
+          snoozeLabel: ReminderNotificationText.snoozeLabel(languageCode: lang),
+          sound: sound,
+          customPath: customPath,
+          iosActions: iosActions,
+        );
     final String payload = ReminderActions.encodePayload(
       taskId: taskId,
       title: title,
@@ -367,16 +372,16 @@ class LocalReminderScheduler implements ReminderScheduler {
     }
     await initialize();
     bool cleared = false;
-    final List<PendingNotificationRequest> pending =
-        await _plugin.pendingNotificationRequests();
+    final List<PendingNotificationRequest> pending = await _plugin
+        .pendingNotificationRequests();
     for (final PendingNotificationRequest r in pending) {
       if (r.id >= 1100000000 && r.id < 2000000000) {
         await _plugin.cancel(id: r.id);
         cleared = true;
       }
     }
-    final List<ActiveNotification> shown =
-        await _plugin.getActiveNotifications();
+    final List<ActiveNotification> shown = await _plugin
+        .getActiveNotifications();
     for (final ActiveNotification n in shown) {
       final int? id = n.id;
       if (id != null && id >= 1100000000 && id < 2000000000) {
@@ -483,9 +488,10 @@ class LocalReminderScheduler implements ReminderScheduler {
     await initialize();
 
     if (Platform.isAndroid) {
-      final AndroidFlutterLocalNotificationsPlugin? android =
-          _plugin.resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
+      final AndroidFlutterLocalNotificationsPlugin? android = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
       final bool enabled = await android?.areNotificationsEnabled() ?? false;
       return enabled
           ? ReminderPermissionStatus.granted
@@ -508,9 +514,10 @@ class LocalReminderScheduler implements ReminderScheduler {
     _envCache = null;
 
     if (Platform.isAndroid) {
-      final AndroidFlutterLocalNotificationsPlugin? android =
-          _plugin.resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
+      final AndroidFlutterLocalNotificationsPlugin? android = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
       final bool granted =
           await android?.requestNotificationsPermission() ?? false;
       return granted
@@ -551,9 +558,10 @@ class LocalReminderScheduler implements ReminderScheduler {
     await initialize();
 
     if (Platform.isAndroid) {
-      final AndroidFlutterLocalNotificationsPlugin? android =
-          _plugin.resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
+      final AndroidFlutterLocalNotificationsPlugin? android = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
       final bool? canSchedule = await android?.canScheduleExactNotifications();
       if (canSchedule == false) {
         return ReminderPermissionStatus.exactAlarmsMissing;
@@ -570,9 +578,10 @@ class LocalReminderScheduler implements ReminderScheduler {
     _envCache = null;
 
     if (Platform.isAndroid) {
-      final AndroidFlutterLocalNotificationsPlugin? android =
-          _plugin.resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
+      final AndroidFlutterLocalNotificationsPlugin? android = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
       await android?.requestExactAlarmsPermission();
       return checkExactAlarmsPermission();
     }
@@ -600,11 +609,11 @@ class LocalReminderScheduler implements ReminderScheduler {
 
     if (Platform.isAndroid) {
       _fullScreenRequested = true;
-      final AndroidFlutterLocalNotificationsPlugin? android =
-          _plugin.resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
-      final bool? granted =
-          await android?.requestFullScreenIntentPermission();
+      final AndroidFlutterLocalNotificationsPlugin? android = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+      final bool? granted = await android?.requestFullScreenIntentPermission();
       if (granted == false) {
         return ReminderPermissionStatus.fullScreenMissing;
       }
@@ -629,8 +638,9 @@ class LocalReminderScheduler implements ReminderScheduler {
         title: title,
         body: body,
         scheduledDate: tz.TZDateTime.from(at, tz.local),
-        notificationDetails:
-            detailsFactory.createReminderDetails(withActions: false),
+        notificationDetails: detailsFactory.createReminderDetails(
+          withActions: false,
+        ),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );
     } on Object catch (error, stackTrace) {
@@ -654,13 +664,15 @@ class LocalReminderScheduler implements ReminderScheduler {
     await _plugin.openAppNotificationSettings();
   }
 
-  IOSFlutterLocalNotificationsPlugin? get _ios =>
-      _plugin.resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin>();
+  IOSFlutterLocalNotificationsPlugin? get _ios => _plugin
+      .resolvePlatformSpecificImplementation<
+        IOSFlutterLocalNotificationsPlugin
+      >();
 
-  MacOSFlutterLocalNotificationsPlugin? get _macos =>
-      _plugin.resolvePlatformSpecificImplementation<
-          MacOSFlutterLocalNotificationsPlugin>();
+  MacOSFlutterLocalNotificationsPlugin? get _macos => _plugin
+      .resolvePlatformSpecificImplementation<
+        MacOSFlutterLocalNotificationsPlugin
+      >();
 
   ReminderPermissionStatus _mapDarwinOptions(
     NotificationsEnabledOptions? options,

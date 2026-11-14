@@ -12,10 +12,10 @@ class VoiceInput {
   bool get isListening => _engine.isListening;
 
   static String _localeFor(String languageCode) => switch (languageCode) {
-        'ru' => 'ru_RU',
-        'kk' => 'kk_KZ',
-        _ => 'en_US',
-      };
+    'ru' => 'ru_RU',
+    'kk' => 'kk_KZ',
+    _ => 'en_US',
+  };
 
   /// Starts listening. [onText] gets the recognised text so far; [onStopped]
   /// fires when listening ends on its own (silence, error or [stop]).

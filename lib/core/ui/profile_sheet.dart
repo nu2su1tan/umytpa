@@ -51,8 +51,9 @@ class _ProfileForm extends StatefulWidget {
 
 class _ProfileFormState extends State<_ProfileForm> {
   final ProfileController _profile = getIt<ProfileController>();
-  late final TextEditingController _name =
-      TextEditingController(text: _profile.name ?? '');
+  late final TextEditingController _name = TextEditingController(
+    text: _profile.name ?? '',
+  );
 
   AlarmSound _sound = AlarmSound.builtIn;
 
@@ -209,10 +210,7 @@ class _ProfileFormState extends State<_ProfileForm> {
               style: t.footnote.copyWith(color: t.ink2),
             ),
             const SizedBox(height: 16),
-            FilledButton(
-              onPressed: _finish,
-              child: Text(l10n.profileDone),
-            ),
+            FilledButton(onPressed: _finish, child: Text(l10n.profileDone)),
           ],
         );
       },

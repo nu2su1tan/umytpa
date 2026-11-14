@@ -13,9 +13,9 @@ class ProfileController extends ChangeNotifier {
     required bool asked,
     required this.previousOpen,
     required this.launchedAt,
-  })  : _name = name,
-        _tone = tone,
-        _asked = asked;
+  }) : _name = name,
+       _tone = tone,
+       _asked = asked;
 
   static const String _nameKey = 'profile_name';
   static const String _toneKey = 'profile_tone';
@@ -26,15 +26,14 @@ class ProfileController extends ChangeNotifier {
   factory ProfileController.memory({
     String? name,
     CopyTone tone = CopyTone.friendly,
-  }) =>
-      ProfileController._(
-        null,
-        name: name,
-        tone: tone,
-        asked: true,
-        previousOpen: null,
-        launchedAt: DateTime.now(),
-      );
+  }) => ProfileController._(
+    null,
+    name: name,
+    tone: tone,
+    asked: true,
+    previousOpen: null,
+    launchedAt: DateTime.now(),
+  );
 
   final SharedPreferences? _prefs;
   String? _name;
@@ -59,13 +58,15 @@ class ProfileController extends ChangeNotifier {
     final ProfileController controller = ProfileController._(
       prefs,
       name: prefs.getString(_nameKey),
-      tone: CopyTone.values
+      tone:
+          CopyTone.values
               .where((CopyTone t) => t.name == prefs.getString(_toneKey))
               .firstOrNull ??
           CopyTone.friendly,
       asked: prefs.getBool(_askedKey) ?? false,
-      previousOpen:
-          last == null ? null : DateTime.fromMillisecondsSinceEpoch(last),
+      previousOpen: last == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(last),
       launchedAt: now,
     );
     await prefs.setInt(_lastOpenKey, now.millisecondsSinceEpoch);
@@ -81,8 +82,9 @@ class ProfileController extends ChangeNotifier {
   }
 
   Future<void> setName(String? value) async {
-    final String? clean =
-        (value == null || value.trim().isEmpty) ? null : value.trim();
+    final String? clean = (value == null || value.trim().isEmpty)
+        ? null
+        : value.trim();
     if (clean == _name) {
       return;
     }
@@ -134,7 +136,7 @@ extension CopyContext on BuildContext {
 
   /// The voice lines for the current language and tone.
   CopyPack get copy => CopyPack.of(
-        Localizations.localeOf(this).languageCode,
-        ProfileScope.of(this).tone,
-      );
+    Localizations.localeOf(this).languageCode,
+    ProfileScope.of(this).tone,
+  );
 }

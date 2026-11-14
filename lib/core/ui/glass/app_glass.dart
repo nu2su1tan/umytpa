@@ -37,20 +37,13 @@ class AppGlass extends StatelessWidget {
     final LiquidShape effectiveShape =
         shape ?? LiquidRoundedSuperellipse(borderRadius: effectiveRadius);
 
-    final Widget content = interactive
-        ? GlassGlow(
-            child: child,
-          )
-        : child;
+    final Widget content = interactive ? GlassGlow(child: child) : child;
 
     final brightness = Theme.of(context).brightness;
 
     // Use own layer if tint is specified or if rendered standalone
     return LiquidGlass.withOwnLayer(
-      settings: GlassTokens.createSettings(
-        tint: tint,
-        brightness: brightness,
-      ),
+      settings: GlassTokens.createSettings(tint: tint, brightness: brightness),
       shape: effectiveShape,
       child: content,
     );
@@ -58,7 +51,8 @@ class AppGlass extends StatelessWidget {
 
   Widget _buildFrostedFallback(BuildContext context, double effectiveRadius) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color fill = tint ??
+    final Color fill =
+        tint ??
         (isDark ? GlassTokens.fallbackDarkFill : GlassTokens.fallbackFill);
     final BorderRadius borderRadius = BorderRadius.circular(effectiveRadius);
 
@@ -74,9 +68,7 @@ class AppGlass extends StatelessWidget {
             decoration: BoxDecoration(
               color: fill,
               borderRadius: borderRadius,
-              border: Border.all(
-                color: GlassTokens.fallbackBorder,
-              ),
+              border: Border.all(color: GlassTokens.fallbackBorder),
             ),
             child: child,
           ),

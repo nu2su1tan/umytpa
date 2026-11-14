@@ -29,8 +29,8 @@ class TasksCubit extends Cubit<TasksState> {
     required this.groupTasksByDate,
     this.updateTask,
     DateTime Function()? now,
-  })  : _now = now ?? DateTime.now,
-        super(const TasksInitial());
+  }) : _now = now ?? DateTime.now,
+       super(const TasksInitial());
 
   final WatchTasks watchTasks;
   final ToggleTaskDone toggleTaskDone;
@@ -77,8 +77,9 @@ class TasksCubit extends Cubit<TasksState> {
   }
 
   void toggleSection(TaskSectionKind kind) {
-    final Set<TaskSectionKind> next =
-        Set<TaskSectionKind>.of(_collapsedSections);
+    final Set<TaskSectionKind> next = Set<TaskSectionKind>.of(
+      _collapsedSections,
+    );
     if (next.contains(kind)) {
       next.remove(kind);
     } else {
@@ -122,7 +123,8 @@ class TasksCubit extends Cubit<TasksState> {
     final DateTime now = _now();
     final DateTime tomorrow = DateTime(now.year, now.month, now.day + 1);
     for (final Task task in _allTasks) {
-      final bool today = task.dueAt.year == now.year &&
+      final bool today =
+          task.dueAt.year == now.year &&
           task.dueAt.month == now.month &&
           task.dueAt.day == now.day;
       if (task.isDone || today || !task.dueAt.isBefore(now)) {
@@ -162,7 +164,9 @@ class TasksCubit extends Cubit<TasksState> {
     int created = 0;
     String? error;
     for (final String line in text.split(RegExp(r'[\r\n]+'))) {
-      final String raw = line.replaceFirst(RegExp(r'^\s*(?:[-*•]|\d+[.)])\s+'), '').trim();
+      final String raw = line
+          .replaceFirst(RegExp(r'^\s*(?:[-*•]|\d+[.)])\s+'), '')
+          .trim();
       if (raw.isEmpty) {
         continue;
       }
@@ -191,7 +195,13 @@ class TasksCubit extends Cubit<TasksState> {
   DateTime _quickDueAt(SmartInput smart, QuickTimeKind? chip, DateTime now) {
     if (smart.hasTime) {
       final DateTime day = smart.date ?? DateTime(now.year, now.month, now.day);
-      return DateTime(day.year, day.month, day.day, smart.hour!, smart.minute ?? 0);
+      return DateTime(
+        day.year,
+        day.month,
+        day.day,
+        smart.hour!,
+        smart.minute ?? 0,
+      );
     }
     if (chip != null && smart.date == null) {
       return QuickTimes.resolve(chip, now: now);
@@ -212,7 +222,13 @@ class TasksCubit extends Cubit<TasksState> {
     final Result<Task> result = await createTask(
       NewTask(
         title: task.title,
-        dueAt: DateTime(day.year, day.month, day.day, task.dueAt.hour, task.dueAt.minute),
+        dueAt: DateTime(
+          day.year,
+          day.month,
+          day.day,
+          task.dueAt.hour,
+          task.dueAt.minute,
+        ),
         category: task.category,
         remindBefore: task.remindBefore,
         repeat: task.repeat,
@@ -259,8 +275,8 @@ class TasksCubit extends Cubit<TasksState> {
     final List<Task> filtered = _selectedCategory == null
         ? _allTasks
         : _allTasks
-            .where((Task t) => t.category == _selectedCategory)
-            .toList(growable: false);
+              .where((Task t) => t.category == _selectedCategory)
+              .toList(growable: false);
 
     emit(
       TasksLoaded(

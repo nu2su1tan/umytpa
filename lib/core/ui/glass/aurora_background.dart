@@ -11,10 +11,7 @@ import 'package:umytpa/features/week_counter/ui/theme/tokens.dart';
 /// lilac, and light blue at ~0.3 opacity) that drift slowly with a single
 /// 20s reverse-repeating [AnimationController].
 class AuroraBackground extends StatefulWidget {
-  const AuroraBackground({
-    super.key,
-    required this.child,
-  });
+  const AuroraBackground({super.key, required this.child});
 
   final Widget child;
 
@@ -36,7 +33,7 @@ class _AuroraBackgroundState extends State<AuroraBackground>
 
     final bool isTest =
         WidgetsBinding.instance.runtimeType.toString().contains('Test') ||
-            (!kIsWeb && Platform.environment.containsKey('FLUTTER_TEST'));
+        (!kIsWeb && Platform.environment.containsKey('FLUTTER_TEST'));
 
     if (isTest) {
       _controller.value = 0.5;
@@ -61,10 +58,7 @@ class _AuroraBackgroundState extends State<AuroraBackground>
         children: <Widget>[
           RepaintBoundary(
             child: CustomPaint(
-              painter: _AuroraPainter(
-                animation: _controller,
-                isDark: isDark,
-              ),
+              painter: _AuroraPainter(animation: _controller, isDark: isDark),
               size: Size.infinite,
             ),
           ),
@@ -76,10 +70,8 @@ class _AuroraBackgroundState extends State<AuroraBackground>
 }
 
 class _AuroraPainter extends CustomPainter {
-  _AuroraPainter({
-    required this.animation,
-    required this.isDark,
-  }) : super(repaint: animation);
+  _AuroraPainter({required this.animation, required this.isDark})
+    : super(repaint: animation);
 
   final Animation<double> animation;
   final bool isDark;
@@ -95,7 +87,8 @@ class _AuroraPainter extends CustomPainter {
     // 2. Three soft blurred blobs (orange, lilac, light blue ~0.3 opacity)
     // Blob 1: Orange
     final Paint orangePaint = Paint()
-      ..color = const Color(0x33C8F53C) // lime ~0.2 opacity
+      ..color =
+          const Color(0x33C8F53C) // lime ~0.2 opacity
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 75);
 
     final Offset orangeCenter = Offset(
@@ -106,7 +99,8 @@ class _AuroraPainter extends CustomPainter {
 
     // Blob 2: Lilac
     final Paint lilacPaint = Paint()
-      ..color = const Color(0x337C4DF0) // violet ~0.2 opacity
+      ..color =
+          const Color(0x337C4DF0) // violet ~0.2 opacity
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 85);
 
     final Offset lilacCenter = Offset(
@@ -117,7 +111,8 @@ class _AuroraPainter extends CustomPainter {
 
     // Blob 3: Light blue
     final Paint bluePaint = Paint()
-      ..color = const Color(0x267C4DF0) // violet ~0.15 opacity
+      ..color =
+          const Color(0x267C4DF0) // violet ~0.15 opacity
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 80);
 
     final Offset blueCenter = Offset(
@@ -131,4 +126,3 @@ class _AuroraPainter extends CustomPainter {
   bool shouldRepaint(_AuroraPainter oldDelegate) =>
       oldDelegate.isDark != isDark;
 }
-

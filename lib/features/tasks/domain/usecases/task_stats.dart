@@ -82,7 +82,9 @@ class TaskStats extends Equatable {
     int totalDone = 0;
 
     for (final Task task in tasks) {
-      final DateTime? at = task.isDone ? (task.completedAt ?? task.dueAt) : null;
+      final DateTime? at = task.isDone
+          ? (task.completedAt ?? task.dueAt)
+          : null;
       if (at == null) {
         continue;
       }
@@ -101,7 +103,8 @@ class TaskStats extends Equatable {
       totalFocus += s.minutes;
     }
 
-    DateTime back(int days) => DateTime(today.year, today.month, today.day - days);
+    DateTime back(int days) =>
+        DateTime(today.year, today.month, today.day - days);
 
     // Current streak: consecutive days with a finished task, counted back from
     // today (or from yesterday while today is still empty).
@@ -117,7 +120,8 @@ class TaskStats extends Equatable {
     int run = 0;
     DateTime? prev;
     for (final DateTime day in days) {
-      if (prev != null && DateTime(prev.year, prev.month, prev.day + 1) == day) {
+      if (prev != null &&
+          DateTime(prev.year, prev.month, prev.day + 1) == day) {
         run++;
       } else {
         run = 1;
@@ -132,12 +136,8 @@ class TaskStats extends Equatable {
       totalDone: totalDone,
       currentStreak: current,
       bestStreak: best,
-      doneLast7: <int>[
-        for (int i = 6; i >= 0; i--) doneByDay[back(i)] ?? 0,
-      ],
-      focusLast7: <int>[
-        for (int i = 6; i >= 0; i--) focusByDay[back(i)] ?? 0,
-      ],
+      doneLast7: <int>[for (int i = 6; i >= 0; i--) doneByDay[back(i)] ?? 0],
+      focusLast7: <int>[for (int i = 6; i >= 0; i--) focusByDay[back(i)] ?? 0],
       byCategory: byCategory,
       totalFocusMinutes: totalFocus,
       focusSessions: sessions.length,
@@ -151,16 +151,16 @@ class TaskStats extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        totalDone,
-        currentStreak,
-        bestStreak,
-        doneLast7,
-        focusLast7,
-        byCategory,
-        totalFocusMinutes,
-        focusSessions,
-        doneToday,
-        weekdayHistogram,
-        donePrevWeek,
-      ];
+    totalDone,
+    currentStreak,
+    bestStreak,
+    doneLast7,
+    focusLast7,
+    byCategory,
+    totalFocusMinutes,
+    focusSessions,
+    doneToday,
+    weekdayHistogram,
+    donePrevWeek,
+  ];
 }

@@ -3,10 +3,7 @@ import '../../../reminders/domain/reminder_scheduler.dart';
 import '../repositories/task_repository.dart';
 
 class DeleteTask {
-  const DeleteTask({
-    required this.repository,
-    required this.reminderScheduler,
-  });
+  const DeleteTask({required this.repository, required this.reminderScheduler});
 
   final TaskRepository repository;
   final ReminderScheduler reminderScheduler;

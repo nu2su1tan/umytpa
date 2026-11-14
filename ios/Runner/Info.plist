@@ -20,12 +20,6 @@
 		<string>ru</string>
 		<string>kk</string>
 	</array>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Umytpa listens to you dictate a task. / Umytpa слушает вас, чтобы записать задачу голосом.</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Umytpa turns your voice into the text of a task. / Umytpa превращает вашу речь в текст задачи.</string>
-	<key>NSAlarmKitUsageDescription</key>
-	<string>Umytpa uses alarms to ring when a task deadline arrives, even if the phone is silent. / Umytpa использует будильники, чтобы звонить в срок задачи, даже если телефон в беззвучном режиме.</string>
 	<key>CFBundleName</key>
 	<string>umytpa</string>
 	<key>CFBundlePackageType</key>
@@ -40,6 +34,12 @@
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAlarmKitUsageDescription</key>
+	<string>Umytpa uses alarms to ring when a task deadline arrives, even if the phone is silent. / Umytpa использует будильники, чтобы звонить в срок задачи, даже если телефон в беззвучном режиме.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Umytpa listens to you dictate a task. / Umytpa слушает вас, чтобы записать задачу голосом.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Umytpa turns your voice into the text of a task. / Umytpa превращает вашу речь в текст задачи.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

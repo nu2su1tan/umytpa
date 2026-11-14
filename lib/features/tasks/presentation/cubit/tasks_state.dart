@@ -54,11 +54,11 @@ final class TasksLoaded extends TasksState {
 
   @override
   List<Object?> get props => <Object?>[
-        allTasks,
-        sections,
-        selectedCategory,
-        collapsedSections,
-      ];
+    allTasks,
+    sections,
+    selectedCategory,
+    collapsedSections,
+  ];
 }
 
 final class TasksFailure extends TasksState {

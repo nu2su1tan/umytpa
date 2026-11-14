@@ -39,7 +39,8 @@ class TaskSectionView extends StatelessWidget {
   Widget build(BuildContext context) {
     final Tokens t = context.tokens;
     final Color headerColor = section.kind.isOverdue ? t.danger : t.ink2;
-    final bool canCollapse = section.kind.initiallyCollapsed ||
+    final bool canCollapse =
+        section.kind.initiallyCollapsed ||
         section.kind == TaskSectionKind.completed;
 
     return Column(
@@ -118,7 +119,9 @@ class TaskSectionView extends StatelessWidget {
                   isOverdueSection: section.kind.isOverdue,
                   onToggleDone: () => onToggleDone(task),
                   onTap: () => onTapTask(task),
-                  onFocus: onFocusTask == null ? null : () => onFocusTask!(task),
+                  onFocus: onFocusTask == null
+                      ? null
+                      : () => onFocusTask!(task),
                 ),
               ),
             ),

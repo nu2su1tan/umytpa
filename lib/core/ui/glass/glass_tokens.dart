@@ -31,8 +31,9 @@ abstract final class GlassTokens {
     Color? tint,
     Brightness brightness = Brightness.light,
   }) {
-    final Color defaultColor =
-        brightness == Brightness.dark ? defaultDarkTint : defaultLightTint;
+    final Color defaultColor = brightness == Brightness.dark
+        ? defaultDarkTint
+        : defaultLightTint;
 
     return LiquidGlassSettings(
       thickness: thickness,
@@ -46,4 +47,3 @@ abstract final class GlassTokens {
     );
   }
 }
-

@@ -11,7 +11,6 @@ export 'package:umytpa/features/week_counter/l10n/jokes.dart';
 export 'package:umytpa/features/week_counter/l10n/labels.dart';
 export 'package:umytpa/features/week_counter/l10n/country_names.dart';
 
-
 // ignore_for_file: directives_ordering
 import 'package:flutter/widgets.dart';
 import 'package:umytpa/features/week_counter/l10n/app_localizations.dart';

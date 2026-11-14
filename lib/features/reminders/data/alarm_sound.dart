@@ -22,16 +22,68 @@ class AlarmSound {
   /// iOS: everything the system audio decoder reads (it is converted to
   /// CAF afterwards, see [pick]). Ogg/Opus/WMA are not readable there.
   static const List<String> _iosExtensions = <String>[
-    'mp3', 'mp2', 'm4a', 'm4b', 'm4r', 'aac', 'adts', 'ac3', 'ec3', 'eac3',
-    'wav', 'wave', 'bwf', 'aiff', 'aif', 'aifc', 'caf', 'flac', 'au', 'snd',
-    'sd2', 'amr', 'mp4', 'm4v', 'mov', '3gp', '3g2', '3gpp',
+    'mp3',
+    'mp2',
+    'm4a',
+    'm4b',
+    'm4r',
+    'aac',
+    'adts',
+    'ac3',
+    'ec3',
+    'eac3',
+    'wav',
+    'wave',
+    'bwf',
+    'aiff',
+    'aif',
+    'aifc',
+    'caf',
+    'flac',
+    'au',
+    'snd',
+    'sd2',
+    'amr',
+    'mp4',
+    'm4v',
+    'mov',
+    '3gp',
+    '3g2',
+    '3gpp',
   ];
 
   /// Android: everything the platform media decoder plays.
   static const List<String> _androidExtensions = <String>[
-    'mp3', 'm4a', 'm4b', 'm4r', 'aac', 'adts', 'wav', 'wave', 'flac', 'ogg',
-    'oga', 'opus', 'amr', 'awb', 'mid', 'midi', 'xmf', 'mxmf', 'rtttl', 'rtx',
-    'ota', 'imy', 'mp4', '3gp', '3ga', '3gpp', 'mka', 'webm', 'caf', 'aiff',
+    'mp3',
+    'm4a',
+    'm4b',
+    'm4r',
+    'aac',
+    'adts',
+    'wav',
+    'wave',
+    'flac',
+    'ogg',
+    'oga',
+    'opus',
+    'amr',
+    'awb',
+    'mid',
+    'midi',
+    'xmf',
+    'mxmf',
+    'rtttl',
+    'rtx',
+    'ota',
+    'imy',
+    'mp4',
+    '3gp',
+    '3ga',
+    '3gpp',
+    'mka',
+    'webm',
+    'caf',
+    'aiff',
     'aif',
   ];
 
@@ -63,8 +115,7 @@ class AlarmSound {
   }
 
   /// Full path of the copied file.
-  Future<String?> path() async =>
-      fileName == null ? null : _pathFor(fileName!);
+  Future<String?> path() async => fileName == null ? null : _pathFor(fileName!);
 
   /// iOS looks for notification sounds in `Library/Sounds`.
   static Future<String> _pathFor(String file) async {
@@ -101,10 +152,10 @@ class AlarmSound {
     final String target = await _pathFor(stored);
     if (convert) {
       try {
-        await _audio.invokeMethod<bool>(
-          'toCaf',
-          <String, String>{'source': source, 'target': target},
-        );
+        await _audio.invokeMethod<bool>('toCaf', <String, String>{
+          'source': source,
+          'target': target,
+        });
       } on Object {
         // Do not leave a half-written file behind.
         final File partial = File(target);

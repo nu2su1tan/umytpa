@@ -96,12 +96,12 @@ class _FocusScreenState extends State<FocusScreen> {
     await _scheduler.cancelFocusEnd();
     if (minutes >= 1) {
       await stats.addFocusSession(
-            FocusSession(
-              startedAt: _startedAt!,
-              minutes: minutes,
-              taskId: widget.task?.id,
-            ),
-          );
+        FocusSession(
+          startedAt: _startedAt!,
+          minutes: minutes,
+          taskId: widget.task?.id,
+        ),
+      );
     }
     if (!mounted) {
       return;
@@ -209,10 +209,7 @@ class _FocusScreenState extends State<FocusScreen> {
   Widget _buildAction(BuildContext context, AppLocalizations l10n) {
     switch (_phase) {
       case _Phase.choosing:
-        return FilledButton(
-          onPressed: _start,
-          child: Text(l10n.focusStart),
-        );
+        return FilledButton(onPressed: _start, child: Text(l10n.focusStart));
       case _Phase.running:
         return OutlinedButton(
           onPressed: _stop,
@@ -258,12 +255,12 @@ class _Dial extends StatelessWidget {
     final double fraction = phase == _Phase.running
         ? 1 - left.inMilliseconds / total.inMilliseconds
         : phase == _Phase.finished
-            ? 1
-            : 0;
+        ? 1
+        : 0;
     final String text = phase == _Phase.finished
         ? '✓'
         : '${shown.inMinutes.toString().padLeft(2, '0')}:'
-            '${(shown.inSeconds % 60).toString().padLeft(2, '0')}';
+              '${(shown.inSeconds % 60).toString().padLeft(2, '0')}';
     return SizedBox.square(
       dimension: 260,
       child: CustomPaint(

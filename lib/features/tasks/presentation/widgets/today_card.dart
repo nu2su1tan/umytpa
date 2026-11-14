@@ -58,14 +58,14 @@ class _TodayCardState extends State<TodayCard> {
     final String headline = p.total == 0
         ? copy.todayNothing
         : p.allDone
-            ? copy.todayAllDone
-            : copy.leftLine(p.left);
+        ? copy.todayAllDone
+        : copy.leftLine(p.left);
     final TaskStats stats = widget.stats;
     final String? mood = stats.currentStreak > 0
         ? copy.streakNote(stats.currentStreak)
         : (stats.bestStreak >= 3 && stats.doneToday == 0)
-            ? copy.streakLost
-            : null;
+        ? copy.streakLost
+        : null;
 
     return Stack(
       clipBehavior: Clip.none,

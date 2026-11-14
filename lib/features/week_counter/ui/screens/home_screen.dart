@@ -29,12 +29,10 @@ import 'schedule_screen.dart';
 import 'vacation_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({
-    super.key,
-    required this.controller,
-  });
+  const HomeScreen({super.key, required this.controller});
 
   final AppController controller;
+
   /// Switches tabs; when null, the calendar shortcuts are hidden.
 
   @override
@@ -363,12 +361,7 @@ class _Hero extends StatelessWidget {
           onOpenSettings,
         );
       case NoDaysOff():
-        return message(
-          l10n.noDaysOffTitle,
-          l10n.noDaysOffBody,
-          null,
-          null,
-        );
+        return message(l10n.noDaysOffTitle, l10n.noDaysOffBody, null, null);
     }
   }
 

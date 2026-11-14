@@ -30,8 +30,8 @@ class TaskFormCubit extends Cubit<TaskFormState> {
     this.defaultCustomBefore,
     this.defaultCategory = TaskCategory.study,
     DateTime Function()? now,
-  })  : _now = now ?? DateTime.now,
-        super(const TaskFormLoading()) {
+  }) : _now = now ?? DateTime.now,
+       super(const TaskFormLoading()) {
     _bootstrap();
   }
 
@@ -301,20 +301,20 @@ class TaskFormCubit extends Cubit<TaskFormState> {
 
     if (reminder != ReminderPreset.none && !_permissionPrompted) {
       _permissionPrompted = true;
-      final ReminderPermissionStatus notifStatus =
-          await reminderScheduler.requestNotificationsPermission();
+      final ReminderPermissionStatus notifStatus = await reminderScheduler
+          .requestNotificationsPermission();
 
       if (!notifStatus.isGranted) {
         showHelp = true;
       } else {
         showHelp = false;
-        final ReminderPermissionStatus exactStatus =
-            await reminderScheduler.checkExactAlarmsPermission();
+        final ReminderPermissionStatus exactStatus = await reminderScheduler
+            .checkExactAlarmsPermission();
         if (!exactStatus.isGranted) {
           nextRationale = ReminderPermissionRationale.exactAlarms;
         } else {
-          final ReminderPermissionStatus fullStatus =
-              await reminderScheduler.checkFullScreenIntentPermission();
+          final ReminderPermissionStatus fullStatus = await reminderScheduler
+              .checkFullScreenIntentPermission();
           if (!fullStatus.isGranted) {
             nextRationale = ReminderPermissionRationale.fullScreenIntent;
           }
@@ -363,8 +363,8 @@ class TaskFormCubit extends Cubit<TaskFormState> {
     switch (rationale) {
       case ReminderPermissionRationale.exactAlarms:
         await reminderScheduler.requestExactAlarmsPermission();
-        final ReminderPermissionStatus fullStatus =
-            await reminderScheduler.checkFullScreenIntentPermission();
+        final ReminderPermissionStatus fullStatus = await reminderScheduler
+            .checkFullScreenIntentPermission();
         final ReminderPermissionRationale? next = !fullStatus.isGranted
             ? ReminderPermissionRationale.fullScreenIntent
             : null;
@@ -475,7 +475,9 @@ class TaskFormCubit extends Cubit<TaskFormState> {
     return TaskInputValidator.validate(
       title: title,
       dueAt: dueAt,
-      remindBefore: reminder == ReminderPreset.custom ? custom : reminder.duration,
+      remindBefore: reminder == ReminderPreset.custom
+          ? custom
+          : reminder.duration,
       isNew: !isEdit,
       now: _now(),
     );
@@ -581,7 +583,8 @@ class TaskFormCubit extends Cubit<TaskFormState> {
     _setSubtasks(List<Subtask>.of(current.subtasks)..removeAt(index));
   }
 
-  TaskFormReady? get _ready => state is TaskFormReady ? state as TaskFormReady : null;
+  TaskFormReady? get _ready =>
+      state is TaskFormReady ? state as TaskFormReady : null;
 }
 
 /// Tiny time carrier so Domain/Cubit stay free of Flutter's [TimeOfDay].

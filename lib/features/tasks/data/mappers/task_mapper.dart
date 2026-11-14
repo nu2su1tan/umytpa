@@ -46,7 +46,10 @@ abstract final class TaskMapper {
   static String encodeSubtasks(List<Subtask> items) =>
       jsonEncode(items.map((Subtask s) => s.toJson()).toList());
 
-  static TasksCompanion toInsertCompanion(NewTask task, {required DateTime now}) {
+  static TasksCompanion toInsertCompanion(
+    NewTask task, {
+    required DateTime now,
+  }) {
     return TasksCompanion.insert(
       title: task.title,
       dueAt: task.dueAt.toUtc(),

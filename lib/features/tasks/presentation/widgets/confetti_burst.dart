@@ -61,12 +61,12 @@ class _Piece {
   });
 
   factory _Piece.random(math.Random r) => _Piece(
-        angle: -math.pi / 2 + (r.nextDouble() - 0.5) * math.pi * 1.1,
-        speed: 220 + r.nextDouble() * 360,
-        spin: (r.nextDouble() - 0.5) * 14,
-        size: 5 + r.nextDouble() * 6,
-        color: _palette[r.nextInt(_palette.length)],
-      );
+    angle: -math.pi / 2 + (r.nextDouble() - 0.5) * math.pi * 1.1,
+    speed: 220 + r.nextDouble() * 360,
+    spin: (r.nextDouble() - 0.5) * 14,
+    size: 5 + r.nextDouble() * 6,
+    color: _palette[r.nextInt(_palette.length)],
+  );
 
   static const List<Color> _palette = <Color>[
     Tokens.lime,
@@ -96,7 +96,8 @@ class _ConfettiPainter extends CustomPainter {
     final double seconds = t * 1.6;
     for (final _Piece p in pieces) {
       final double x = origin.dx + math.cos(p.angle) * p.speed * seconds;
-      final double y = origin.dy +
+      final double y =
+          origin.dy +
           math.sin(p.angle) * p.speed * seconds +
           0.5 * gravity * seconds * seconds;
       final Paint paint = Paint()

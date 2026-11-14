@@ -17,16 +17,16 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (Migrator m) => m.createAll(),
-        onUpgrade: (Migrator m, int from, int to) async {
-          if (from < 2) {
-            await m.addColumn(tasks, tasks.repeat);
-            await m.addColumn(tasks, tasks.subtasksJson);
-            await m.addColumn(tasks, tasks.completedAt);
-            await m.createTable(focusSessions);
-          }
-        },
-      );
+    onCreate: (Migrator m) => m.createAll(),
+    onUpgrade: (Migrator m, int from, int to) async {
+      if (from < 2) {
+        await m.addColumn(tasks, tasks.repeat);
+        await m.addColumn(tasks, tasks.subtasksJson);
+        await m.addColumn(tasks, tasks.completedAt);
+        await m.createTable(focusSessions);
+      }
+    },
+  );
 
   static QueryExecutor _openConnection() {
     return driftDatabase(

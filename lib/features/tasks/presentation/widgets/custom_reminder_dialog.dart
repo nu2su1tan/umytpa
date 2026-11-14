@@ -38,8 +38,9 @@ class _CustomReminderDialogState extends State<_CustomReminderDialog> {
     final bool days = minutes >= 1440 && minutes % 1440 == 0;
     final bool hours = !days && minutes >= 60 && minutes % 60 == 0;
     _unit = days ? 2 : (hours ? 1 : 0);
-    final int amount =
-        days ? minutes ~/ 1440 : (hours ? minutes ~/ 60 : minutes);
+    final int amount = days
+        ? minutes ~/ 1440
+        : (hours ? minutes ~/ 60 : minutes);
     _controller = TextEditingController(text: '$amount');
   }
 
@@ -105,9 +106,9 @@ class _CustomReminderDialogState extends State<_CustomReminderDialog> {
         ),
         FilledButton(
           onPressed: _valid
-              ? () => Navigator.of(context).pop(
-                    Duration(minutes: _value! * _perUnit[_unit]),
-                  )
+              ? () => Navigator.of(
+                  context,
+                ).pop(Duration(minutes: _value! * _perUnit[_unit]))
               : null,
           child: Text(l10n.customReminderApply),
         ),

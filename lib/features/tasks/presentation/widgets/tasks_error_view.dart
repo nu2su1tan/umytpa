@@ -33,7 +33,11 @@ class TasksErrorView extends StatelessWidget {
                 color: t.danger.withValues(alpha: 0.14),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.error_outline_rounded, size: 30, color: t.danger),
+              child: Icon(
+                Icons.error_outline_rounded,
+                size: 30,
+                color: t.danger,
+              ),
             ),
             const SizedBox(height: 16),
             Text(
@@ -42,7 +46,11 @@ class TasksErrorView extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 6),
-            Text(context.l10n.domainMessage(message), style: t.callout, textAlign: TextAlign.center),
+            Text(
+              context.l10n.domainMessage(message),
+              style: t.callout,
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 24),
             AppButton(label: context.l10n.retry, onTap: onRetry, expand: false),
           ],

@@ -270,14 +270,17 @@ const _kk = <JokePool, List<String>>{
     'Ауысым жүріп жатыр, шар толып барады. Бәрі ~~жоспар~~ кесте бойынша.',
     'Жұмыс блогының ортасы. Демалыс ~~алыс~~ көрінгеннен жақын.',
   ],
-  JokePool.night: ['Түнгі ауысым. Сізде ~~кеш кешкі ас~~ түскі ас кесте бойынша.'],
+  JokePool.night: [
+    'Түнгі ауысым. Сізде ~~кеш кешкі ас~~ түскі ас кесте бойынша.',
+  ],
 };
 
-List<String> jokeLines(String localeName, JokePool pool) => (switch (localeName) {
-  final String l when l.startsWith('ru') => _ru,
-  final String l when l.startsWith('kk') => _kk,
-  _ => _en,
-})[pool]!;
+List<String> jokeLines(String localeName, JokePool pool) =>
+    (switch (localeName) {
+      final String l when l.startsWith('ru') => _ru,
+      final String l when l.startsWith('kk') => _kk,
+      _ => _en,
+    })[pool]!;
 
 bool _isFiveDay(WorkSchedule schedule) =>
     schedule.workdays.length == 5 &&

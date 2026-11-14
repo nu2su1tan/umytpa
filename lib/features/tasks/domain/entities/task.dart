@@ -55,8 +55,7 @@ class Task extends Equatable {
       title: title ?? this.title,
       dueAt: dueAt ?? this.dueAt,
       category: category ?? this.category,
-      remindBefore:
-          remindBefore != null ? remindBefore() : this.remindBefore,
+      remindBefore: remindBefore != null ? remindBefore() : this.remindBefore,
       isDone: isDone ?? this.isDone,
       createdAt: createdAt ?? this.createdAt,
       repeat: repeat ?? this.repeat,
@@ -67,17 +66,17 @@ class Task extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        id,
-        title,
-        dueAt,
-        category,
-        remindBefore,
-        isDone,
-        createdAt,
-        repeat,
-        subtasks,
-        completedAt,
-      ];
+    id,
+    title,
+    dueAt,
+    category,
+    remindBefore,
+    isDone,
+    createdAt,
+    repeat,
+    subtasks,
+    completedAt,
+  ];
 }
 
 /// Input for creating a task (id and createdAt assigned by the data layer).
@@ -99,6 +98,12 @@ class NewTask extends Equatable {
   final List<Subtask> subtasks;
 
   @override
-  List<Object?> get props =>
-      <Object?>[title, dueAt, category, remindBefore, repeat, subtasks];
+  List<Object?> get props => <Object?>[
+    title,
+    dueAt,
+    category,
+    remindBefore,
+    repeat,
+    subtasks,
+  ];
 }

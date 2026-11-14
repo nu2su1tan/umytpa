@@ -13,9 +13,9 @@ class Subtask extends Equatable {
   Map<String, Object?> toJson() => <String, Object?>{'t': title, 'd': isDone};
 
   static Subtask fromJson(Map<String, Object?> json) => Subtask(
-        title: (json['t'] as String?) ?? '',
-        isDone: (json['d'] as bool?) ?? false,
-      );
+    title: (json['t'] as String?) ?? '',
+    isDone: (json['d'] as bool?) ?? false,
+  );
 
   @override
   List<Object?> get props => <Object?>[title, isDone];

@@ -20,26 +20,27 @@ abstract final class AppTheme {
     final Tokens t = brightness == Brightness.dark ? Tokens.dark : Tokens.light;
     final bool isDark = brightness == Brightness.dark;
 
-    final ColorScheme scheme = ColorScheme.fromSeed(
-      seedColor: Tokens.violet,
-      brightness: brightness,
-    ).copyWith(
-      primary: t.violetInk,
-      onPrimary: isDark ? Colors.black : Colors.white,
-      primaryContainer: t.violetSoft,
-      onPrimaryContainer: t.violetInk,
-      secondary: t.violetInk,
-      onSecondary: isDark ? Colors.black : Colors.white,
-      secondaryContainer: t.violetSoft,
-      onSecondaryContainer: t.violetInk,
-      tertiary: t.limeInk,
-      surface: t.bg,
-      onSurface: t.ink,
-      onSurfaceVariant: t.ink2,
-      error: t.danger,
-      outline: t.ink3,
-      outlineVariant: t.line,
-    );
+    final ColorScheme scheme =
+        ColorScheme.fromSeed(
+          seedColor: Tokens.violet,
+          brightness: brightness,
+        ).copyWith(
+          primary: t.violetInk,
+          onPrimary: isDark ? Colors.black : Colors.white,
+          primaryContainer: t.violetSoft,
+          onPrimaryContainer: t.violetInk,
+          secondary: t.violetInk,
+          onSecondary: isDark ? Colors.black : Colors.white,
+          secondaryContainer: t.violetSoft,
+          onSecondaryContainer: t.violetInk,
+          tertiary: t.limeInk,
+          surface: t.bg,
+          onSurface: t.ink,
+          onSurfaceVariant: t.ink2,
+          error: t.danger,
+          outline: t.ink3,
+          outlineVariant: t.line,
+        );
 
     final TextTheme textTheme = TextTheme(
       headlineLarge: t.largeTitle.copyWith(fontSize: 30, height: 36 / 30),
@@ -83,8 +84,9 @@ abstract final class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
-        systemOverlayStyle:
-            isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+        systemOverlayStyle: isDark
+            ? SystemUiOverlayStyle.light
+            : SystemUiOverlayStyle.dark,
         titleTextStyle: t.navTitle,
       ),
       cardTheme: CardThemeData(
@@ -164,24 +166,18 @@ abstract final class AppTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: t.sheet,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         titleTextStyle: t.navTitle.copyWith(fontSize: 20),
         contentTextStyle: t.callout,
       ),
       datePickerTheme: DatePickerThemeData(
         backgroundColor: t.sheet,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       ),
       timePickerTheme: TimePickerThemeData(
         backgroundColor: t.sheet,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: t.inverse,
@@ -191,9 +187,7 @@ abstract final class AppTheme {
         ),
         actionTextColor: isDark ? Tokens.violet : Tokens.lime,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       switchTheme: SwitchThemeData(
         thumbColor: const WidgetStatePropertyAll<Color>(Colors.white),

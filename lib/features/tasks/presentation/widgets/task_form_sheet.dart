@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/utils/time_format.dart';
+
 import '../../../../core/di/injection.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/category_colors.dart';
@@ -39,8 +41,9 @@ abstract final class TaskFormSheet {
     String? initialTitle,
   }) async {
     // A new task starts with what was picked last time.
-    final TaskDefaults defaults =
-        task == null ? await TaskDefaults.load() : const TaskDefaults();
+    final TaskDefaults defaults = task == null
+        ? await TaskDefaults.load()
+        : const TaskDefaults();
     if (!context.mounted) {
       return null;
     }
@@ -60,8 +63,7 @@ abstract final class TaskFormSheet {
             deleteTask: getIt<DeleteTask>(),
             reminderScheduler: getIt<ReminderScheduler>(),
             initialTask: task,
-            defaultReminder:
-                remembered ? defaults.reminder : defaultReminder,
+            defaultReminder: remembered ? defaults.reminder : defaultReminder,
             defaultCustomBefore: defaults.customBefore,
             defaultCategory: defaults.category,
           )..prefill(initialTitle),
@@ -111,89 +113,94 @@ class _TaskFormSheetBodyState extends State<_TaskFormSheetBody> {
       barrierLabel: context.l10n.discard,
       barrierColor: Colors.black.withValues(alpha: 0.35),
       transitionDuration: const Duration(milliseconds: 250),
-      transitionBuilder: (
-        BuildContext context,
-        Animation<double> animation,
-        Animation<double> secondaryAnimation,
-        Widget child,
-      ) {
-        final double curvedValue =
-            Curves.easeOutBack.transform(animation.value);
-        return Transform.scale(
-          scale: curvedValue,
-          child: Opacity(
-            opacity: animation.value.clamp(0.0, 1.0),
-            child: child,
-          ),
-        );
-      },
-      pageBuilder: (
-        BuildContext context,
-        Animation<double> animation,
-        Animation<double> secondaryAnimation,
-      ) {
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 340),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: context.tokens.sheet,
-                  borderRadius: BorderRadius.circular(32),
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Text(
-                          context.l10n.discardTitle,
-                          style:
-                              Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          context.l10n.discardBody,
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        const SizedBox(height: 24),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+      transitionBuilder:
+          (
+            BuildContext context,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+            Widget child,
+          ) {
+            final double curvedValue = Curves.easeOutBack.transform(
+              animation.value,
+            );
+            return Transform.scale(
+              scale: curvedValue,
+              child: Opacity(
+                opacity: animation.value.clamp(0.0, 1.0),
+                child: child,
+              ),
+            );
+          },
+      pageBuilder:
+          (
+            BuildContext context,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+          ) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 340),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: context.tokens.sheet,
+                      borderRadius: BorderRadius.circular(32),
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(false),
-                              child: Text(
-                                context.l10n.keepEditing,
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
+                            Text(
+                              context.l10n.discardTitle,
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.w600),
                             ),
-                            const SizedBox(width: 8),
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(true),
-                              style: TextButton.styleFrom(
-                                foregroundColor: context.tokens.danger,
-                              ),
-                              child: Text(context.l10n.discard),
+                            const SizedBox(height: 12),
+                            Text(
+                              context.l10n.discardBody,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                            const SizedBox(height: 24),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(false),
+                                  child: Text(
+                                    context.l10n.keepEditing,
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(true),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: context.tokens.danger,
+                                  ),
+                                  child: Text(context.l10n.discard),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
-        );
-      },
+            );
+          },
     );
     return discard ?? false;
   }
@@ -226,8 +233,7 @@ class _TaskFormSheetBodyState extends State<_TaskFormSheetBody> {
               );
             }
             _showPermissionRationaleDialog(context, pendingRationale);
-          case TaskFormReady(:final title)
-              when _titleController.text != title:
+          case TaskFormReady(:final title) when _titleController.text != title:
             _titleController.value = TextEditingValue(
               text: title,
               selection: TextSelection.collapsed(offset: title.length),
@@ -278,279 +284,284 @@ class _TaskFormSheetBodyState extends State<_TaskFormSheetBody> {
                       child: switch (state) {
                         TaskFormLoading() ||
                         TaskFormSaveSuccess() ||
-                        TaskFormDeleteSuccess() =>
-                          const SizedBox(
-                            height: 240,
-                            child: Center(child: CircularProgressIndicator()),
-                          ),
+                        TaskFormDeleteSuccess() => const SizedBox(
+                          height: 240,
+                          child: Center(child: CircularProgressIndicator()),
+                        ),
                         TaskFormLoadFailure(:final message) => Padding(
-                            padding: const EdgeInsets.all(AppTheme.screenPadding),
-                            child: Text(message),
-                          ),
+                          padding: const EdgeInsets.all(AppTheme.screenPadding),
+                          child: Text(message),
+                        ),
                         TaskFormReady() => PopScope(
-                            canPop: !state.isDirty,
-                            onPopInvokedWithResult:
-                                (bool didPop, Object? result) async {
-                              if (didPop) {
-                                return;
-                              }
-                              final bool discard =
-                                  await _confirmDiscardIfNeeded(state);
-                              if (discard && context.mounted) {
-                                Navigator.of(context).pop();
-                              }
-                            },
-                            child: SingleChildScrollView(
-                              padding: const EdgeInsets.fromLTRB(
-                                AppTheme.screenPadding,
-                                8,
-                                AppTheme.screenPadding,
-                                24,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: <Widget>[
-                                  // Title field on solid light fill
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: t.sheetCard,
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 4,
-                                    ),
-                                    child: TextField(
-                                      controller: _titleController,
-                                      focusNode: _titleFocus,
-                                      autofocus: !state.isEdit,
-                                      maxLength: 120,
-                                      style: t.sectionTitle,
-                                      decoration: InputDecoration(
-                                        hintText: state.isEdit ? context.l10n.taskHint : context.l10n.smartHint,
-                                        counterText: '',
-                                        border: InputBorder.none,
-                                        enabledBorder: InputBorder.none,
-                                        focusedBorder: InputBorder.none,
-                                        errorText: state.validation.titleError == null ||
-                                                !state.isDirty
-                                            ? null
-                                            : context.l10n.domainMessage(
-                                                state.validation.titleError!,
-                                              ),
-                                      ),
-                                      textInputAction: TextInputAction.done,
-                                      onChanged: context
-                                          .read<TaskFormCubit>()
-                                          .titleChanged,
-                                    ),
+                          canPop: !state.isDirty,
+                          onPopInvokedWithResult:
+                              (bool didPop, Object? result) async {
+                                if (didPop) {
+                                  return;
+                                }
+                                final bool discard =
+                                    await _confirmDiscardIfNeeded(state);
+                                if (discard && context.mounted) {
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.fromLTRB(
+                              AppTheme.screenPadding,
+                              8,
+                              AppTheme.screenPadding,
+                              24,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: <Widget>[
+                                // Title field on solid light fill
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: t.sheetCard,
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
-                                  if (state.smart != null) ...<Widget>[
-                                    const SizedBox(height: 8),
-                                    _SmartSuggestion(
-                                      smart: state.smart!,
-                                      onApply: () {
-                                        final TaskFormCubit cubit =
-                                            context.read<TaskFormCubit>()
-                                              ..applySmartInput();
-                                        final TaskFormState next = cubit.state;
-                                        if (next is TaskFormReady) {
-                                          _titleController.value =
-                                              TextEditingValue(
-                                            text: next.title,
-                                            selection:
-                                                TextSelection.collapsed(
-                                              offset: next.title.length,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 4,
+                                  ),
+                                  child: TextField(
+                                    controller: _titleController,
+                                    focusNode: _titleFocus,
+                                    autofocus: !state.isEdit,
+                                    maxLength: 120,
+                                    style: t.sectionTitle,
+                                    decoration: InputDecoration(
+                                      hintText: state.isEdit
+                                          ? context.l10n.taskHint
+                                          : context.l10n.smartHint,
+                                      counterText: '',
+                                      border: InputBorder.none,
+                                      enabledBorder: InputBorder.none,
+                                      focusedBorder: InputBorder.none,
+                                      errorText:
+                                          state.validation.titleError == null ||
+                                              !state.isDirty
+                                          ? null
+                                          : context.l10n.domainMessage(
+                                              state.validation.titleError!,
                                             ),
-                                          );
-                                        }
-                                      },
                                     ),
-                                  ],
-                                  if (state.validation.dueAtError != null) ...<Widget>[
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      context.l10n.domainMessage(state.validation.dueAtError!),
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: theme.colorScheme.error,
-                                      ),
-                                    ),
-                                  ],
-                                  if (state.validation.reminderWarning !=
-                                      null) ...<Widget>[
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      context.l10n.domainMessage(
-                                        state.validation.reminderWarning!,
-                                      ),
-                                      style:
-                                          theme.textTheme.bodySmall?.copyWith(
-                                        color: t.danger,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                  if (state.showPermissionHelp) ...<Widget>[
-                                    const SizedBox(height: 12),
-                                    _PermissionHelpBanner(
-                                      onOpenSettings: () {
-                                        context
-                                            .read<TaskFormCubit>()
-                                            .openSystemSettings();
-                                      },
-                                    ),
-                                  ],
-                                  if (state.submitError != null) ...<Widget>[
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      context.l10n.domainMessage(state.submitError!),
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: theme.colorScheme.error,
-                                      ),
-                                    ),
-                                  ],
-                                  const SizedBox(height: 20),
-                                  _CategoryChips(
-                                    selected: state.category,
-                                    onSelected: context
+                                    textInputAction: TextInputAction.done,
+                                    onChanged: context
                                         .read<TaskFormCubit>()
-                                        .categoryChanged,
+                                        .titleChanged,
                                   ),
-                                  const SizedBox(height: 16),
-                                  if (!state.isEdit) ...<Widget>[
-                                    Wrap(
-                                      spacing: 8,
-                                      runSpacing: 8,
-                                      children: <Widget>[
-                                        for (final QuickTimeKind kind
-                                            in QuickTimes.available(
-                                          DateTime.now(),
-                                        ))
-                                          _SelectableChip(
-                                            label:
-                                                context.l10n.quickTimeLabel(kind),
-                                            selected: false,
-                                            onTap: () => context
-                                                .read<TaskFormCubit>()
-                                                .quickDueAt(
-                                                  QuickTimes.resolve(
-                                                    kind,
-                                                    now: DateTime.now(),
-                                                  ),
-                                                ),
-                                          ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 12),
-                                  ],
-                                  _DateTimeRow(
-                                    dueAt: state.dueAt,
-                                    onPickDate: () => _pickDate(context, state),
-                                    onPickTime: () => _pickTime(context, state),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  Row(
-                                    children: <Widget>[
-                                      Icon(
-                                        Icons.notifications_none_rounded,
-                                        size: 18,
-                                        color: t.ink2,
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        context.l10n.remindMe,
-                                        style: t.footnote.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 10),
-                                  _ReminderChips(
-                                    selected: state.reminder,
-                                    customBefore: state.customBefore,
-                                    onSelected: (ReminderPreset preset) {
-                                      context
-                                          .read<TaskFormCubit>()
-                                          .reminderChanged(preset);
-                                    },
-                                    onCustom: () async {
+                                ),
+                                if (state.smart != null) ...<Widget>[
+                                  const SizedBox(height: 8),
+                                  _SmartSuggestion(
+                                    smart: state.smart!,
+                                    onApply: () {
                                       final TaskFormCubit cubit =
-                                          context.read<TaskFormCubit>();
-                                      final Duration? picked =
-                                          await showCustomReminderDialog(
-                                        context,
-                                        state.customBefore,
-                                      );
-                                      if (picked != null) {
-                                        unawaited(
-                                          cubit.reminderChanged(
-                                            ReminderPreset.custom,
-                                            custom: picked,
+                                          context.read<TaskFormCubit>()
+                                            ..applySmartInput();
+                                      final TaskFormState next = cubit.state;
+                                      if (next is TaskFormReady) {
+                                        _titleController
+                                            .value = TextEditingValue(
+                                          text: next.title,
+                                          selection: TextSelection.collapsed(
+                                            offset: next.title.length,
                                           ),
                                         );
                                       }
                                     },
                                   ),
-                                  const SizedBox(height: 20),
-                                  _SectionLabel(
-                                    icon: Icons.repeat_rounded,
-                                    text: context.l10n.repeatLabel,
+                                ],
+                                if (state.validation.dueAtError !=
+                                    null) ...<Widget>[
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    context.l10n.domainMessage(
+                                      state.validation.dueAtError!,
+                                    ),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.error,
+                                    ),
                                   ),
-                                  const SizedBox(height: 10),
+                                ],
+                                if (state.validation.reminderWarning !=
+                                    null) ...<Widget>[
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    context.l10n.domainMessage(
+                                      state.validation.reminderWarning!,
+                                    ),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: t.danger,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                                if (state.showPermissionHelp) ...<Widget>[
+                                  const SizedBox(height: 12),
+                                  _PermissionHelpBanner(
+                                    onOpenSettings: () {
+                                      context
+                                          .read<TaskFormCubit>()
+                                          .openSystemSettings();
+                                    },
+                                  ),
+                                ],
+                                if (state.submitError != null) ...<Widget>[
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    context.l10n.domainMessage(
+                                      state.submitError!,
+                                    ),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.error,
+                                    ),
+                                  ),
+                                ],
+                                const SizedBox(height: 20),
+                                _CategoryChips(
+                                  selected: state.category,
+                                  onSelected: context
+                                      .read<TaskFormCubit>()
+                                      .categoryChanged,
+                                ),
+                                const SizedBox(height: 16),
+                                if (!state.isEdit) ...<Widget>[
                                   Wrap(
                                     spacing: 8,
                                     runSpacing: 8,
                                     children: <Widget>[
-                                      for (final RepeatRule rule
-                                          in RepeatRule.values)
+                                      for (final QuickTimeKind kind
+                                          in QuickTimes.available(
+                                            DateTime.now(),
+                                          ))
                                         _SelectableChip(
-                                          label: context.l10n.repeatName(rule),
-                                          selected: state.repeat == rule,
+                                          label: context.l10n.quickTimeLabel(
+                                            kind,
+                                          ),
+                                          selected: false,
                                           onTap: () => context
                                               .read<TaskFormCubit>()
-                                              .repeatChanged(rule),
+                                              .quickDueAt(
+                                                QuickTimes.resolve(
+                                                  kind,
+                                                  now: DateTime.now(),
+                                                ),
+                                              ),
                                         ),
                                     ],
                                   ),
-                                  const SizedBox(height: 20),
-                                  _SectionLabel(
-                                    icon: Icons.checklist_rounded,
-                                    text: context.l10n.subtasksLabel,
-                                  ),
-                                  const SizedBox(height: 10),
-                                  _SubtasksEditor(items: state.subtasks),
-                                  const SizedBox(height: 24),
-                                  FilledButton(
-                                    onPressed: state.canSave
-                                        ? () => context
-                                            .read<TaskFormCubit>()
-                                            .save()
-                                        : null,
-                                    child: Text(
-                                      state.isEdit
-                                          ? context.l10n.saveChanges
-                                          : context.l10n.save,
+                                  const SizedBox(height: 12),
+                                ],
+                                _DateTimeRow(
+                                  dueAt: state.dueAt,
+                                  onPickDate: () => _pickDate(context, state),
+                                  onPickTime: () => _pickTime(context, state),
+                                ),
+                                const SizedBox(height: 20),
+                                Row(
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.notifications_none_rounded,
+                                      size: 18,
+                                      color: t.ink2,
                                     ),
-                                  ),
-                                  if (state.isEdit) ...<Widget>[
-                                    const SizedBox(height: 8),
-                                    TextButton(
-                                      onPressed: state.isSubmitting
-                                          ? null
-                                          : () => context
-                                              .read<TaskFormCubit>()
-                                              .delete(),
-                                      style: TextButton.styleFrom(
-                                        foregroundColor: t.danger,
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      context.l10n.remindMe,
+                                      style: t.footnote.copyWith(
+                                        fontWeight: FontWeight.w600,
                                       ),
-                                      child: Text(context.l10n.delete),
                                     ),
                                   ],
+                                ),
+                                const SizedBox(height: 10),
+                                _ReminderChips(
+                                  selected: state.reminder,
+                                  customBefore: state.customBefore,
+                                  onSelected: (ReminderPreset preset) {
+                                    context
+                                        .read<TaskFormCubit>()
+                                        .reminderChanged(preset);
+                                  },
+                                  onCustom: () async {
+                                    final TaskFormCubit cubit = context
+                                        .read<TaskFormCubit>();
+                                    final Duration? picked =
+                                        await showCustomReminderDialog(
+                                          context,
+                                          state.customBefore,
+                                        );
+                                    if (picked != null) {
+                                      unawaited(
+                                        cubit.reminderChanged(
+                                          ReminderPreset.custom,
+                                          custom: picked,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                                const SizedBox(height: 20),
+                                _SectionLabel(
+                                  icon: Icons.repeat_rounded,
+                                  text: context.l10n.repeatLabel,
+                                ),
+                                const SizedBox(height: 10),
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children: <Widget>[
+                                    for (final RepeatRule rule
+                                        in RepeatRule.values)
+                                      _SelectableChip(
+                                        label: context.l10n.repeatName(rule),
+                                        selected: state.repeat == rule,
+                                        onTap: () => context
+                                            .read<TaskFormCubit>()
+                                            .repeatChanged(rule),
+                                      ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                                _SectionLabel(
+                                  icon: Icons.checklist_rounded,
+                                  text: context.l10n.subtasksLabel,
+                                ),
+                                const SizedBox(height: 10),
+                                _SubtasksEditor(items: state.subtasks),
+                                const SizedBox(height: 24),
+                                FilledButton(
+                                  onPressed: state.canSave
+                                      ? () =>
+                                            context.read<TaskFormCubit>().save()
+                                      : null,
+                                  child: Text(
+                                    state.isEdit
+                                        ? context.l10n.saveChanges
+                                        : context.l10n.save,
+                                  ),
+                                ),
+                                if (state.isEdit) ...<Widget>[
+                                  const SizedBox(height: 8),
+                                  TextButton(
+                                    onPressed: state.isSubmitting
+                                        ? null
+                                        : () => context
+                                              .read<TaskFormCubit>()
+                                              .delete(),
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: t.danger,
+                                    ),
+                                    child: Text(context.l10n.delete),
+                                  ),
                                 ],
-                              ),
+                              ],
                             ),
                           ),
+                        ),
                       },
                     ),
                   ],
@@ -627,6 +638,12 @@ class _TaskFormSheetBodyState extends State<_TaskFormSheetBody> {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialEntryMode: TimePickerEntryMode.input,
+      builder: (BuildContext ctx, Widget? child) => MediaQuery(
+        data: MediaQuery.of(ctx).copyWith(
+          alwaysUse24HourFormat: !uses12HourClock(context.l10n.localeName),
+        ),
+        child: child!,
+      ),
       initialTime: TimeOfDay(
         hour: state.dueAt.hour,
         minute: state.dueAt.minute,
@@ -634,8 +651,8 @@ class _TaskFormSheetBodyState extends State<_TaskFormSheetBody> {
     );
     if (picked != null && context.mounted) {
       context.read<TaskFormCubit>().dueTimeChanged(
-            TimeOfDayLike(hour: picked.hour, minute: picked.minute),
-          );
+        TimeOfDayLike(hour: picked.hour, minute: picked.minute),
+      );
     }
   }
 }
@@ -680,10 +697,7 @@ class _PermissionHelpBanner extends StatelessWidget {
 }
 
 class _CategoryChips extends StatelessWidget {
-  const _CategoryChips({
-    required this.selected,
-    required this.onSelected,
-  });
+  const _CategoryChips({required this.selected, required this.onSelected});
 
   final TaskCategory selected;
   final ValueChanged<TaskCategory> onSelected;
@@ -740,7 +754,7 @@ class _ReminderChips extends StatelessWidget {
         _SelectableChip(
           label: selected == ReminderPreset.custom && customBefore != null
               ? context.l10n.reminderBefore(customBefore) ??
-                  context.l10n.reminderCustom
+                    context.l10n.reminderCustom
               : context.l10n.reminderCustom,
           selected: selected == ReminderPreset.custom,
           onTap: onCustom,
@@ -776,7 +790,7 @@ class _DateTimeRow extends StatelessWidget {
         Expanded(
           child: _PillButton(
             icon: Icons.schedule,
-            label: DateFormat.Hm(context.l10n.localeName).format(dueAt),
+            label: timeFormatFor(context.l10n.localeName).format(dueAt),
             onTap: onPickTime,
           ),
         ),
@@ -977,8 +991,9 @@ class _SubtasksEditorState extends State<_SubtasksEditor> {
                     item.title,
                     style: t.body.copyWith(
                       color: item.isDone ? t.ink3 : t.ink,
-                      decoration:
-                          item.isDone ? TextDecoration.lineThrough : null,
+                      decoration: item.isDone
+                          ? TextDecoration.lineThrough
+                          : null,
                     ),
                   ),
                 ),

@@ -27,7 +27,8 @@ Future<void> configureDependencies() async {
   final LocaleController localeController = await LocaleController.load();
   final ProfileController profile = await ProfileController.load();
   final AppDatabase database = AppDatabase();
-  const NotificationDetailsFactory detailsFactory = NotificationDetailsFactory();
+  const NotificationDetailsFactory detailsFactory =
+      NotificationDetailsFactory();
   final LocalReminderScheduler scheduler = LocalReminderScheduler(
     detailsFactory: detailsFactory,
     languageCode: () => localeController.locale?.languageCode,
@@ -49,9 +50,7 @@ Future<void> configureDependencies() async {
     ..registerLazySingleton<WatchTasks>(
       () => WatchTasks(getIt<TaskRepository>()),
     )
-    ..registerLazySingleton<GetTask>(
-      () => GetTask(getIt<TaskRepository>()),
-    )
+    ..registerLazySingleton<GetTask>(() => GetTask(getIt<TaskRepository>()))
     ..registerLazySingleton<GroupTasksByDate>(() => const GroupTasksByDate())
     ..registerLazySingleton<CreateTask>(
       () => CreateTask(

@@ -1,5 +1,4 @@
-import 'package:intl/intl.dart';
-
+import '../../../core/utils/time_format.dart';
 import '../../tasks/domain/entities/task.dart';
 
 /// Pure notification copy (no BuildContext). Matches the design mockup:
@@ -39,28 +38,28 @@ abstract final class ReminderNotificationText {
     return '$minutes minutes left';
   }
 
-  static String doneLabel({String? languageCode}) =>
-      switch (languageCode) {
-        'ru' => 'Сделал',
-        'kk' => 'Дайын',
-        _ => 'Done',
-      };
+  static String doneLabel({String? languageCode}) => switch (languageCode) {
+    'ru' => 'Сделал',
+    'kk' => 'Дайын',
+    _ => 'Done',
+  };
 
   /// Caption of the button that silences a ringing alarm.
   static String stopLabel({String? languageCode}) => switch (languageCode) {
-        'ru' => 'Стоп',
-        'kk' => 'Тоқтату',
-        _ => 'Stop',
-      };
+    'ru' => 'Стоп',
+    'kk' => 'Тоқтату',
+    _ => 'Stop',
+  };
 
-  static String snoozeLabel({String? languageCode}) =>
-      switch (languageCode) {
-        'ru' || 'kk' => '+10 мин',
-        _ => '+10 min',
-      };
+  static String snoozeLabel({String? languageCode}) => switch (languageCode) {
+    'ru' || 'kk' => '+10 мин',
+    _ => '+10 min',
+  };
 
   static String bodyFor(Task task, {String? languageCode}) {
-    final String due = DateFormat.Hm().format(task.dueAt.toLocal());
+    final String due = timeFormatFor(
+      languageCode ?? 'en',
+    ).format(task.dueAt.toLocal());
     if (languageCode == 'ru') {
       return '${task.title} · до $due';
     }

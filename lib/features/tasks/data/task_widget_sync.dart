@@ -30,7 +30,10 @@ abstract final class TaskWidgetSync {
       await HomeWidget.saveWidgetData<String>('task_widget_title', title);
       await HomeWidget.saveWidgetData<String>('task_widget_count', count);
       await HomeWidget.saveWidgetData<String>('task_widget_next', next);
-      await HomeWidget.saveWidgetData<String>('task_widget_next_time', nextTime);
+      await HomeWidget.saveWidgetData<String>(
+        'task_widget_next_time',
+        nextTime,
+      );
       await HomeWidget.updateWidget(qualifiedAndroidName: androidName);
     } on PlatformException catch (error) {
       debugPrint('Task widget update failed: $error');
